@@ -18,6 +18,7 @@ jobs:
           node-version: 18
       - run: |
           ls -la
+          touch ./apps/web/.env
           echo DATABASE_URL="${{ secrets.DATABASE_URL }}" >> ./apps/web/.env
           cat .env
       - run: npm i -g pnpm
