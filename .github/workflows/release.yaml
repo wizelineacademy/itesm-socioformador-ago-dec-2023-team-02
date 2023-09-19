@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 18
       - run: npm i -g pnpm
-      - run: pnpm i
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm build
       - run: npx semantic-release
         env:
