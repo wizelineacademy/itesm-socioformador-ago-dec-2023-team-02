@@ -5,6 +5,7 @@ on:
 
 jobs:
   release:
+    name: Release
     permissions:
       contents: write
       issues: write
@@ -15,6 +16,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 18
+      - run: |
+          echo DATABASE_URL="${{ secrets.DATABASE_URL }}" >> .env
+          cat .env
       - run: npm i -g pnpm
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm build
