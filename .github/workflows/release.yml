@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: 18
       - run: |
-          echo DATABASE_URL="${{ secrets.DATABASE_URL }}" >> .env
+          echo DATABASE_URL="${{ secrets.DATABASE_URL }}" >> ./apps/web/.env
           cat .env
       - run: npm i -g pnpm
       - run: pnpm install --no-frozen-lockfile
