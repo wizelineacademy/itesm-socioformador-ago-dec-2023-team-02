@@ -1,6 +1,6 @@
 import prisma from "../lib/prisma";
 
-async function main() {
+async function main(): Promise<void> {
   const response = await Promise.all([
     prisma.users.upsert({
       where: { email: "rauchg@vercel.com" },

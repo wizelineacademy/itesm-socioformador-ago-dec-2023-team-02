@@ -3,22 +3,22 @@
 import { useState } from "react";
 import styles from "./counters.module.css";
 
-function MyButton() {
+function MyButton(): JSX.Element {
   const [count, setCount] = useState(0);
 
-  function handleClick() {
+  function handleClick(): void {
     setCount(count + 1);
   }
 
   return (
     <div>
-      <button onClick={handleClick} className={styles.counter}>
+      <button className={styles.counter} onClick={handleClick} type="button">
         Clicked {count} times
       </button>
     </div>
   );
 }
 
-export default function MyApp() {
+export default function MyApp(): JSX.Element {
   return <MyButton />;
 }

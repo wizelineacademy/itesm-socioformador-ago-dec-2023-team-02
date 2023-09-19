@@ -42,7 +42,10 @@ module.exports = {
     "@typescript-eslint/no-unsafe-assignment": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unsafe-call": "off",
-    "react/no-array-index-key": "off",
+    "@typescript-eslint/no-unnecessary-condition": "off",
     "@typescript-eslint/no-unsafe-member-access": "off",
+    "react/no-array-index-key": "off",
+    "eslint-comments/require-description": "off",
+    "no-console": "off",
   },
 };
