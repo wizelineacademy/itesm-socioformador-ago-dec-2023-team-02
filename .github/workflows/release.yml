@@ -5,20 +5,23 @@ on:
 
 jobs:
   release:
-    name: Release
     permissions:
       contents: write
       issues: write
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_DEBUG: false
+          envkey_PORT: 3000
+          envkey_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          directory: ./apps/web
+          file_name: .env
       - uses: actions/setup-node@v2
         with:
           node-version: 18
-      - run: |
-          echo DATABASE_URL="${{ secrets.DATABASE_URL }}" >> ./apps/web/.env
-          cat .env
       - run: npm i -g pnpm
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm build

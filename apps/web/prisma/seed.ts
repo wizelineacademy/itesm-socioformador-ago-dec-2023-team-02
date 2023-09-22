@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma";
-
+/*
 async function main(): Promise<void> {
   const response = await Promise.all([
     prisma.users.upsert({
@@ -53,3 +53,5 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
+
+*/
