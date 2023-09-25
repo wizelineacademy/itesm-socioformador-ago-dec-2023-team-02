@@ -99,7 +99,7 @@ export async function createModel(modelData: ModelDataInput): Promise<{ model?: 
     try {
         // Validate name
         if (!modelData.name || modelData.name.trim() === '') {
-            return { error: 'Model name cannot be empty' };
+            return { message: 'Model name cannot be empty' };
         }
 
         // Validate idProvider
@@ -107,17 +107,17 @@ export async function createModel(modelData: ModelDataInput): Promise<{ model?: 
             where: { id: modelData.idProvider },
         });
         if (!providerExists) {
-            return { error: 'Provider ID does not exist' };
+            return { message: 'Provider ID does not exist' };
         }
 
         // Validate modelType
         if (!Object.values(ModelType).includes(modelData.modelType)) {
-            return { error: 'Invalid model type' };
+            return { message: 'Invalid model type' };
         }
 
         // Validate description
         if (!modelData.description || Object.keys(modelData.description).length === 0) {
-            return { error: 'Description cannot be empty' };
+            return { message: 'Description cannot be empty' };
         }
 
         // Create a new model in the database using the provided data
@@ -165,7 +165,7 @@ export async function updateModel(id: number, updateData: UpdateModelDataInput):
     try {
         // Validate name
         if (updateData.name && updateData.name.trim() === '') {
-            return { error: 'Model name cannot be empty' };
+            return { message: 'Model name cannot be empty' };
         }
 
         // Validate idProvider if provided
@@ -174,18 +174,18 @@ export async function updateModel(id: number, updateData: UpdateModelDataInput):
                 where: { id: updateData.idProvider },
             });
             if (!providerExists) {
-                return { error: 'Provider ID does not exist' };
+                return { message: 'Provider ID does not exist' };
             }
         }
 
         // Validate modelType if provided
         if (updateData.modelType && !Object.values(ModelType).includes(updateData.modelType)) {
-            return { error: 'Invalid model type' };
+            return { message: 'Invalid model type' };
         }
 
         // Validate description
         if (!updateData.description || Object.keys(updateData.description).length === 0) {
-            return { error: 'Description cannot be empty' };
+            return { message: 'Description cannot be empty' };
         }
 
         // Update the model in the database using the provided ID and data
