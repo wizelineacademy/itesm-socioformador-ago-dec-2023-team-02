@@ -1,5 +1,5 @@
-import type { Model } from "@prisma/client";
-import { Prisma, ModelType } from '@prisma/client';
+import type { Model, Prisma} from "@prisma/client";
+import {  ModelType } from '@prisma/client';
 import prisma from "./prisma";
 
 /**
@@ -52,7 +52,7 @@ export async function getModelById(id: number): Promise<{ model?: Model; message
         // Fetch the model from the database that matches the given ID
         const model: Model | null = await prisma.model.findUnique({
             where: {
-                id: id,  // Model ID to filter
+                id,  // Model ID to filter
             },
             include: {
                 // Include details from the 'provider' relation
@@ -99,7 +99,7 @@ export async function createModel(modelData: ModelDataInput): Promise<{ model?: 
     try {
         // Validate name
         if (!modelData.name || modelData.name.trim() === '') {
-            return { message: 'Model name cannot be empty' };
+            return { error: 'Model name cannot be empty' };
         }
 
         // Validate idProvider
@@ -107,17 +107,17 @@ export async function createModel(modelData: ModelDataInput): Promise<{ model?: 
             where: { id: modelData.idProvider },
         });
         if (!providerExists) {
-            return { message: 'Provider ID does not exist' };
+            return { error: 'Provider ID does not exist' };
         }
 
         // Validate modelType
         if (!Object.values(ModelType).includes(modelData.modelType)) {
-            return { message: 'Invalid model type' };
+            return { error: 'Invalid model type' };
         }
 
         // Validate description
         if (!modelData.description || Object.keys(modelData.description).length === 0) {
-            return { message: 'Description cannot be empty' };
+            return { error: 'Description cannot be empty' };
         }
 
         // Create a new model in the database using the provided data
@@ -127,7 +127,7 @@ export async function createModel(modelData: ModelDataInput): Promise<{ model?: 
                 name: modelData.name,             // Model name
                 active: modelData.active,         // Whether the model is active
                 modelType: modelData.modelType,   // Type of the model (Text/Image)
-                description: modelData.description as Prisma.JsonObject // Description in JSON format
+                description: modelData.description // Description in JSON format
             }
         });
 
@@ -147,11 +147,11 @@ export async function createModel(modelData: ModelDataInput): Promise<{ model?: 
  * Represents the updated information for a model.
  */
 interface UpdateModelDataInput {
+    idProvider?: number;
     name?: string;
     active?: boolean;
     modelType?: 'TEXT' | 'IMAGE';
-    description?: any; // You can specify a more specific type here if needed
-    idProvider?: number;
+    description: Prisma.JsonObject; // Assuming Json is a type you've defined
 }
 
 
@@ -161,7 +161,7 @@ interface UpdateModelDataInput {
  * @param updateData - The data to update the model with.
  * @returns - The updated model object, or an error object if an error occurs.
  */
-export async function updateModel(id: number, updateData: UpdateModelDataInput) {
+export async function updateModel(id: number, updateData: UpdateModelDataInput): Promise<{ model?: Model; message?: string; error?: any }> {
     try {
         // Validate name
         if (updateData.name && updateData.name.trim() === '') {
@@ -185,14 +185,13 @@ export async function updateModel(id: number, updateData: UpdateModelDataInput) 
 
         // Validate description
         if (!updateData.description || Object.keys(updateData.description).length === 0) {
-            return { message: 'Description cannot be empty' };
+            return { error: 'Description cannot be empty' };
         }
-
 
         // Update the model in the database using the provided ID and data
         const model = await prisma.model.update({
             where: {
-                id: id, // Model ID to filter
+                id, // Model ID to filter
             },
             data: {
                 ...updateData // Spread the update data
@@ -216,7 +215,7 @@ export async function deleteModelById(id: number): Promise<{ message?: string; e
     try {
         // Fetch the model from the database to check if it exists
         const modelExists = await prisma.model.findUnique({
-            where: { id: id },
+            where: { id },
         });
 
         // Validate if the model exists
@@ -226,7 +225,7 @@ export async function deleteModelById(id: number): Promise<{ message?: string; e
 
         // Delete the model from the database
         await prisma.model.delete({
-            where: { id: id },
+            where: { id },
         });
 
         // Return a message indicating the model was successfully deleted
