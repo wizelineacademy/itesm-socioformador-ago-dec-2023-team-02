@@ -10,6 +10,22 @@ export async function getAllConversationsByUserId(
   idUser: number
 ): Promise<{ conversations?: Conversation[]; message?: string; error?: any }> {
   try {
+
+    // Validate idUser
+    if (!idUser || idUser <= 0) {
+      return { message: 'Invalid user ID' };
+    }
+
+    // Check if the user exists in the database
+    const userExists = await prisma.user.findUnique({
+      where: { id: idUser },
+    });
+
+    if (!userExists) {
+      return { message: 'User not found' };
+    }
+
+
     // Search all conversations in the database that match the user ID
     const conversations: Conversation[] = await prisma.conversation.findMany({
       where: {
@@ -46,6 +62,12 @@ export async function getConversationById(
   id: number
 ): Promise<{ conversation?: Conversation; message?: string; error?: any }> {
   try {
+
+    // Validate id
+    if (!id || id <= 0) {
+      return { message: 'Invalid conversation ID' };
+    }
+
     // Fetch the conversation from the database that matches the given ID
     const conversation: Conversation | null =
       await prisma.conversation.findUnique({
@@ -96,6 +118,17 @@ export async function updateConversationById(
   includeRelatedEntities: boolean // Whether to include related entities in the returned conversation object
 ): Promise<{ conversation?: Conversation; message?: string; error?: any }> {
   try {
+
+    // Validate id
+    if (!id || id <= 0) {
+      return { message: 'Invalid conversation ID' };
+    }
+
+    // Validate title if provided
+    if (updatedInfo.title && updatedInfo.title.trim() === '') {
+      return { message: 'Title cannot be empty' };
+    }
+
     // Attempt to update the conversation in the database
     const conversation: Conversation | null = await prisma.conversation.update({
       where: { id }, // Specify which conversation to update by its ID
@@ -106,16 +139,16 @@ export async function updateConversationById(
       },
       include: includeRelatedEntities
         ? {
-            // Include these related entities only if includeRelatedEntities is true
-            user: true, // Include details of the associated user
-            model: true, // Include details of the associated model
-            messages: true, // Include messages in the conversation
-            tags: true, // Include tags associated with the conversation
-            conversationParameters: true, // Include conversation parameters
-          }
+          // Include these related entities only if includeRelatedEntities is true
+          user: true, // Include details of the associated user
+          model: true, // Include details of the associated model
+          messages: true, // Include messages in the conversation
+          tags: true, // Include tags associated with the conversation
+          conversationParameters: true, // Include conversation parameters
+        }
         : {
-            tags: true, // Include tags associated with the conversation
-          },
+          tags: true, // Include tags associated with the conversation
+        },
     });
 
     // Check if the conversation was found and updated
@@ -140,6 +173,12 @@ export async function deleteConversationById(
   id: number
 ): Promise<{ message?: string; error?: any }> {
   try {
+
+    // Validate id
+    if (!id || id <= 0) {
+      return { message: 'Invalid conversation ID' };
+    }
+
     // Update the 'active' field of the conversation in the database that matches the given ID
     const conversation: Conversation | null = await prisma.conversation.update({
       where: {
@@ -172,6 +211,15 @@ export async function deleteAllConversationsByUserId(
   idUser: number
 ): Promise<{ message?: string; count?: number; error?: any }> {
   try {
+
+    // Check if the user exists
+    const userExists = await prisma.user.findUnique({
+      where: { id: idUser },
+    });
+    if (!userExists) {
+      return { message: 'User ID does not exist' };
+    }
+
     // Update the 'active' field of all conversations that match the given user ID
     const updateResponse: Prisma.BatchPayload =
       await prisma.conversation.updateMany({
