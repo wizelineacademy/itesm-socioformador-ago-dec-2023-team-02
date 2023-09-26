@@ -1,3 +1,8 @@
+/**
+ * This module contains functions to interact with the Tag model in the database.
+ * @packageDocumentation
+ */
+
 import type { Tag } from "@prisma/client";
 import prisma from "./prisma";
 
