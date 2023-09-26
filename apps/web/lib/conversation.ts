@@ -168,7 +168,7 @@ export async function updateConversationById(
  * @param id - The ID of the conversation to delete.
  * @returns An object with a message indicating whether the conversation was successfully marked as inactive or not, or an error if one occurred.
  */
-export async function deleteConversationById(
+export async function deactivateConversationById(
   id: number
 ): Promise<PrismaResponse<null>> {
   try {
@@ -205,7 +205,7 @@ export async function deleteConversationById(
  * @param idUser - The ID of the user whose conversations will be marked as inactive.
  * @returns An object containing a message indicating the conversations are now inactive and the number of conversations that were updated, or an error object if an error occurred during the update.
  */
-export async function deleteAllConversationsByUserId(
+export async function deactivateAllConversationsByUserId(
   idUser: number
 ): Promise<PrismaResponse<{ count: number }>> {
   try {
@@ -241,6 +241,48 @@ export async function deleteAllConversationsByUserId(
     };
   } catch (error: any) {
     // Handle any errors that occur during the update
+    return { status: 500, message: error.message };
+  }
+}
+
+
+/**
+ * Deletes a conversation and all its associated messages from the database.
+ * @param id - The ID of the conversation to delete.
+ * @returns A promise that resolves to a PrismaResponse object indicating the status and message of the operation.
+ */
+export async function deleteConversationById(
+  id: number
+): Promise<PrismaResponse<null>> {
+  try {
+    // Validate the ID to ensure it's a positive integer
+    if (!id || id <= 0) {
+      return { status: 400, message: 'Invalid conversation ID' };
+    }
+
+    // Delete all messages associated with the conversation
+    await prisma.message.deleteMany({
+      where: {
+        idConversation: id, // Filter messages by conversation ID
+      },
+    });
+
+    // Delete the conversation from the database that matches the given ID
+    const conversation: Conversation | null = await prisma.conversation.delete({
+      where: {
+        id, // Conversation ID to filter
+      },
+    });
+
+    // If the conversation is not found, return a message indicating so
+    if (!conversation) {
+      return { status: 404, message: 'Conversation not found' };
+    }
+
+    // Return a message indicating the conversation was successfully deleted
+    return { status: 200, message: 'Conversation and associated messages successfully deleted' };
+  } catch (error: any) {
+    // Handle any errors that occur during the deletion
     return { status: 500, message: error.message };
   }
 }
