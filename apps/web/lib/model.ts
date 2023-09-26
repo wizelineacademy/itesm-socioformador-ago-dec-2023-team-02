@@ -2,6 +2,7 @@
  * This module contains functions to interact with the AI Model model in the database.
  * @packageDocumentation
  */
+
 import type { Model, Prisma} from "@prisma/client";
 import {  ModelType } from '@prisma/client';
 import type { PrismaResponse } from "@/types/PrismaClientTypes";
