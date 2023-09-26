@@ -1,19 +1,24 @@
+/**
+ * This module contains functions to interact with the Conversation model in the database.
+ * @packageDocumentation
+ */
+
 import type { Tag, Conversation, Prisma } from "@prisma/client";
+import type { PrismaResponse } from "@/types/PrismaClientTypes";
 import prisma from "./prisma";
 
 /**
  * Retrieves all conversations from the database that match the given user ID.
  * @param idUser - The ID of the user to filter conversations.
- * @returns An object containing either an array of conversations (excluding messages and conversation parameters), a message of no conversations found or an error message.
+ * @returns An object containing either an array of conversations or an error object.
  */
 export async function getAllConversationsByUserId(
   idUser: number
-): Promise<{ conversations?: Conversation[]; message?: string; error?: any }> {
+): Promise<PrismaResponse<Conversation[]>> {
   try {
-
     // Validate idUser
     if (!idUser || idUser <= 0) {
-      return { message: 'Invalid user ID' };
+      return { status: 400, message: 'Invalid user ID' };
     }
 
     // Check if the user exists in the database
@@ -22,9 +27,8 @@ export async function getAllConversationsByUserId(
     });
 
     if (!userExists) {
-      return { message: 'User not found' };
+      return { status: 404, message: 'User not found' };
     }
-
 
     // Search all conversations in the database that match the user ID
     const conversations: Conversation[] = await prisma.conversation.findMany({
@@ -34,24 +38,25 @@ export async function getAllConversationsByUserId(
       },
       include: {
         messages: false, // Do not include messages from each conversation
-        conversationParameters: false, //Do not include conversation parameters from each conversation
         tags: true, // Include tags from each conversation
         model: true, // Include model from each conversation
       },
     });
 
-    // if there are no conversations, return a message indicating that there are none
+    // If there are no conversations, return a message indicating that there are none
     if (conversations.length === 0) {
-      return { message: "No conversations found for this user" };
+      return { status: 404, message: 'No conversations found for this user' };
     }
 
-    //return found conversations
-    return { conversations };
+    // Return found conversations
+    return { data: conversations, status: 200 };
   } catch (error: any) {
     // Handle any errors that occur during the fetch
-    return { error };
+    return { status: 500, message: error.message };
   }
 }
+
+
 
 /**
  * Retrieves a conversation from the database by its ID, along with all its details.
@@ -60,40 +65,37 @@ export async function getAllConversationsByUserId(
  */
 export async function getConversationById(
   id: number
-): Promise<{ conversation?: Conversation; message?: string; error?: any }> {
+): Promise<PrismaResponse<Conversation>> {
   try {
-
     // Validate id
     if (!id || id <= 0) {
-      return { message: 'Invalid conversation ID' };
+      return { status: 400, message: 'Invalid conversation ID' };
     }
 
     // Fetch the conversation from the database that matches the given ID
-    const conversation: Conversation | null =
-      await prisma.conversation.findUnique({
-        where: {
-          id, // Conversation ID to filter
-        },
-        // Include additional models (relations) in the result
-        include: {
-          user: true, // Include user details
-          model: true, // Include model details
-          messages: true, // Include messages in the conversation
-          tags: true, // Include tags associated with the conversation
-          conversationParameters: true, // Include conversation parameters
-        },
-      });
+    const conversation: Conversation | null = await prisma.conversation.findUnique({
+      where: {
+        id, // Conversation ID to filter
+      },
+      // Include additional models (relations) in the result
+      include: {
+        user: true, // Include user details
+        model: true, // Include model details
+        messages: true, // Include messages in the conversation
+        tags: true, // Include tags associated with the conversation
+      },
+    });
 
     // If the conversation is not found, return a message indicating so
     if (!conversation) {
-      return { message: "Conversation not found" };
+      return { status: 404, message: 'Conversation not found' };
     }
 
     // Return the found conversation along with all its details
-    return { conversation };
+    return { data: conversation, status: 200 };
   } catch (error: any) {
     // Handle any errors that occur during the fetch
-    return { error };
+    return { status: 500, message: error.message };
   }
 }
 
@@ -105,62 +107,59 @@ interface UpdatedInfo {
   title?: string; //The updated title of the conversation.
 }
 
+
 /**
  * Updates a conversation in the database by its ID.
  * @param id - The ID of the conversation to update.
  * @param updatedInfo - The new information to update the conversation with.
  * @param includeRelatedEntities - Whether to include related entities in the returned conversation object.
- * @returns An object containing either the updated conversation or an error message.
+ * @returns An object containing either the updated conversation or an error object.
  */
 export async function updateConversationById(
-  id: number, // The ID of the conversation to update
-  updatedInfo: UpdatedInfo, // The new information to update the conversation with
-  includeRelatedEntities: boolean // Whether to include related entities in the returned conversation object
-): Promise<{ conversation?: Conversation; message?: string; error?: any }> {
+  id: number,
+  updatedInfo: UpdatedInfo,
+  includeRelatedEntities: boolean
+): Promise<PrismaResponse<Conversation>> {
   try {
-
     // Validate id
     if (!id || id <= 0) {
-      return { message: 'Invalid conversation ID' };
+      return { status: 400, message: 'Invalid conversation ID' };
     }
 
     // Validate title if provided
     if (updatedInfo.title && updatedInfo.title.trim() === '') {
-      return { message: 'Title cannot be empty' };
+      return { status: 400, message: 'Title cannot be empty' };
     }
 
     // Attempt to update the conversation in the database
     const conversation: Conversation | null = await prisma.conversation.update({
-      where: { id }, // Specify which conversation to update by its ID
+      where: { id },
       data: {
-        // Set the new data for the conversation
-        tags: updatedInfo.tags ? { set: updatedInfo.tags } : undefined, // Update the tags if provided
-        title: updatedInfo.title || undefined, // Update the title if provided
+        tags: updatedInfo.tags ? { set: updatedInfo.tags } : undefined,
+        title: updatedInfo.title || undefined,
       },
       include: includeRelatedEntities
         ? {
-          // Include these related entities only if includeRelatedEntities is true
-          user: true, // Include details of the associated user
-          model: true, // Include details of the associated model
-          messages: true, // Include messages in the conversation
-          tags: true, // Include tags associated with the conversation
-          conversationParameters: true, // Include conversation parameters
-        }
+            user: true,
+            model: true,
+            messages: true,
+            tags: true,
+          }
         : {
-          tags: true, // Include tags associated with the conversation
-        },
+            tags: true,
+          },
     });
 
     // Check if the conversation was found and updated
     if (!conversation) {
-      return { message: "Conversation not found" }; // Return a message if the conversation was not found
+      return { status: 404, message: 'Conversation not found' };
     }
 
     // Return the updated conversation
-    return { conversation };
+    return { data: conversation, status: 200 };
   } catch (error: any) {
     // Handle and return any errors that occur
-    return { error };
+    return { status: 500, message: error.message };
   }
 }
 
@@ -171,12 +170,11 @@ export async function updateConversationById(
  */
 export async function deleteConversationById(
   id: number
-): Promise<{ message?: string; error?: any }> {
+): Promise<PrismaResponse<null>> {
   try {
-
     // Validate id
     if (!id || id <= 0) {
-      return { message: 'Invalid conversation ID' };
+      return { status: 400, message: 'Invalid conversation ID' };
     }
 
     // Update the 'active' field of the conversation in the database that matches the given ID
@@ -191,14 +189,14 @@ export async function deleteConversationById(
 
     // If the conversation is not found, return a message indicating so
     if (!conversation) {
-      return { message: "Conversation not found" };
+      return { status: 404, message: 'Conversation not found' };
     }
 
     // Return a message indicating the conversation is now inactive
-    return { message: "Conversation marked as inactive" };
+    return { status: 200, message: 'Conversation marked as inactive' };
   } catch (error: any) {
     // Handle any errors that occur during the update
-    return { error };
+    return { status: 500, message: error.message };
   }
 }
 
@@ -209,15 +207,14 @@ export async function deleteConversationById(
  */
 export async function deleteAllConversationsByUserId(
   idUser: number
-): Promise<{ message?: string; count?: number; error?: any }> {
+): Promise<PrismaResponse<{ count: number }>> {
   try {
-
     // Check if the user exists
     const userExists = await prisma.user.findUnique({
       where: { id: idUser },
     });
     if (!userExists) {
-      return { message: 'User ID does not exist' };
+      return { status: 404, message: 'User ID does not exist' };
     }
 
     // Update the 'active' field of all conversations that match the given user ID
@@ -233,16 +230,17 @@ export async function deleteAllConversationsByUserId(
 
     // Check if any conversations were updated
     if (updateResponse.count === 0) {
-      return { message: "No conversations found for this user" };
+      return { status: 404, message: 'No conversations found for this user' };
     }
 
     // Return a message indicating the conversations are now inactive
     return {
-      message: "Conversations marked as inactive",
-      count: updateResponse.count,
+      status: 200,
+      message: 'Conversations marked as inactive',
+      data: { count: updateResponse.count },
     };
   } catch (error: any) {
     // Handle any errors that occur during the update
-    return { error };
+    return { status: 500, message: error.message };
   }
 }

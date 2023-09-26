@@ -1,3 +1,8 @@
+/**
+ * This module contains functions to interact with the Message model in the database.
+ * @packageDocumentation
+ */
+
 import type { Message } from "@prisma/client";
 import { Sender } from "@prisma/client";
 import type { PrismaResponse } from "@/types/PrismaClientTypes";
