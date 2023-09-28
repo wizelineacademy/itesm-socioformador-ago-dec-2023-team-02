@@ -3,7 +3,25 @@
  */
 
 export interface PrismaResponse<ResponseData> {
-    data? : ResponseData;
     status : number;
+    data? : ResponseData;
     message? : string;
+}
+
+export interface GlobalParameters {
+    chatGPT: ChatGPTParameters, 
+    dallE: DallEParameters, 
+    palm: PalmParameters
+}
+
+export interface ChatGPTParameters {
+
+}
+
+export interface DallEParameters {
+
+}
+
+export interface PalmParameters {
+
 }
