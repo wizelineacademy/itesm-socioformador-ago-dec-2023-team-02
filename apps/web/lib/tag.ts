@@ -4,13 +4,9 @@
  */
 
 import type { Tag } from "@prisma/client";
+import type { PrismaResponse } from "@/types/PrismaClientTypes";
 import prisma from "./prisma";
-
-interface PrismaResponse<ResponseData> {
-    data?: ResponseData
-    error?: any 
-    message?: string
-}
+import { buildErrorMessage } from "./utils";
 
 /**
  * Retrieves the tag that has the given tag ID. 
@@ -24,9 +20,9 @@ export async function getTag(idTag: number): Promise<PrismaResponse<Tag>> {
                 id: idTag
             }
         })
-        return {data}
+        return {status: 200, data}
     } catch (error) {
-        return {error}
+        return {status: 400, message: buildErrorMessage(error)}
     }
 }
 
@@ -44,10 +40,10 @@ export async function getAllTagsByUserID(idUser: number): Promise<PrismaResponse
             }
         })
 
-        return {data}
+        return {status: 200, data}
 
     } catch (error) {
-        return {error}
+        return {status: 400, message: buildErrorMessage(error)}
     }
 }
 
@@ -69,10 +65,9 @@ export async function getAllTagsByConversationID(idConversation: number): Promis
             }
         })
 
-        return {data}
-
+        return {status: 200, data}
     } catch (error) {
-        return {error}
+        return {status: 400, message: buildErrorMessage(error)}
     }
 }
 
@@ -92,9 +87,9 @@ export async function createTagForUser(idUser: number, name: string, color: stri
                 color
             }
         })
-        return {data}
+        return {status: 200, data}
     } catch (error) {
-        return {error}
+        return {status: 400, message: buildErrorMessage(error)}
     }
 }
 
@@ -103,16 +98,16 @@ export async function createTagForUser(idUser: number, name: string, color: stri
  * @param idTag - The ID of the tag to delete (number). 
  * @returns A Promise that resolves to an object that implements PrismaResponse<Tag>, and that potentially contains the deleted Tag.  
  */
-export async function removeTag(idTag: number): Promise<PrismaResponse<Tag>> {
+export async function deleteTag(idTag: number): Promise<PrismaResponse<Tag>> {
     try {
         const data: Tag = await prisma.tag.delete({
             where: {
                 id: idTag
             }
         })
-        return {data}
+        return {status: 200, data}
     } catch (error) {
-        return {error}
+        return {status: 400, message: buildErrorMessage(error)}
     }
 }
 
@@ -134,8 +129,8 @@ export async function editTag(idTag: number, name: string, color: string): Promi
                 color
             }
         })
-        return {data}
+        return {status: 200, data}
     } catch (error) {
-        return {error}
+        return {status: 400, message: buildErrorMessage(error)}
     }
 }
