@@ -4,9 +4,16 @@
  */
 
 import type { Tag } from "@prisma/client";
-import type { PrismaResponse } from "@/types/PrismaClientTypes";
+import type { PrismaResponse } from "@/types/prisma-client-types";
 import prisma from "./prisma";
-import { buildErrorMessage } from "./utils";
+
+function isValidTagName(name: string): boolean {
+    return name.length > 0 // Más validación podría ser añadida. 
+}
+
+function isValidTagColor(color: string): boolean {
+    return /^#[0-9a-fA-F]{6}$/.test(color) // El color es representado con un hexadecimal de 6 digitos. 
+}
 
 /**
  * Retrieves the tag that has the given tag ID. 
@@ -15,14 +22,15 @@ import { buildErrorMessage } from "./utils";
  */
 export async function getTag(idTag: number): Promise<PrismaResponse<Tag>> {
     try {
-        const data: Tag = await prisma.tag.findUniqueOrThrow({
+        const tag: Tag | null = await prisma.tag.findUnique({
             where: {
                 id: idTag
             }
         })
-        return {status: 200, data}
-    } catch (error) {
-        return {status: 400, message: buildErrorMessage(error)}
+
+        return tag === null ? {status: 404, message: "No tag was found"} : {status: 200, data: tag}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
     }
 }
 
@@ -34,16 +42,19 @@ export async function getTag(idTag: number): Promise<PrismaResponse<Tag>> {
  */
 export async function getAllTagsByUserID(idUser: number): Promise<PrismaResponse<Tag[]>> {
     try {
-        const data: Tag[] = await prisma.tag.findMany({
+        if (await prisma.user.findUnique({where: {id: idUser}}) === null) {
+            return {status: 400, message: "Invalid user ID given."}
+        }
+
+        const tags: Tag[] = await prisma.tag.findMany({
             where: {
                 id: idUser
             }
         })
 
-        return {status: 200, data}
-
-    } catch (error) {
-        return {status: 400, message: buildErrorMessage(error)}
+        return {status: 200, data: tags}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
     }
 }
 
@@ -55,7 +66,11 @@ export async function getAllTagsByUserID(idUser: number): Promise<PrismaResponse
  */
 export async function getAllTagsByConversationID(idConversation: number): Promise<PrismaResponse<Tag[]>> {
     try {
-        const data: Tag[] = await prisma.tag.findMany({
+        if (await prisma.conversation.findUnique({where: {id: idConversation}}) === null) {
+            return {status: 400, message: "Invalid conversation ID given."}
+        }
+
+        const tags: Tag[] = await prisma.tag.findMany({
             where: {
                 conversations: {
                     some: {
@@ -65,9 +80,9 @@ export async function getAllTagsByConversationID(idConversation: number): Promis
             }
         })
 
-        return {status: 200, data}
-    } catch (error) {
-        return {status: 400, message: buildErrorMessage(error)}
+        return {status: 200, data: tags}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
     }
 }
 
@@ -79,17 +94,25 @@ export async function getAllTagsByConversationID(idConversation: number): Promis
  * @returns A Promise that resolves to an object that implements PrismaResponse<Tag>, and that potentially contains the created Tag.  
  */
 export async function createTagForUser(idUser: number, name: string, color: string): Promise<PrismaResponse<Tag>> {
+    if (!isValidTagName(name) || !isValidTagColor(color)) {
+        return {status: 400, message: "Invalid name or color value given."}
+    }
+
     try {
-        const data: Tag = await prisma.tag.create({
+        if (await prisma.user.findUnique({where: {id: idUser}}) === null) {
+            return {status: 400, message: "Invalid user ID given."}
+        }
+
+        const tag: Tag = await prisma.tag.create({
             data: {
                 idUser, 
                 name,
                 color
             }
         })
-        return {status: 200, data}
-    } catch (error) {
-        return {status: 400, message: buildErrorMessage(error)}
+        return {status: 200, data: tag}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
     }
 }
 
@@ -100,14 +123,14 @@ export async function createTagForUser(idUser: number, name: string, color: stri
  */
 export async function deleteTag(idTag: number): Promise<PrismaResponse<Tag>> {
     try {
-        const data: Tag = await prisma.tag.delete({
+        const tag: Tag = await prisma.tag.delete({
             where: {
                 id: idTag
             }
         })
-        return {status: 200, data}
-    } catch (error) {
-        return {status: 400, message: buildErrorMessage(error)}
+        return {status: 200, data: tag}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
     }
 }
 
@@ -119,8 +142,12 @@ export async function deleteTag(idTag: number): Promise<PrismaResponse<Tag>> {
  * @returns A Promise that resolves to an object that implements PrismaResponse<Tag>, and that potentially contains the updated Tag.  
  */
 export async function editTag(idTag: number, name: string, color: string): Promise<PrismaResponse<Tag>> {
+    if (!isValidTagName(name) || !isValidTagColor(color)) {
+        return {status: 400, message: "Invalid name or color value given."}
+    }
+    
     try {
-        const data: Tag = await prisma.tag.update({
+        const tag: Tag = await prisma.tag.update({
             where: {
                 id: idTag
             }, 
@@ -129,8 +156,8 @@ export async function editTag(idTag: number, name: string, color: string): Promi
                 color
             }
         })
-        return {status: 200, data}
-    } catch (error) {
-        return {status: 400, message: buildErrorMessage(error)}
+        return {status: 200, data: tag}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
     }
 }

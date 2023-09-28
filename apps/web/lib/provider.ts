@@ -4,7 +4,7 @@
  */
 
 import type { Provider } from "@prisma/client";
-import type { PrismaResponse } from "@/types/PrismaClientTypes";
+import type { PrismaResponse } from "@/types/prisma-client-types";
 import prisma from "./prisma";
 
 

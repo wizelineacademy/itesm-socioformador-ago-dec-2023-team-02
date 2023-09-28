@@ -3,9 +3,9 @@
  */
 
 export interface PrismaResponse<ResponseData> {
-    status : number;
-    data? : ResponseData;
-    message? : string;
+    status: number;
+    data?: ResponseData;
+    message?: string;
 }
 
 export interface GlobalParameters {

@@ -1,12 +1,14 @@
 import type { User } from "@prisma/client";
-import type { PrismaResponse } from "@/types/PrismaClientTypes";
+import type {PrismaResponse } from "@/types/prisma-client-types";
 import prisma from "./prisma";
-import { buildErrorMessage } from "./utils";
 
-// Get
-// Remove
-// Create 
-// Edit 
+function isValidUser(user: User): boolean {
+    return isValidUserEmail(user.email) // Más validación podría ser añadida. 
+}
+
+function isValidUserEmail(email: string): boolean {
+    return /^[a-zA-Z0-9._%+-]+@wizeline\.com$/.test(email) // Verificar 
+}
 
 /**
  * Retrieves the user that has the given user ID. 
@@ -15,15 +17,15 @@ import { buildErrorMessage } from "./utils";
  */
 export async function getUser(idUser: number): Promise<PrismaResponse<User>> {
     try {
-        const data: User = await prisma.user.findUniqueOrThrow({
+        const user: User | null = await prisma.user.findUnique({
             where: {
                 id: idUser
             }
         })
 
-        return {status: 200, data}
-    } catch (error) {
-        return {status: 400, message: buildErrorMessage(error)}
+        return user === null ? {status: 404, message: "No tag was found"} : {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
     }
 }
 
@@ -32,9 +34,13 @@ export async function getUser(idUser: number): Promise<PrismaResponse<User>> {
  * @param idGroup - The ID of the group whose users will be retrieved (number). 
  * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains an array of users (User[]). 
  */
-export async function getUserByGroupId(idGroup: number): Promise<PrismaResponse<User[]>> {
+export async function getUsersByGroupId(idGroup: number): Promise<PrismaResponse<User[]>> {
     try {
-        const data: User[] = await prisma.user.findMany({
+        if (await prisma.group.findUnique({where: {id: idGroup}}) === null) {
+            return {status: 400, message: "Invalid group ID given."}
+        }
+
+        const users: User[] = await prisma.user.findMany({
             where: {
                 groups: {
                     some: {
@@ -44,9 +50,9 @@ export async function getUserByGroupId(idGroup: number): Promise<PrismaResponse<
             }
         })
 
-        return {status: 200, data}
-    } catch (error) {
-        return {status: 400, message: buildErrorMessage(error)}
+        return {status: 200, data: users}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
     }
 }
 
@@ -57,15 +63,15 @@ export async function getUserByGroupId(idGroup: number): Promise<PrismaResponse<
  */
 export async function deleteUser(idUser: number): Promise<PrismaResponse<User>> {
     try {
-        const data: User = await prisma.user.delete({
+        const user: User = await prisma.user.delete({
             where: {
                 id: idUser
             }
         })
 
-        return {status: 200, data}
-    } catch (error) {
-        return {status: 400, message: buildErrorMessage(error)}
+        return {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
     }
 }
 
@@ -77,7 +83,7 @@ export async function deleteUser(idUser: number): Promise<PrismaResponse<User>> 
  */
 export async function deleteManyUsers(idsUsers: number[]): Promise<PrismaResponse<{count: number}>> {
     try {
-        const data: {count: number} = await prisma.user.deleteMany({
+        const deletionInfo: {count: number} = await prisma.user.deleteMany({
             where: {
                 id: {
                     in: idsUsers
@@ -85,34 +91,170 @@ export async function deleteManyUsers(idsUsers: number[]): Promise<PrismaRespons
             }
         })
 
-        return {status: 200, data}
-    } catch (error) {
-        return {status: 400, message: buildErrorMessage(error)}
+        return {status: 200, data: deletionInfo}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
     }
 }
 
 /**
  * Creates a new user.
- * @param user - A user object that holds the information of the user to create (User).  
- * @param user - A user object that holds the information of the user to create (User).  
+ * @param newUser - A user object that holds the information of the user to create (User).  
+ * @param groupIds - An array of group IDs, to which the newly created user will be added (number[]). 
  * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the created user (User). 
  */
-// export async function createUser(user: User, connectToGroups?: number[]): Promise<PrismaResponse<User>> {
-//     try {
-//         const data = await prisma.user.create({
-//             data: user
-//         })
+export async function createUser(newUser: User, groupIds: number[]): Promise<PrismaResponse<User>> {
+    if (!isValidUser(newUser)){
+        return {status: 400, message: "Invalid user data given."}
+    }
 
-//         return {status: 200, data}
-//     } catch (error) {
-//         return {status: 400, message: buildErrorMessage(error)}
-//     }
-// }
+    try {
+        const user = await prisma.user.create({
+            data: {...newUser, 
+                globalParameters: newUser.globalParameters as any, // Verificar que esto sea seguro. 
+                groups: {
+                    connect: groupIds.map(groupId => {return {id: groupId}}) 
+                }
+            } 
+        })
 
+        return {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
 
+/**
+ * Updates an existing user. 
+ * @param idUser - The ID of the user to be updated (number). 
+ * @param updatedUser - A user object that will overwrite the information of the selected user (User). 
+ * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the updated user (User). 
+ */
+export async function updateUser(idUser: number, updatedUser: User): Promise<PrismaResponse<User>> {
+    if (!isValidUser(updatedUser)){
+        return {status: 400, message: "Invalid user data given."}
+    }
+    
+    try {
+        const user = await prisma.user.update({
+            where: {
+                id: idUser
+            },
+            data: {...updatedUser, 
+                globalParameters: updatedUser.globalParameters as any, // Verificar que esto sea seguro. 
+            } 
+        })
 
+        return {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
 
+/**
+ * Adds the given user to one or many groups. 
+ * @param idUser - The ID of the user who will be associated to the given user groups (number). 
+ * @param groupIds - An array of group IDs, to which the newly created user will be added (number[]). 
+ * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the updated user (User). 
+ */
+export async function addUserToGroups(idUser: number, groupIds: number[]): Promise<PrismaResponse<User>> {
+    try {
+        const user = await prisma.user.update({
+            where: {
+                id: idUser
+            },
+            data: {
+                groups: {
+                    connect: groupIds.map(groupId => {return {id: groupId}})
+                }
+            }
+        })
 
+        return {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
 
+/**
+ * Removes the given user from one or many groups. 
+ * @param idUser - The ID of the user who will no longer be associated to the given user groups (number). 
+ * @param groupIds - An array of group IDs, to which the newly created user will be dissociated (number[]). 
+ * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the updated user (User). 
+ */
+export async function removeUserFromGroups(idUser: number, groupIds: number[]): Promise<PrismaResponse<User>> {
+    try {
+        const user = await prisma.user.update({
+            where: {
+                id: idUser
+            },
+            data: {
+                groups: {
+                    disconnect: groupIds.map(groupId => {return {id: groupId}})
+                }
+            }
+        })
 
+        return {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
 
+/**
+ * Increments the number of creadits remaining of the given user. 
+ * @param idUser - The ID of the user whose number of credits will be incremented (number). 
+ * @param creditIncrement - A non-negative number with which to increment the user's remaining credit value (number). 
+ * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the updated user (User). 
+ */
+export async function incrementUserCreditsRemaining(idUser: number, creditIncrement: number): Promise<PrismaResponse<User>> {
+    if (creditIncrement < 0) {
+        return {status: 400, message: "Invalid credit increment value given."}
+    }
+    
+    try {
+        const user = await prisma.user.update({
+            where: {
+                id: idUser
+            },
+            data: {
+                creditsRemaining: {
+                    increment: creditIncrement
+                }
+            }
+        })
+
+        return {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
+
+/**
+ * Decrements the number of creadits remaining of the given user. 
+ * @param idUser - The ID of the user whose number of credits will be decremented (number). 
+ * @param creditDecrement - A non-negative number with which to decrement the user's remaining credit value (number). 
+ * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the updated user (User). 
+ */
+export async function decrementUserCreditsRemaining(idUser: number, creditDecrement: number): Promise<PrismaResponse<User>> {
+    if (creditDecrement < 0) {
+        return {status: 400, message: "Invalid credit decrement value given."}
+    }
+    
+    try {
+        const user = await prisma.user.update({
+            where: {
+                id: idUser
+            },
+            data: {
+                creditsRemaining: {
+                    decrement: creditDecrement
+                }
+            }
+        })
+
+        return {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
