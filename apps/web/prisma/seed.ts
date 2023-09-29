@@ -1,57 +1,137 @@
-import prisma from "../lib/prisma";
-/*
+import prisma from "../lib/prisma"; // Import the Prisma client
+
+// Define the main function as an asynchronous function
 async function main(): Promise<void> {
-  const response = await Promise.all([
-    prisma.users.upsert({
-      where: { email: "rauchg@vercel.com" },
+
+  // Concurrently upsert User, Group, Provider, Model, Conversation, Message, and Tag
+  const [user, group, provider, model, conversation, message, tag] = await Promise.all([
+    // Upsert User with initial creditsRemaining set to 0
+    prisma.user.upsert({
+      where: { email: 'john.doe@example.com' },
       update: {},
       create: {
-        name: "Guillermo Rauch",
-        email: "rauchg@vercel.com",
-        image:
-          "https://pbs.twimg.com/profile_images/1576257734810312704/ucxb4lHy_400x400.jpg",
+        idAuth0: 'auth0|123456',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        jobPosition: 'Software Engineer',
+        role: 'USER',
+        image: '',
+        creditsRemaining: 0, // Initial credits set to 0
+        globalParameters: JSON.stringify({ key: 'value' }),
       },
     }),
-    prisma.users.upsert({
-      where: { email: "lee@vercel.com" },
+
+    // Upsert Group
+    prisma.group.upsert({
+      where: { id: 1 },
       update: {},
       create: {
-        name: "Lee Robinson",
-        email: "lee@vercel.com",
-        image:
-          "https://pbs.twimg.com/profile_images/1587647097670467584/adWRdqQ6_400x400.jpg",
+        name: 'Engineering',
+        description: 'Engineering Group',
+        creditsAssigned: 500,
       },
     }),
-    await prisma.users.upsert({
-      where: { email: "stey@vercel.com" },
+
+    // Upsert Provider
+    prisma.provider.upsert({
+      where: { id: 1 },
       update: {},
       create: {
-        name: "Steven Tey",
-        email: "stey@vercel.com",
-        image:
-          "https://pbs.twimg.com/profile_images/1506792347840888834/dS-r50Je_400x400.jpg",
+        name: 'OpenAI',
+        image: 'https://logowik.com/chatgpt-logo-vector-54826.html',
       },
     }),
-    await prisma.users.upsert({
-      where: { email: "william.monroy.mamani@gmail.com" },
+
+    // Upsert Model
+    // Upsert ChatGPT-3.5-turbo Model
+    prisma.model.upsert({
+      where: { id: 1 }, // Unique identifier for the model
+      update: {}, // Update fields if the model already exists (empty here)
+      create: {
+        idProvider: 1, // Link to the OpenAI provider
+        name: 'ChatGPT-3.5-turbo',
+        active: true,
+        modelType: 'TEXT', // Assuming 'TEXT' is one of the enum values for ModelType
+        description: JSON.stringify({
+          details: 'ChatGPT-3.5 is a state-of-the-art conversational model.',
+          typeOfUse: 'Chatbots, customer service, virtual assistants',
+          generalDescription: 'Designed to assist in a wide range of conversational tasks.',
+          examples: 'Answering questions, generating text, tutoring, language translation',
+          pricePerToken: '0.005 USD', // Replace with the actual price per token
+        })
+      }
+    }),
+
+    // Upsert Conversation
+    prisma.conversation.upsert({
+      where: { id: 1 },
       update: {},
       create: {
-        name: "William Monroy",
-        email: "william.monroy.mamani@gmail.com",
-        image: "https://github.com/william-monroy.png",
+        idUser: 1,
+        idModel: 1,
+        title: 'Conversation1',
+        parameters: JSON.stringify({ setting: 'default' }),
+      },
+    }),
+
+    // Upsert Message
+    prisma.message.upsert({
+      where: { id: 1 },
+      update: {},
+      create: {
+        idConversation: 1,
+        sender: 'USER',
+        content: ['Hello, how are you?'],
+        creditsUsed: 1,
+      },
+    }),
+
+    // Upsert Tag
+    prisma.tag.upsert({
+      where: { id: 1 },
+      update: {},
+      create: {
+        idUser: 1,
+        name: 'Tag1',
+        color: '#FF5733',
       },
     }),
   ]);
-  console.log(response);
-}
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
+
+  // Update the user's creditsRemaining based on the group they are assigned to
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      creditsRemaining: {
+        increment: group.creditsAssigned, // Increment by the group's credits
+      },
+      groups: {
+        connect: { id: group.id }, // Connect the user to the group
+      },
+    },
   });
 
-*/
+  // Add the tag to the conversation
+  await prisma.conversation.update({
+    where: { id: conversation.id },
+    data: {
+      tags: {
+        connect: { id: tag.id }, // Connect the tag to the conversation
+      },
+    },
+  });
+
+  // Log a success message
+  console.log('Successfully seeded the database.');
+}
+
+// Run the main function and handle errors
+main()
+  .then(async () => {
+    await prisma.$disconnect(); // Disconnect the Prisma client
+  })
+  .catch(async (e) => {
+    console.error(e); // Log any errors
+    await prisma.$disconnect(); // Disconnect the Prisma client
+    process.exit(1); // Exit the process with an error code
+  });
