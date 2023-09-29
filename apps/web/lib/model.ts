@@ -3,11 +3,10 @@
  * @packageDocumentation
  */
 
-import type { Model, Prisma} from "@prisma/client";
-import {  ModelType } from '@prisma/client';
+import type { Model, Prisma } from "@prisma/client";
+import { ModelType } from '@prisma/client';
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import prisma from "./prisma";
-
 
 /**
  * Fetches all models from the database, including details from the 'provider' relation.
@@ -42,7 +41,6 @@ export async function getAllModels(): Promise<PrismaResponse<Model[]>> {
         return { status: 500, message: error.message };
     }
 }
-
 
 /**
  * Fetches a model from the database using its ID, including details from the 'provider' relation.
@@ -86,7 +84,6 @@ export async function getModelById(id: number): Promise<PrismaResponse<Model>> {
     }
 }
 
-
 /**
  * Represents the creation information for a model.
  */
@@ -98,7 +95,6 @@ interface ModelDataInput {
     description: Prisma.JsonObject; // Assuming Json is a type you've defined
 }
 
-
 /**
  * Creates a new model in the database using the provided data.
  * @param modelData - The data needed to create a new model.
@@ -106,6 +102,9 @@ interface ModelDataInput {
  */
 export async function createModel(modelData: ModelDataInput): Promise<PrismaResponse<Model>> {
     try {
+        // Trim name
+        modelData.name = modelData.name.trim();
+
         // Validate name
         if (!modelData.name || modelData.name.trim() === '') {
             return { status: 400, message: 'Model name cannot be empty' };
@@ -148,7 +147,6 @@ export async function createModel(modelData: ModelDataInput): Promise<PrismaResp
     }
 }
 
-
 /**
  * Represents the updated information for a model.
  */
@@ -160,8 +158,6 @@ interface UpdateModelDataInput {
     description: Prisma.JsonObject; // Assuming Json is a type you've defined
 }
 
-
-
 /**
  * Updates a model in the database with the provided ID and data.
  * @param id - The ID of the model to update.
@@ -170,8 +166,13 @@ interface UpdateModelDataInput {
  */
 export async function updateModel(id: number, updateData: UpdateModelDataInput): Promise<PrismaResponse<Model>> {
     try {
+        // Trim name if provided
+        if (updateData.name) {
+            updateData.name = updateData.name.trim();
+        }
+
         // Validate name
-        if (updateData.name && updateData.name.trim() === '') {
+        if (updateData.name && updateData.name === '') {
             return { status: 400, message: 'Model name cannot be empty' };
         }
 
@@ -212,7 +213,6 @@ export async function updateModel(id: number, updateData: UpdateModelDataInput):
         return { status: 500, message: error.message };
     }
 }
-
 
 /**
  * Deletes a model from the database by its ID.

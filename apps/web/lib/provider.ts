@@ -78,6 +78,10 @@ interface ProviderInput {
  */
 export async function createProvider(providerData: ProviderInput): Promise<PrismaResponse<Provider>> {
     try {
+
+        // Trim name
+        providerData.name = providerData.name.trim();
+
         // Validate name
         if (!providerData.name || providerData.name.trim() === '') {
             return { status: 400, message: 'Provider name cannot be empty' };
@@ -125,6 +129,11 @@ export async function updateProvider(id: number, updateData: ProviderUpdateInput
         // Validate ID
         if (!id || id <= 0) {
             return { status: 400, message: 'Invalid provider ID' };
+        }
+
+        // Trim name if provided
+        if (updateData.name) {
+            updateData.name = updateData.name.trim();
         }
 
         // Validate name if provided

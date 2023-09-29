@@ -87,8 +87,11 @@ export async function createMessage(
 ): Promise<PrismaResponse<any>> {
     try {
 
+        // Remove extra whitespace from beginning and end of strings in content
+        const contentTrimmed = content.map(message => message.trim());
+
         // Validate input parameters
-        if (!idConversation || !sender || !content || !creditsUsed) {
+        if (!idConversation || !sender || !contentTrimmed || !creditsUsed) {
             return { status: 400, message: 'Invalid input parameters' };
         }
 
@@ -109,7 +112,7 @@ export async function createMessage(
         const newMessage = await prisma.message.create({
             data: {
                 idConversation,
-                content,
+                content: contentTrimmed,
                 creditsUsed,
                 sender,
             },
