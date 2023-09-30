@@ -1,12 +1,15 @@
-import prisma from "../lib/prisma"; // Import the Prisma client
+import { PrismaClient, Model, Provider, Prisma } from "@prisma/client";
+import { providersData } from "../data/providers-data";
+import { modelsData } from "../data/models-data";
+
+
+const prisma = new PrismaClient();
 
 // Define the main function as an asynchronous function
 async function main(): Promise<void> {
-
-  // Concurrently upsert User, Group, Provider, Model, Conversation, Message, and Tag
-  const [user, group, provider, model, conversation, message, tag] = await Promise.all([
-    // Upsert User with initial creditsRemaining set to 0
-    prisma.user.upsert({
+  try {
+    // Upsert User
+    const user = await prisma.user.upsert({
       where: { email: 'john.doe@example.com' },
       update: {},
       create: {
@@ -19,75 +22,30 @@ async function main(): Promise<void> {
         creditsRemaining: 0, // Initial credits set to 0
         globalParameters: JSON.stringify({ key: 'value' }),
       },
-    }),
-
-    // Upsert Group
-    prisma.group.upsert({
-      where: { id: 1 },
-      update: {},
-      create: {
-        name: 'Engineering',
-        description: 'Engineering Group',
-        creditsAssigned: 500,
-      },
-    }),
+    });
 
     // Upsert Provider
-    prisma.provider.upsert({
-      where: { id: 1 },
-      update: {},
-      create: {
-        name: 'OpenAI',
-        image: 'https://logowik.com/chatgpt-logo-vector-54826.html',
-      },
-    }),
+    const upsertProviders = providersData.map((provider: Provider) => {
+      return prisma.provider.upsert({
+        where: { id: provider.id },
+        update: {},
+        create: provider,
+      });
+    });
+    await Promise.all(upsertProviders);  // Await here to ensure providers are created before models
 
     // Upsert Model
-    // Upsert ChatGPT-3.5-turbo Model
-    prisma.model.upsert({
-      where: { id: 1 }, // Unique identifier for the model
-      update: {}, // Update fields if the model already exists (empty here)
-      create: {
-        idProvider: 1, // Link to the OpenAI provider
-        name: 'ChatGPT-3.5-turbo',
-        active: true,
-        modelType: 'TEXT', // Assuming 'TEXT' is one of the enum values for ModelType
-        description: JSON.stringify({
-          details: 'ChatGPT-3.5 is a state-of-the-art conversational model.',
-          typeOfUse: 'Chatbots, customer service, virtual assistants',
-          generalDescription: 'Designed to assist in a wide range of conversational tasks.',
-          examples: 'Answering questions, generating text, tutoring, language translation',
-          pricePerToken: '0.005 USD', // Replace with the actual price per token
-        })
-      }
-    }),
-
-    // Upsert Conversation
-    prisma.conversation.upsert({
-      where: { id: 1 },
-      update: {},
-      create: {
-        idUser: 1,
-        idModel: 1,
-        title: 'Conversation1',
-        parameters: JSON.stringify({ setting: 'default' }),
-      },
-    }),
-
-    // Upsert Message
-    prisma.message.upsert({
-      where: { id: 1 },
-      update: {},
-      create: {
-        idConversation: 1,
-        sender: 'USER',
-        content: ['Hello, how are you?'],
-        creditsUsed: 1,
-      },
-    }),
+    const upsertModels = modelsData.map((model: Model) => {
+      return prisma.model.upsert({
+        where: { id: model.id },
+        update: {},
+        create: { ...model, description: JSON.stringify(model.description) },
+      });
+    });
+    await Promise.all(upsertModels);  // Await here to ensure models are created before conversations
 
     // Upsert Tag
-    prisma.tag.upsert({
+    const tag = await prisma.tag.upsert({
       where: { id: 1 },
       update: {},
       create: {
@@ -95,43 +53,36 @@ async function main(): Promise<void> {
         name: 'Tag1',
         color: '#FF5733',
       },
-    }),
-  ]);
+    });
 
-  // Update the user's creditsRemaining based on the group they are assigned to
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      creditsRemaining: {
-        increment: group.creditsAssigned, // Increment by the group's credits
+    // Upsert Conversation
+    const conversation = await prisma.conversation.upsert({
+      where: { id: 1 },
+      update: {},
+      create: {
+        idUser: 1,
+        idModel: 1,
+        title: 'Conversation1',
+        parameters: JSON.stringify({ setting: 'default' }),
+        tags: {
+          connect: { id: tag.id },  // Connect the tag to the conversation here
+        },
       },
-      groups: {
-        connect: { id: group.id }, // Connect the user to the group
-      },
-    },
-  });
+    });
 
-  // Add the tag to the conversation
-  await prisma.conversation.update({
-    where: { id: conversation.id },
-    data: {
-      tags: {
-        connect: { id: tag.id }, // Connect the tag to the conversation
-      },
-    },
-  });
-
-  // Log a success message
-  console.log('Successfully seeded the database.');
+    // Log a success message
+    console.log('Successfully seeded the database.');
+  } catch (e) {
+    console.error(e);  // Log any errors
+    throw e;  // Re-throw the error to be caught by the error handler below
+  } finally {
+    await prisma.$disconnect();  // Disconnect the Prisma client
+  }
 }
 
 // Run the main function and handle errors
 main()
-  .then(async () => {
-    await prisma.$disconnect(); // Disconnect the Prisma client
-  })
-  .catch(async (e) => {
-    console.error(e); // Log any errors
-    await prisma.$disconnect(); // Disconnect the Prisma client
-    process.exit(1); // Exit the process with an error code
+  .catch(e => {
+    console.error(e);  // Log any errors caught during the main execution
+    process.exit(1);  // Exit the process with an error code
   });

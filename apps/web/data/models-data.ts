@@ -1,6 +1,6 @@
 import { Model, ModelType } from '@prisma/client';
 
-export const models: Model[] = [
+export const modelsData: Model[] = [
     /**
      * openAI Models
      */
