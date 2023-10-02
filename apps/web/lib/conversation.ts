@@ -17,7 +17,7 @@ export async function getAllConversationsByUserId(
 ): Promise<PrismaResponse<Conversation[]>> {
   try {
     // Validate idUser
-    if (!idUser || idUser <= 0) {
+    if (!idUser || idUser < 0) {
       return { status: 400, message: 'Invalid user ID' };
     }
 
@@ -39,7 +39,16 @@ export async function getAllConversationsByUserId(
       include: {
         messages: false, // Do not include messages from each conversation
         tags: true, // Include tags from each conversation
-        model: true, // Include model from each conversation
+        model: {
+          select: {
+            name: true, // Only select the name of the model
+            provider: {
+              select: {
+                image: true, // Only select the logo (image) of the provider
+              },
+            },
+          },
+        }, // Include only specific fields from model and provider
       },
     });
 
@@ -55,8 +64,6 @@ export async function getAllConversationsByUserId(
     return { status: 500, message: error.message };
   }
 }
-
-
 
 /**
  * Retrieves a conversation from the database by its ID, along with all its details.
@@ -100,13 +107,97 @@ export async function getConversationById(
 }
 
 /**
+ * Represents the creation information for a conversation.
+ */
+interface ConversationDataInput {
+  idUser: number;
+  idModel: number;
+  title: string;
+  tags: { id: number }[]; // Assuming tags are identified by their ID
+  parameters: JSON; // Optional, if you have specific parameters for the conversation
+  active: boolean; // Optional, defaults to true based on your schema
+  useGlobalParameters: boolean; // New parameter to decide whether to use global parameters
+}
+
+/**
+ * Creates a new conversation in the database.
+ * @param input - The conversation data input.
+ * @returns A promise that resolves to a PrismaResponse containing the newly created conversation or an error message.
+ */
+export async function createConversation(
+  input: ConversationDataInput
+): Promise<PrismaResponse<Conversation>> {
+  try {
+
+    const { idUser, idModel, title } = input || {};
+
+    // Validate input
+    if (!idUser || !idModel || !title) {
+      return { status: 400, message: 'Invalid input for creating conversation' };
+    }
+
+    // Validate that the user exists and fetch globalParameters if needed
+    const user = await prisma.user.findUnique({
+      where: {
+        id: idUser,
+      },
+      select: {
+        globalParameters: true, // Select globalParameters
+      },
+    });
+
+    if (!user) {
+      return { status: 404, message: 'User not found' };
+    }
+
+    // Validate that the model exists
+    const model = await prisma.model.findUnique({
+      where: {
+        id: idModel,
+      },
+    });
+
+    if (!model) {
+      return { status: 404, message: 'Model not found' };
+    }
+
+    // Prepare parameters based on useGlobalParameters flag
+    const userGlobalParameters: Record<string, unknown> = user.globalParameters ? JSON.parse(String(user.globalParameters)) : {};
+    const modelParameters: Record<string, unknown> | undefined = userGlobalParameters[model.name] as Record<string, unknown> | undefined;
+    const parameters: Record<string, unknown> | undefined | null = input.useGlobalParameters ? modelParameters : undefined;
+
+    // Create a new conversation in the database
+    const newConversation = await prisma.conversation.create({
+      data: {
+        ...input,
+        parameters: parameters ? JSON.stringify(parameters) : JSON.stringify({}), // Set parameters if applicable
+        tags: input.tags ? { connect: input.tags } : undefined, // Connect tags if provided
+        active: true, // Set the 'active' field to true by default
+      },
+      // Include additional models (relations) in the result
+      include: {
+        user: true, // Include user details
+        model: true, // Include model details
+        messages: true, // Include messages in the conversation
+        tags: true, // Include tags associated with the conversation
+      },
+    });
+
+    // Return the newly created conversation
+    return { data: newConversation, status: 201 };
+  } catch (error: any) {
+    // Handle any errors that occur during the creation
+    return { status: 500, message: error.message };
+  }
+}
+
+/**
  * Represents the updated information for a conversation.
  */
 interface UpdatedInfo {
   tags?: Tag[]; // Array of tags associated with the conversation.
   title?: string; //The updated title of the conversation.
 }
-
 
 /**
  * Updates a conversation in the database by its ID.
@@ -140,14 +231,14 @@ export async function updateConversationById(
       },
       include: includeRelatedEntities
         ? {
-            user: true,
-            model: true,
-            messages: true,
-            tags: true,
-          }
+          user: true,
+          model: true,
+          messages: true,
+          tags: true,
+        }
         : {
-            tags: true,
-          },
+          tags: true,
+        },
     });
 
     // Check if the conversation was found and updated
