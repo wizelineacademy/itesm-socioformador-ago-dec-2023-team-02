@@ -17,7 +17,7 @@ export async function getAllConversationsByUserId(
 ): Promise<PrismaResponse<Conversation[]>> {
   try {
     // Validate idUser
-    if (!idUser || idUser <= 0) {
+    if (!idUser || idUser < 0) {
       return { status: 400, message: 'Invalid user ID' };
     }
 
@@ -39,7 +39,16 @@ export async function getAllConversationsByUserId(
       include: {
         messages: false, // Do not include messages from each conversation
         tags: true, // Include tags from each conversation
-        model: true, // Include model from each conversation
+        model: {
+          select: {
+            name: true, // Only select the name of the model
+            provider: {
+              select: {
+                image: true, // Only select the logo (image) of the provider
+              },
+            },
+          },
+        }, // Include only specific fields from model and provider
       },
     });
 
@@ -55,8 +64,6 @@ export async function getAllConversationsByUserId(
     return { status: 500, message: error.message };
   }
 }
-
-
 
 /**
  * Retrieves a conversation from the database by its ID, along with all its details.
@@ -99,7 +106,6 @@ export async function getConversationById(
   }
 }
 
-
 /**
  * Represents the creation information for a conversation.
  */
@@ -126,7 +132,7 @@ export async function createConversation(
     const { idUser, idModel, title } = input || {};
 
     // Validate input
-    if  (!idUser || !idModel || !title) {
+    if (!idUser || !idModel || !title) {
       return { status: 400, message: 'Invalid input for creating conversation' };
     }
 
@@ -185,7 +191,6 @@ export async function createConversation(
   }
 }
 
-
 /**
  * Represents the updated information for a conversation.
  */
@@ -193,7 +198,6 @@ interface UpdatedInfo {
   tags?: Tag[]; // Array of tags associated with the conversation.
   title?: string; //The updated title of the conversation.
 }
-
 
 /**
  * Updates a conversation in the database by its ID.
