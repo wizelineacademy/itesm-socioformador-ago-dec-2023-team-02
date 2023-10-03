@@ -197,6 +197,7 @@ export async function createConversation(
 export interface UpdatedInfo {
   tags?: Tag[]; // Array of tags associated with the conversation.
   title?: string; //The updated title of the conversation.
+  parameters?: JSON; // The updated parameters for the conversation.
 }
 
 /**
@@ -222,12 +223,23 @@ export async function updateConversationById(
       return { status: 400, message: 'Title cannot be empty' };
     }
 
+    // Validate conversation exists in the database
+    const existingConversation = await prisma.conversation.findUnique({
+      where: { id },
+    });
+
+    if (!existingConversation) {
+      return { status: 404, message: 'Conversation not found' };
+    }
+
+
     // Attempt to update the conversation in the database
     const conversation: Conversation | null = await prisma.conversation.update({
       where: { id },
       data: {
         tags: updatedInfo.tags ? { set: updatedInfo.tags } : undefined,
         title: updatedInfo.title || undefined,
+        parameters: updatedInfo.parameters as any // Add parameters to the update
       },
       include: includeRelatedEntities
         ? {
