@@ -8,9 +8,6 @@ import { Sender } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import prisma from "./prisma";
 
-
-
-
 /**
  * Retrieves all messages related to a conversation from the database using Prisma.
  * @param idConversation - The ID of the conversation to retrieve messages from.

@@ -5,8 +5,8 @@
 
 import type { Provider } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
+import type { ProviderCreateData, ProviderUpdateData } from "@/types/provider-types";
 import prisma from "./prisma";
-
 
 /**
  * Retrieves all providers from the database using Prisma.
@@ -64,19 +64,11 @@ export async function getProviderById(id: number): Promise<PrismaResponse<Provid
 
 
 /**
- * Represents the creation information for a provider.
- */
-interface ProviderInput {
-    name: string;
-    image: string;
-};
-
-/**
  * Creates a new provider in the database using Prisma.
  * @param providerData - The data of the provider to be created.
  * @returns A promise that resolves to a PrismaResponse object containing the created provider or an error message.
  */
-export async function createProvider(providerData: ProviderInput): Promise<PrismaResponse<Provider>> {
+export async function createProvider(providerData: ProviderCreateData): Promise<PrismaResponse<Provider>> {
     try {
 
         // Trim name
@@ -111,20 +103,12 @@ export async function createProvider(providerData: ProviderInput): Promise<Prism
 
 
 /**
- * Represents the updated information for a provider.
- */
-interface ProviderUpdateInput {
-    name?: string;
-    image?: string;
-};
-
-/**
  * Updates a provider in the database using Prisma.
  * @param id - The ID of the provider to update.
  * @param updateData - The data to update the provider with.
  * @returns A Promise that resolves to a PrismaResponse object containing the updated provider or an error message.
  */
-export async function updateProvider(id: number, updateData: ProviderUpdateInput): Promise<PrismaResponse<Provider>> {
+export async function updateProvider(id: number, updateData: ProviderUpdateData): Promise<PrismaResponse<Provider>> {
     try {
         // Validate ID
         if (!id || id <= 0) {
