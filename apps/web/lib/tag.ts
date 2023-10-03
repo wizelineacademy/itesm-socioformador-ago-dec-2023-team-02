@@ -6,14 +6,7 @@
 import type { Tag } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import prisma from "./prisma";
-
-function isValidTagName(name: string): boolean {
-    return name.length > 0 // Más validación podría ser añadida. 
-}
-
-function isValidTagColor(color: string): boolean {
-    return /^#[0-9a-fA-F]{6}$/.test(color) // El color es representado con un hexadecimal de 6 digitos. 
-}
+import { isValidTagColor, isValidTagName } from "./prisma-input-validation";
 
 /**
  * Retrieves the tag that has the given tag ID. 

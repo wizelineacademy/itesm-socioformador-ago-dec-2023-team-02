@@ -1,14 +1,8 @@
 import type { User } from "@prisma/client";
 import type {PrismaResponse } from "@/types/prisma-client-types";
+import type { GlobalParameters } from "@/types/model-parameters-types";
 import prisma from "./prisma";
-
-function isValidUser(user: User): boolean {
-    return isValidUserEmail(user.email) // Más validación podría ser añadida. 
-}
-
-function isValidUserEmail(email: string): boolean {
-    return /^[a-zA-Z0-9._%+-]+@wizeline\.com$/.test(email) // Verificar 
-}
+import { areValidGlobalParameters, isValidUser } from "./prisma-input-validation";
 
 /**
  * Retrieves the user that has the given user ID. 
@@ -143,6 +137,34 @@ export async function updateUser(idUser: number, updatedUser: User): Promise<Pri
             data: {...updatedUser, 
                 globalParameters: updatedUser.globalParameters as any, // Verificar que esto sea seguro. 
             } 
+        })
+
+        return {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
+
+/**
+ * Updates the global model parameters associated to the given user. 
+ * @param id - The ID of the user whose global model parameters will be updated.
+ * @param globalParameters - An object of type GlobalParameters that holds the parameter values with which
+ * to update the user's global parameters. 
+ * @returns Promise that resolves to an object that implements PrismaResponse<User>, and that potentially contains the updated User. 
+ */
+export async function updateUserGlobalParameters(idUser: number, globalParameters: GlobalParameters): Promise<PrismaResponse<User>> {
+    if (!areValidGlobalParameters(globalParameters)) {
+        return {status: 400, message: 'Invalid global paramters'}
+    }
+
+    try {
+        const user: User = await prisma.user.update({
+            where: {
+                id: idUser
+            }, 
+            data: {
+                globalParameters: globalParameters as any 
+            }
         })
 
         return {status: 200, data: user}
