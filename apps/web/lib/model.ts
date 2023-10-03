@@ -3,8 +3,9 @@
  * @packageDocumentation
  */
 
-import type { Model, Prisma } from "@prisma/client";
 import { ModelType } from '@prisma/client';
+import type { Model } from "@prisma/client";
+import type { ModelCreateData, ModelUpdateData } from "@/types/model-types";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import prisma from "./prisma";
 
@@ -85,22 +86,11 @@ export async function getModelById(id: number): Promise<PrismaResponse<Model>> {
 }
 
 /**
- * Represents the creation information for a model.
- */
-interface ModelDataInput {
-    idProvider: number;
-    name: string;
-    active: boolean;
-    modelType: ModelType;
-    description: Prisma.JsonObject; // Assuming Json is a type you've defined
-}
-
-/**
  * Creates a new model in the database using the provided data.
  * @param modelData - The data needed to create a new model.
  * @returns A promise that resolves to a PrismaResponse object containing the created model and its details, or an error message and status code if an error occurred.
  */
-export async function createModel(modelData: ModelDataInput): Promise<PrismaResponse<Model>> {
+export async function createModel(modelData: ModelCreateData): Promise<PrismaResponse<Model>> {
     try {
         // Trim name
         modelData.name = modelData.name.trim();
@@ -148,23 +138,12 @@ export async function createModel(modelData: ModelDataInput): Promise<PrismaResp
 }
 
 /**
- * Represents the updated information for a model.
- */
-interface UpdateModelDataInput {
-    idProvider?: number;
-    name?: string;
-    active?: boolean;
-    modelType?: 'TEXT' | 'IMAGE';
-    description: Prisma.JsonObject; // Assuming Json is a type you've defined
-}
-
-/**
  * Updates a model in the database with the provided ID and data.
  * @param id - The ID of the model to update.
  * @param updateData - The data to update the model with.
  * @returns A promise that resolves to a PrismaResponse containing the updated model or an error message and status code.
  */
-export async function updateModel(id: number, updateData: UpdateModelDataInput): Promise<PrismaResponse<Model>> {
+export async function updateModel(id: number, updateData: ModelUpdateData): Promise<PrismaResponse<Model>> {
     try {
         // Trim name if provided
         if (updateData.name) {
