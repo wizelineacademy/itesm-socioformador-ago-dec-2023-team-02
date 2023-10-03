@@ -27,11 +27,13 @@ DELETE /tags/:id
 
 ### Conversations
 ```
-GET /conversations/:id
+GET /conversations/user/:id
 PATCH /conversations/user/:id
 POST /conversations
+GET /conversations/:id
 PATCH /conversations/:id
 DELETE /conversations/:id
+PATCH /conversations/deactivate/:id
 ```
 
 ### Params
