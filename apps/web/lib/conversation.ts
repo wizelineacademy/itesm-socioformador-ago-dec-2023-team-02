@@ -109,7 +109,7 @@ export async function getConversationById(
 /**
  * Represents the creation information for a conversation.
  */
-interface ConversationDataInput {
+export interface ConversationDataInput {
   idUser: number;
   idModel: number;
   title: string;
@@ -194,7 +194,7 @@ export async function createConversation(
 /**
  * Represents the updated information for a conversation.
  */
-interface UpdatedInfo {
+export interface UpdatedInfo {
   tags?: Tag[]; // Array of tags associated with the conversation.
   title?: string; //The updated title of the conversation.
 }
