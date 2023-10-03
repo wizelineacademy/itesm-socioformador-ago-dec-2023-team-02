@@ -1,10 +1,12 @@
+/**
+ * This module contains functions to interact with the Message model in the database.
+ * @packageDocumentation
+ */
+
 import type { Message } from "@prisma/client";
 import { Sender } from "@prisma/client";
-import type { PrismaResponse } from "@/types/PrismaClientTypes";
+import type { PrismaResponse } from "@/types/prisma-client-types";
 import prisma from "./prisma";
-
-
-
 
 /**
  * Retrieves all messages related to a conversation from the database using Prisma.
@@ -82,8 +84,11 @@ export async function createMessage(
 ): Promise<PrismaResponse<any>> {
     try {
 
+        // Remove extra whitespace from beginning and end of strings in content
+        const contentTrimmed = content.map(message => message.trim());
+
         // Validate input parameters
-        if (!idConversation || !sender || !content || !creditsUsed) {
+        if (!idConversation || !sender || !contentTrimmed || !creditsUsed) {
             return { status: 400, message: 'Invalid input parameters' };
         }
 
@@ -104,7 +109,7 @@ export async function createMessage(
         const newMessage = await prisma.message.create({
             data: {
                 idConversation,
-                content,
+                content: contentTrimmed,
                 creditsUsed,
                 sender,
             },

@@ -1,12 +1,19 @@
-import type { Model, Prisma} from "@prisma/client";
-import {  ModelType } from '@prisma/client';
+/**
+ * This module contains functions to interact with the AI Model model in the database.
+ * @packageDocumentation
+ */
+
+import { ModelType } from '@prisma/client';
+import type { Model } from "@prisma/client";
+import type { ModelCreateData, ModelUpdateData } from "@/types/model-types";
+import type { PrismaResponse } from "@/types/prisma-client-types";
 import prisma from "./prisma";
 
 /**
- * Retrieves all models from the database, including provider details.
- * @returns An object with either an array of models or a message/error if there was an issue.
+ * Fetches all models from the database, including details from the 'provider' relation.
+ * @returns A Promise that resolves to a PrismaResponse object containing the fetched models or an error message.
  */
-export async function getAllModels(): Promise<{ models?: Model[]; message?: string; error?: any }> {
+export async function getAllModels(): Promise<PrismaResponse<Model[]>> {
     try {
         // Fetch all models from the database
         const models: Model[] = await prisma.model.findMany({
@@ -25,28 +32,27 @@ export async function getAllModels(): Promise<{ models?: Model[]; message?: stri
 
         // Check if any models were fetched
         if (models.length === 0) {
-            return { message: "No models found" };
+            return { status: 404, message: "No models found" };
         }
 
         // Return the fetched models
-        return { models };
+        return { data: models, status: 200 };
     } catch (error: any) {
         // Handle any errors that occur during the fetch
-        return { error };
+        return { status: 500, message: error.message };
     }
 }
 
-
 /**
- * Fetch a specific model from the database by its ID.
+ * Fetches a model from the database using its ID, including details from the 'provider' relation.
  * @param id - The ID of the model to fetch.
- * @returns - The model object if found, or an error object if an error occurs.
+ * @returns A promise that resolves to a PrismaResponse object containing the fetched model or an error message.
  */
-export async function getModelById(id: number): Promise<{ model?: Model; message?: string; error?: any }> {
+export async function getModelById(id: number): Promise<PrismaResponse<Model>> {
     try {
         // Validate that the ID is a positive integer
         if (id <= 0) {
-            return { message: "Invalid ID. Must be a positive integer." };
+            return { status: 400, message: "Invalid ID. Must be a positive integer." };
         }
 
         // Fetch the model from the database that matches the given ID
@@ -68,38 +74,30 @@ export async function getModelById(id: number): Promise<{ model?: Model; message
 
         // If the model is not found, return a message indicating so
         if (!model) {
-            return { message: "Model not found" };
+            return { status: 404, message: "Model not found" };
         }
 
         // Return the fetched model along with its details
-        return { model };
-    } catch (error) {
+        return { data: model, status: 200 };
+    } catch (error: any) {
         // Handle any errors that occur during the fetch
-        return { error };
+        return { status: 500, message: error.message };
     }
 }
 
 /**
- * Represents the creation information for a model.
+ * Creates a new model in the database using the provided data.
+ * @param modelData - The data needed to create a new model.
+ * @returns A promise that resolves to a PrismaResponse object containing the created model and its details, or an error message and status code if an error occurred.
  */
-interface ModelDataInput {
-    idProvider: number;
-    name: string;
-    active: boolean;
-    modelType: ModelType;
-    description: Prisma.JsonObject; // Assuming Json is a type you've defined
-}
-
-/**
- * Create a new model in the database.
- * @param modelData - The data for the new model.
- * @returns - The created model object, or an error object if an error occurs.
- */
-export async function createModel(modelData: ModelDataInput): Promise<{ model?: Model; message?: string; error?: any }> {
+export async function createModel(modelData: ModelCreateData): Promise<PrismaResponse<Model>> {
     try {
+        // Trim name
+        modelData.name = modelData.name.trim();
+
         // Validate name
         if (!modelData.name || modelData.name.trim() === '') {
-            return { message: 'Model name cannot be empty' };
+            return { status: 400, message: 'Model name cannot be empty' };
         }
 
         // Validate idProvider
@@ -107,17 +105,17 @@ export async function createModel(modelData: ModelDataInput): Promise<{ model?: 
             where: { id: modelData.idProvider },
         });
         if (!providerExists) {
-            return { message: 'Provider ID does not exist' };
+            return { status: 400, message: 'Provider ID does not exist' };
         }
 
         // Validate modelType
         if (!Object.values(ModelType).includes(modelData.modelType)) {
-            return { message: 'Invalid model type' };
+            return { status: 400, message: 'Invalid model type' };
         }
 
         // Validate description
         if (!modelData.description || Object.keys(modelData.description).length === 0) {
-            return { message: 'Description cannot be empty' };
+            return { status: 400, message: 'Description cannot be empty' };
         }
 
         // Create a new model in the database using the provided data
@@ -132,40 +130,29 @@ export async function createModel(modelData: ModelDataInput): Promise<{ model?: 
         });
 
         // Return the created model along with its details
-        return { model };
-
-        // Return the created model along with its details
-        return { model };
+        return { data: model, status: 201 };
     } catch (error: any) {
         // Handle any errors that occur during the creation
-        return { error };
+        return { status: 500, message: error.message };
     }
 }
 
-
 /**
- * Represents the updated information for a model.
- */
-interface UpdateModelDataInput {
-    idProvider?: number;
-    name?: string;
-    active?: boolean;
-    modelType?: 'TEXT' | 'IMAGE';
-    description: Prisma.JsonObject; // Assuming Json is a type you've defined
-}
-
-
-/**
- * Update an existing model in the database.
+ * Updates a model in the database with the provided ID and data.
  * @param id - The ID of the model to update.
  * @param updateData - The data to update the model with.
- * @returns - The updated model object, or an error object if an error occurs.
+ * @returns A promise that resolves to a PrismaResponse containing the updated model or an error message and status code.
  */
-export async function updateModel(id: number, updateData: UpdateModelDataInput): Promise<{ model?: Model; message?: string; error?: any }> {
+export async function updateModel(id: number, updateData: ModelUpdateData): Promise<PrismaResponse<Model>> {
     try {
+        // Trim name if provided
+        if (updateData.name) {
+            updateData.name = updateData.name.trim();
+        }
+
         // Validate name
-        if (updateData.name && updateData.name.trim() === '') {
-            return { message: 'Model name cannot be empty' };
+        if (updateData.name && updateData.name === '') {
+            return { status: 400, message: 'Model name cannot be empty' };
         }
 
         // Validate idProvider if provided
@@ -174,22 +161,22 @@ export async function updateModel(id: number, updateData: UpdateModelDataInput):
                 where: { id: updateData.idProvider },
             });
             if (!providerExists) {
-                return { message: 'Provider ID does not exist' };
+                return { status: 400, message: 'Provider ID does not exist' };
             }
         }
 
         // Validate modelType if provided
         if (updateData.modelType && !Object.values(ModelType).includes(updateData.modelType)) {
-            return { message: 'Invalid model type' };
+            return { status: 400, message: 'Invalid model type' };
         }
 
         // Validate description
         if (!updateData.description || Object.keys(updateData.description).length === 0) {
-            return { message: 'Description cannot be empty' };
+            return { status: 400, message: 'Description cannot be empty' };
         }
 
         // Update the model in the database using the provided ID and data
-        const model = await prisma.model.update({
+        const model: Model = await prisma.model.update({
             where: {
                 id, // Model ID to filter
             },
@@ -199,19 +186,19 @@ export async function updateModel(id: number, updateData: UpdateModelDataInput):
         });
 
         // Return the updated model
-        return { model };
-    } catch (error) {
+        return { data: model, status: 200 };
+    } catch (error: any) {
         // Handle any errors that occur during the update
-        return { error };
+        return { status: 500, message: error.message };
     }
 }
 
 /**
  * Deletes a model from the database by its ID.
  * @param id - The ID of the model to delete.
- * @returns - An object containing a message indicating the model was deleted or an error object if an error occurs.
+ * @returns A Promise that resolves to a PrismaResponse object indicating the status of the deletion.
  */
-export async function deleteModelById(id: number): Promise<{ message?: string; error?: any }> {
+export async function deleteModelById(id: number): Promise<PrismaResponse<null>> {
     try {
         // Fetch the model from the database to check if it exists
         const modelExists = await prisma.model.findUnique({
@@ -220,7 +207,7 @@ export async function deleteModelById(id: number): Promise<{ message?: string; e
 
         // Validate if the model exists
         if (!modelExists) {
-            return { message: 'Model not found' };
+            return { status: 404, message: 'Model not found' };
         }
 
         // Delete the model from the database
@@ -229,9 +216,9 @@ export async function deleteModelById(id: number): Promise<{ message?: string; e
         });
 
         // Return a message indicating the model was successfully deleted
-        return { message: 'Model successfully deleted' };
-    } catch (error) {
+        return { status: 200, message: 'Model successfully deleted' };
+    } catch (error: any) {
         // Handle any errors that occur during the deletion
-        return { error };
+        return { status: 500, message: error.message };
     }
 }

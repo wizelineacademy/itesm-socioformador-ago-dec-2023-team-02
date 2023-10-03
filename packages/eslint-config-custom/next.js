@@ -47,5 +47,6 @@ module.exports = {
     "react/no-array-index-key": "off",
     "eslint-comments/require-description": "off",
     "no-console": "off",
+    "tsdoc/syntax": "off",
   },
 };
