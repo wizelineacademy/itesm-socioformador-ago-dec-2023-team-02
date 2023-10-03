@@ -50,7 +50,7 @@ export async function PATCH(
     const updatedInfo: ConversationUpdateData = body ? JSON.parse(body) : {};
 
     // Call the 'updateConversationById' function to update the conversation in the database
-    const result = await updateConversationById(idConversation, updatedInfo, true);
+    const result = await updateConversationById(idConversation, updatedInfo);
 
     // Check the status code of the result
     if (result.status !== 200) {
