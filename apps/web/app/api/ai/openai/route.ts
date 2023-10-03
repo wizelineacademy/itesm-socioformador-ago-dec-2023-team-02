@@ -1,6 +1,7 @@
 //route.ts Route Handlers
 import {Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
+//import { getAllMessages, createMessage } from "@/lib/message";
 
 export const runtime = 'edge'; // Provide infraestructure for our API route (https://edge-runtime.vercel.ap/)
 
@@ -20,8 +21,6 @@ export async function POST(request: Request){
     //GPT-4 system messages
     //system message tells GPT-4 how to act
     //it should always be at the front of your array
-
-
 
     //get response from openai "createChatCompletion"
     const response = await openai.createChatCompletion({

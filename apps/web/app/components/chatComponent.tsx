@@ -1,11 +1,14 @@
 "use client"
-import { useChat, Message } from "ai/react"
+import { getAllMessages } from "@/lib/message";
+import { useChat, Message, useCompletion } from "ai/react"
 
 
 export default function ChatComponent(){
     // Vercerl AI SDK (ai package) use chat()
     // useChat -> handles the part of messages for us, handles user inputs, handling user submits, etc.
-    const {input, handleInputChange, handleSubmit, isLoading, messages} = useChat();
+    const {input, handleInputChange, handleSubmit, isLoading, messages} = useChat({
+        api: '/api/ai/openai'
+    });
     //messages -> (uses asks a question, gpt-4 response, users asks again, gpt-4 keeps responding)
     console.log(messages);
     console.log(input)
@@ -17,7 +20,7 @@ export default function ChatComponent(){
                     <div key={message.id}>
                         {/*Name of the person talking */}
                         {
-                            message.role ==="assistant"
+                            message.role ==="assistant" 
                             ?
                             <h3 className= "text-lg font-semibold mt-2 px-1">
                                 GPT-3.5-turbo
