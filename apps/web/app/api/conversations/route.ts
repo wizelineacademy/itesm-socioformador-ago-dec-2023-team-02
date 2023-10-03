@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import {createConversation} from "@/lib/conversation";
-import type {ConversationDataInput} from "@/lib/conversation"
+import type { ConversationCreateData } from "@/types/conversation-types";
 
 /**
  * Handles POST requests to create a new conversation.
@@ -12,7 +12,7 @@ request: Request  // The incoming HTTP request object
 ): Promise<NextResponse> {  // The function returns a Promise that resolves to a NextResponse object
 
   // Parse the request body to get the conversation data input
-  const input: ConversationDataInput = JSON.parse(await request.text());
+  const input: ConversationCreateData = JSON.parse(await request.text());
 
   // Call the 'createConversation' function to create a new conversation in the database
   const result = await createConversation(input);

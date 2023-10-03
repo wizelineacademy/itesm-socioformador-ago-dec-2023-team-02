@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getConversationById, updateConversationById, deleteConversationById } from "@/lib/conversation";
-import type { UpdatedInfo } from "@/lib/conversation"
+import type { ConversationUpdateData } from "@/types/conversation-types";
 
 /**
  * GET request handler for conversation by ID.
@@ -47,7 +47,7 @@ export async function PATCH(
 
     // Parse the request body to get the updated information for the conversation
     const body = await request.text();
-    const updatedInfo: UpdatedInfo = body ? JSON.parse(body) : {};
+    const updatedInfo: ConversationUpdateData = body ? JSON.parse(body) : {};
 
     // Call the 'updateConversationById' function to update the conversation in the database
     const result = await updateConversationById(idConversation, updatedInfo, true);
