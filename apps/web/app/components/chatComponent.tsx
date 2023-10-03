@@ -19,11 +19,11 @@ export default function ChatComponent(){
                         {
                             message.role ==="assistant"
                             ?
-                            <h3 className= "text-lg font-semibold mt-2">
+                            <h3 className= "text-lg font-semibold mt-2 px-1">
                                 GPT-3.5-turbo
                             </h3>
                             :
-                            <h3 className= "text-lg font-semibold mt-2">
+                            <h3 className= "text-lg font-semibold mt-2 px-1">
                                 User
                             </h3>
                         }
@@ -31,10 +31,10 @@ export default function ChatComponent(){
                         {/* Formatting the message */}
                         {message.content.split("\n").map((currentTextBlock: string, index : number) => {
                             if(currentTextBlock === ""){
-                                return <p key={message.id + index}></p> // " "
+                                return <p key={message.id + index} className="px-1"></p> // " "
                             }
                             else {
-                                return <p key={message.id + index}>{currentTextBlock}</p>
+                                return <p key={message.id + index} className="px-1">{currentTextBlock}</p>
                             }
                         })}
 
@@ -61,15 +61,15 @@ export default function ChatComponent(){
                 <p>I am a user of the soup knowledge</p>
             </div>*/}
             <form className= "mt-12" onSubmit={handleSubmit}>
-                <p>Users Message</p>
+                <p className="p-1">Users Message</p>
                 <textarea 
-                    className="mt-2 w-full bg-neutral-950 p-2"
+                    className="mt-2 w-full bg-textarea p-2 rounded-md text-slate-300"
                     placeholder={"What are data structures and algorithms?"}
                     value={input}
                     onChange={handleInputChange}
 
                 />
-                <button className="rounded-md bg-pink-500 p-2 mt-2">
+                <button className="rounded-md bg-wizelinered p-2 mt-2">
                     Send message
                 </button>
                 
