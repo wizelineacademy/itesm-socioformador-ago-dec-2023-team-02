@@ -69,7 +69,12 @@ export async function getMessage(id: number): Promise<PrismaResponse<Message>> {
     }
 }
 
-
+export interface MessageDataInput {
+    idConversation: number;
+    sender: Sender;
+    content: string[];
+    creditsUsed: number;
+}
 
 /**
  * Creates a new message in the database using Prisma.
@@ -80,41 +85,38 @@ export async function getMessage(id: number): Promise<PrismaResponse<Message>> {
  * @returns A Promise that resolves to a PrismaResponse object containing the created message or an error message.
  */
 export async function createMessage(
-    idConversation: number,
-    sender: Sender,
-    content: string[],
-    creditsUsed: number
+    messageData : MessageDataInput
 ): Promise<PrismaResponse<any>> {
     try {
 
         // Remove extra whitespace from beginning and end of strings in content
-        const contentTrimmed = content.map(message => message.trim());
+        const contentTrimmed = messageData.content.map(message => message.trim());
 
         // Validate input parameters
-        if (!idConversation || !sender || !contentTrimmed || !creditsUsed) {
+        if (!messageData.idConversation || !messageData.sender || !contentTrimmed || !messageData.creditsUsed) {
             return { status: 400, message: 'Invalid input parameters' };
         }
 
         // Validate if the conversation exists
         const conversation = await prisma.conversation.findUnique({
-            where: { id: idConversation },
+            where: { id: messageData.idConversation },
         });
         if (!conversation) {
             return { status: 404, message: 'Conversation not found' };
         }
 
         // Validate if the sender role is valid
-        if (!Object.values(Sender).includes(sender)) {
+        if (!Object.values(Sender).includes(messageData.sender)) {
             return { status: 400, message: 'Invalid sender role' };
         }
 
         // Create the new message in the database using Prisma
         const newMessage = await prisma.message.create({
             data: {
-                idConversation,
+                idConversation: messageData.idConversation,
                 content: contentTrimmed,
-                creditsUsed,
-                sender,
+                creditsUsed: messageData.creditsUsed,
+                sender: messageData.sender,
             },
         });
 
