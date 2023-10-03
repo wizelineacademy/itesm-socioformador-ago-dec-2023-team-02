@@ -34,5 +34,5 @@ export async function PATCH(
     }
 
     // If everything is fine, return a success message as JSON
-    return NextResponse.json({ message: "Conversation marked as inactive" });
+    return NextResponse.json({ message: "Conversation marked as inactive" }, { status: 200 });
 }

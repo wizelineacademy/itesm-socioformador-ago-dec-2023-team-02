@@ -27,7 +27,7 @@ export async function GET(
     }
 
     // If everything is fine, return the conversation data as JSON
-    return NextResponse.json(result.data);
+    return NextResponse.json(result.data, { status: 200 });
 }
 
 /**
@@ -59,7 +59,7 @@ export async function PATCH(
     }
 
     // If everything is fine, return the updated conversation data as JSON
-    return NextResponse.json(result.data);
+    return NextResponse.json(result.data, { status: 200 });
 }
 
 /**
@@ -87,5 +87,5 @@ export async function DELETE(
     }
 
     // If everything is fine, return a success message as JSON
-    return NextResponse.json({ message: "Conversation and messages deleted successfully" });
+    return NextResponse.json({ message: "Conversation and messages deleted successfully" }, { status: 200 });
 }

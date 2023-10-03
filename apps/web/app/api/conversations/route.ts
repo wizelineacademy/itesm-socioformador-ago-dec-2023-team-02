@@ -24,5 +24,5 @@ request: Request  // The incoming HTTP request object
   }
 
   // If the conversation was successfully created, return the new conversation data as JSON
-  return NextResponse.json(result.data);
+  return NextResponse.json(result.data, { status: 201 });
 }
