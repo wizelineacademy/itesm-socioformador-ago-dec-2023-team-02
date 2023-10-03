@@ -1,8 +1,8 @@
 import type { User } from "@prisma/client";
 import type {PrismaResponse } from "@/types/prisma-client-types";
-import type { GlobalParameters } from "@/types/model-parameters-types";
+import { isValidUser, type UserCreateData, type UserUpdateData } from "@/types/user-types";
+import { areValidGlobalParameters, type GlobalParameters } from "@/types/model-parameters-types";
 import prisma from "./prisma";
-import { areValidGlobalParameters, isValidUser } from "./prisma-input-validation";
 
 /**
  * Retrieves the user that has the given user ID. 
@@ -97,15 +97,14 @@ export async function deleteManyUsers(idsUsers: number[]): Promise<PrismaRespons
  * @param groupIds - An array of group IDs, to which the newly created user will be added (number[]). 
  * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the created user (User). 
  */
-export async function createUser(newUser: User, groupIds: number[]): Promise<PrismaResponse<User>> {
-    if (!isValidUser(newUser)){
+export async function createUser(userData: UserCreateData, groupIds: number[]): Promise<PrismaResponse<User>> {
+    if (!isValidUser(userData)){
         return {status: 400, message: "Invalid user data given."}
     }
 
     try {
         const user = await prisma.user.create({
-            data: {...newUser, 
-                globalParameters: newUser.globalParameters as any, // Verificar que esto sea seguro. 
+            data: {...userData,
                 groups: {
                     connect: groupIds.map(groupId => {return {id: groupId}}) 
                 }
@@ -124,8 +123,8 @@ export async function createUser(newUser: User, groupIds: number[]): Promise<Pri
  * @param updatedUser - A user object that will overwrite the information of the selected user (User). 
  * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the updated user (User). 
  */
-export async function updateUser(idUser: number, updatedUser: User): Promise<PrismaResponse<User>> {
-    if (!isValidUser(updatedUser)){
+export async function updateUser(idUser: number, userData: UserUpdateData): Promise<PrismaResponse<User>> {
+    if (!isValidUser(userData)){
         return {status: 400, message: "Invalid user data given."}
     }
     
@@ -134,9 +133,7 @@ export async function updateUser(idUser: number, updatedUser: User): Promise<Pri
             where: {
                 id: idUser
             },
-            data: {...updatedUser, 
-                globalParameters: updatedUser.globalParameters as any, // Verificar que esto sea seguro. 
-            } 
+            data: userData
         })
 
         return {status: 200, data: user}

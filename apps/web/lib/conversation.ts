@@ -3,11 +3,11 @@
  * @packageDocumentation
  */
 
-import type { Tag, Conversation, Prisma } from "@prisma/client";
+import type { Conversation, Prisma } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
-import type { ModelParameters } from "@/types/model-parameters-types";
+import type { ConversationCreateData, ConversationUpdateData } from "@/types/conversation-types";
+import { areValidModelParameters, type ModelParameters } from "@/types/model-parameters-types";
 import prisma from "./prisma";
-import { areValidModelParameters } from "./prisma-input-validation";
 
 /**
  * Retrieves all conversations from the database that match the given user ID.
@@ -109,25 +109,12 @@ export async function getConversationById(
 }
 
 /**
- * Represents the creation information for a conversation.
- */
-export interface ConversationDataInput {
-  idUser: number;
-  idModel: number;
-  title: string;
-  tags: { id: number }[]; // Assuming tags are identified by their ID
-  parameters: JSON; // Optional, if you have specific parameters for the conversation
-  active: boolean; // Optional, defaults to true based on your schema
-  useGlobalParameters: boolean; // New parameter to decide whether to use global parameters
-}
-
-/**
  * Creates a new conversation in the database.
  * @param input - The conversation data input.
  * @returns A promise that resolves to a PrismaResponse containing the newly created conversation or an error message.
  */
 export async function createConversation(
-  input: ConversationDataInput
+  input: ConversationCreateData
 ): Promise<PrismaResponse<Conversation>> {
   try {
 
@@ -194,14 +181,6 @@ export async function createConversation(
 }
 
 /**
- * Represents the updated information for a conversation.
- */
-export interface UpdatedInfo {
-  tags?: Tag[]; // Array of tags associated with the conversation.
-  title?: string; //The updated title of the conversation.
-}
-
-/**
  * Updates a conversation in the database by its ID.
  * @param id - The ID of the conversation to update.
  * @param updatedInfo - The new information to update the conversation with.
@@ -210,7 +189,7 @@ export interface UpdatedInfo {
  */
 export async function updateConversationById(
   id: number,
-  updatedInfo: UpdatedInfo,
+  updatedInfo: ConversationUpdateData,
   includeRelatedEntities: boolean
 ): Promise<PrismaResponse<Conversation>> {
   try {
