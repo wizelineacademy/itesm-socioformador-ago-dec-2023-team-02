@@ -24,6 +24,20 @@ export async function getUser(idUser: number): Promise<PrismaResponse<User>> {
 }
 
 /**
+ * Retrieves all users. 
+ * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains all fetched users (User[]). 
+ */
+export async function getAllUsers(): Promise<PrismaResponse<User[]>> {
+    try {
+        const users: User[] = await prisma.user.findMany()
+
+        return {status: 200, data: users}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
+
+/**
  * Retrieves all users that belong to the group with the given group ID. 
  * @param idGroup - The ID of the group whose users will be retrieved (number). 
  * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains an array of users (User[]). 
@@ -97,7 +111,7 @@ export async function deleteManyUsers(idsUsers: number[]): Promise<PrismaRespons
  * @param groupIds - An array of group IDs, to which the newly created user will be added (number[]). 
  * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the created user (User). 
  */
-export async function createUser(userData: UserCreateData, groupIds: number[]): Promise<PrismaResponse<User>> {
+export async function createUser(userData: UserCreateData, groupIds: number[] = []): Promise<PrismaResponse<User>> {
     if (!isValidUser(userData)){
         return {status: 400, message: "Invalid user data given."}
     }

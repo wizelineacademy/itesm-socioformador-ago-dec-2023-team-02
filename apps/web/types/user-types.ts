@@ -3,8 +3,6 @@
  * @packageDocumentation
  */
 
-import type { Role } from "@prisma/client";
-
 // -- Types -- 
 /**
  * Interface implemented by objects used to update the values of a User record. 
@@ -14,7 +12,7 @@ export interface UserUpdateData {
     name?: string; 
     email?: string;
     jobPosition?: string;
-    role?: Role;
+    role?: 'ADMIN' | 'USER'; 
     image?: string;
     creditsRemaining?: number; 
     globalParameters?: any 
@@ -25,7 +23,7 @@ export interface UserCreateData {
     name: string; 
     email: string;
     jobPosition: string;
-    role: Role;
+    role: 'ADMIN' | 'USER'; 
     image: string;
     creditsRemaining: number; 
     globalParameters: any 
@@ -54,3 +52,40 @@ export function isValidUser(user: UserData): boolean {
 export function isValidUserEmail(email: string): boolean {
     return /^[a-zA-Z0-9._%+-]+@wizeline\.com$/.test(email) // Validate  
 }
+
+/**
+ * Type-guard that determines if an object implements the interface UserUpdateData. 
+ * @param obj - An object whose adherence to UserUpdateData will be tested. 
+ * @returns A boolean value that indicates whether or not the given obj implements UserUpdateData. 
+ */
+export function isUserUpdateData(obj: any): obj is UserUpdateData {
+    return (
+      (obj.idAuth0 === undefined || typeof obj.idAuth0 === 'string') &&
+      (obj.name === undefined || typeof obj.name === 'string') &&
+      (obj.email === undefined || typeof obj.email === 'string') &&
+      (obj.jobPosition === undefined || typeof obj.jobPosition === 'string') &&
+      (obj.role === undefined || obj.role === 'ADMIN' || obj.role === 'USER') && 
+      (obj.image === undefined || typeof obj.image === 'string') &&
+      (obj.creditsRemaining === undefined || typeof obj.creditsRemaining === 'number')
+      // && (obj.globalParameters === undefined || ...) // todo: global parameters validation.
+    );
+  }
+
+/**
+ * Type-guard that determines if an object implements the interface UserCreateData. 
+ * @param obj - An object whose adherence to UserCreateData will be tested. 
+ * @returns A boolean value that indicates whether or not the given obj implements UserCreateData. 
+ */
+  export function isUserCreateData(obj: any): obj is UserCreateData {
+    return (
+      typeof obj === 'object' &&
+      typeof obj.idAuth0 === 'string' &&
+      typeof obj.name === 'string' &&
+      typeof obj.email === 'string' &&
+      typeof obj.jobPosition === 'string' &&
+      (obj.role === 'ADMIN' || obj.role === 'USER') &&
+      typeof obj.image === 'string' &&
+      typeof obj.creditsRemaining === 'number'
+      // && obj.globalParameters !== undefined // todo: global parameters validation.
+    );
+  }
