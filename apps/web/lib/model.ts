@@ -143,7 +143,7 @@ export async function createModel(modelData: ModelCreateData): Promise<PrismaRes
  * @param updateData - The data to update the model with.
  * @returns A promise that resolves to a PrismaResponse containing the updated model or an error message and status code.
  */
-export async function updateModel(id: number, updateData: ModelUpdateData): Promise<PrismaResponse<Model>> {
+export async function updateModelById(id: number, updateData: ModelUpdateData): Promise<PrismaResponse<Model>> {
     try {
         // Trim name if provided
         if (updateData.name) {
@@ -170,9 +170,11 @@ export async function updateModel(id: number, updateData: ModelUpdateData): Prom
             return { status: 400, message: 'Invalid model type' };
         }
 
-        // Validate description
-        if (!updateData.description || Object.keys(updateData.description).length === 0) {
-            return { status: 400, message: 'Description cannot be empty' };
+        // Validate description only if provided
+        if (updateData.description) {
+            if (Object.keys(updateData.description).length === 0) {
+                return { status: 400, message: 'Description cannot be empty' };
+            }
         }
 
         // Update the model in the database using the provided ID and data

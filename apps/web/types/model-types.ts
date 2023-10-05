@@ -25,5 +25,5 @@ export interface ModelUpdateData {
     name?: string;
     active?: boolean;
     modelType?: 'TEXT' | 'IMAGE';
-    description: Prisma.JsonObject; // Assuming Json is a type you've defined
+    description?: Prisma.JsonObject; // Assuming Json is a type you've defined
 }
