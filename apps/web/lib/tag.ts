@@ -41,7 +41,7 @@ export async function getAllTagsByUserID(idUser: number): Promise<PrismaResponse
 
         const tags: Tag[] = await prisma.tag.findMany({
             where: {
-                id: idUser
+                idUser
             }
         })
 
@@ -79,38 +79,29 @@ export async function getAllTagsByConversationID(idConversation: number): Promis
     }
 }
 
-
-/**
- * Represents the creation information for a tag.
- */
-
 /**
  * Creates a new tag for a given user.
- * @param idUser - The ID of the user for whom the tag is being created.
- * @param tagInput - The input data for the new tag.
+ * @param tagData - The input data for the new tag.
  * @returns A promise that resolves to a PrismaResponse object containing either the created tag or an error message.
  */
-export async function createTag(idUser: number, tagData: TagCreateData): Promise<PrismaResponse<Tag>> {
+export async function createTag(tagData: TagCreateData): Promise<PrismaResponse<Tag>> {
     // Trim name and color
     const normalizedTagData: TagCreateData = normalizeTagCreateData(tagData)
 
     // Validar idUser, name y color
-    if (idUser <= 0 || !isValidTag(normalizedTagData)) {
+    if (tagData.idUser <= 0 || !isValidTag(normalizedTagData)) {
         return {status: 400, message: "Invalid user ID, name, or color value given." }
     }
 
     try {
         // Verificar la existencia del usuario
-        if (await prisma.user.findUnique({ where: { id: idUser } }) === null) {
+        if (await prisma.user.findUnique({ where: { id: tagData.idUser } }) === null) {
             return { status: 400, message: "Invalid user ID given." }
         }
 
         // Crear el tag en la base de datos
         const tag: Tag = await prisma.tag.create({
-            data: {
-                idUser,
-                ...tagData
-            }
+            data: tagData
         });
 
         return { status: 200, data: tag };
