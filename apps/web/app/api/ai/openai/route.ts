@@ -1,7 +1,7 @@
 //route.ts Route Handlers
 import {Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
-//import { getAllMessages, createMessage } from "@/lib/message";
+import { createMessage } from "@/lib/message";
 
 export const runtime = 'edge'; // Provide infraestructure for our API route (https://edge-runtime.vercel.ap/)
 
@@ -11,16 +11,12 @@ const config = new Configuration({
 
 const openai = new OpenAIApi(config);
 
-// POST localhost:3000/api/chat
+// POST localhost:3000/api/ai/openai/route.ts
 export async function POST(request: Request){
     const {messages} = await request.json(); //{messages:[]}
 
     //messages [{users and he says "hello there"}]
     console.log(messages);
-
-    //GPT-4 system messages
-    //system message tells GPT-4 how to act
-    //it should always be at the front of your array
 
     //get response from openai "createChatCompletion"
     const response = await openai.createChatCompletion({
@@ -31,6 +27,8 @@ export async function POST(request: Request){
             ...messages
         ]
     })
+
+    console.log(response)
 
     //create a stream of data from OpenAI (stream data to the frontend)
     const stream = await OpenAIStream(response);
