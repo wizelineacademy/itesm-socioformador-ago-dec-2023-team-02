@@ -157,4 +157,3 @@ export async function deleteMessage(idMessage: number): Promise<PrismaResponse<a
         return { status: 500, message: error.message }; // Return error message
     }
 }
-

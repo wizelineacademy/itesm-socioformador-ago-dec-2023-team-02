@@ -2,7 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 
 export const metadata = {
-  title: "Vercel Postgres Demo with Prisma",
+  title: "WizePrompt ChatGPT Demo",
   description:
     "A simple Next.js app with Vercel Postgres as the database and Prisma as the ORM",
 };

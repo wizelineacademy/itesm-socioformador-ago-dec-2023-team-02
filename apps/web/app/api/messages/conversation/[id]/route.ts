@@ -23,7 +23,7 @@ export async function GET(
     // Check the status code of the result
     if (result.status !== 200) {
         // If the status code is not 200 OK, return an error response
-        return new NextResponse(result.message || "An error occurred", { status: result.status });
+        return new NextResponse(result.data || "An error occurred", { status: result.status });
     }
 
     // If everything is fine, return the message data as JSON

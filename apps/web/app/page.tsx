@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import ChatComponent from "./components/chatComponent";
 
 // Prisma does not support Edge without the Data Proxy currently
 // export const runtime = 'edge'
@@ -8,21 +9,11 @@ export const dynamic = "force-dynamic";
 
 export default function Home(): JSX.Element {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center">
-      <h1 className="pt-4 pb-8 bg-gradient-to-br from-black via-[#171717] to-[#575757] bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-7xl">
-        Postgres with Next.js
-      </h1>
-
-      <div className="sm:absolute sm:bottom-0 w-full px-20 py-10 flex justify-between">
-        <Link href="https://vercel.com">
-          <Image
-            alt="Vercel Logo"
-            height={24}
-            priority
-            src="/vercel.svg"
-            width={100}
-          />
-        </Link>
+    <main className="relative flex min-h-screen flex-col bg-background items-center justify-center">
+      <div className="bg-chatbg p-3 w-[800px] rounded-md text-white">
+      <h2 className= "text-2xl text-center"> WizePrompt {"\n"}</h2>
+      <h2 className= "text-2x1 text-center">GPT-3.5-Turbo</h2>
+      <ChatComponent/>
       </div>
     </main>
   );
