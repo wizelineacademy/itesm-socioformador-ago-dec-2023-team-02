@@ -1,27 +1,13 @@
 /**
- * Implemented by the output of the prisma methods that query the database through prismaClient.
+ * User-defined TypeScript interfaces and validation functions related specifically to prisma client queries. 
+ * @packageDocumentation
  */
 
+/**
+ * An interface that is implemented by all objects returned by a prisma client queries. 
+ */
 export interface PrismaResponse<ResponseData> {
     status: number;
     data?: ResponseData;
     message?: string;
-}
-
-export interface GlobalParameters {
-    chatGPT: ChatGPTParameters, 
-    dallE: DallEParameters, 
-    palm: PalmParameters
-}
-
-export interface ChatGPTParameters {
-
-}
-
-export interface DallEParameters {
-
-}
-
-export interface PalmParameters {
-
 }

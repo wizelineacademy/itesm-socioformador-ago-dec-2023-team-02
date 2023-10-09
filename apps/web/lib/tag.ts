@@ -5,15 +5,8 @@
 
 import type { Tag } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
+import {isValidTag, normalizeTagCreateData, normalizeTagUpdateData, type TagCreateData, type TagUpdateData } from "@/types/tag-types";
 import prisma from "./prisma";
-
-function isValidTagName(name: string): boolean {
-    return name.length > 0 // Más validación podría ser añadida. 
-}
-
-function isValidTagColor(color: string): boolean {
-    return /^#[0-9a-fA-F]{6}$/.test(color) // El color es representado con un hexadecimal de 6 digitos. 
-}
 
 /**
  * Retrieves the tag that has the given tag ID. 
@@ -48,7 +41,7 @@ export async function getAllTagsByUserID(idUser: number): Promise<PrismaResponse
 
         const tags: Tag[] = await prisma.tag.findMany({
             where: {
-                id: idUser
+                idUser
             }
         })
 
@@ -86,45 +79,29 @@ export async function getAllTagsByConversationID(idConversation: number): Promis
     }
 }
 
-
-/**
- * Represents the creation information for a tag.
- */
-interface TagInput {
-    name: string;
-    color: string;
-}
-
-
 /**
  * Creates a new tag for a given user.
- * @param idUser - The ID of the user for whom the tag is being created.
- * @param tagInput - The input data for the new tag.
+ * @param tagData - The input data for the new tag.
  * @returns A promise that resolves to a PrismaResponse object containing either the created tag or an error message.
  */
-export async function createTag(idUser: number, tagInput: TagInput): Promise<PrismaResponse<Tag>> {
+export async function createTag(tagData: TagCreateData): Promise<PrismaResponse<Tag>> {
     // Trim name and color
-    tagInput.name = tagInput.name.trim();
-    tagInput.color = tagInput.color.trim();
+    const normalizedTagData: TagCreateData = normalizeTagCreateData(tagData)
 
     // Validar idUser, name y color
-    if (idUser <= 0 || !tagInput.name || !tagInput.color || !isValidTagName(tagInput.name) || !isValidTagColor(tagInput.color)) {
-        return { status: 400, message: "Invalid user ID, name, or color value given." }
+    if (tagData.idUser <= 0 || !isValidTag(normalizedTagData)) {
+        return {status: 400, message: "Invalid user ID, name, or color value given." }
     }
 
     try {
         // Verificar la existencia del usuario
-        if (await prisma.user.findUnique({ where: { id: idUser } }) === null) {
+        if (await prisma.user.findUnique({ where: { id: tagData.idUser } }) === null) {
             return { status: 400, message: "Invalid user ID given." }
         }
 
         // Crear el tag en la base de datos
         const tag: Tag = await prisma.tag.create({
-            data: {
-                idUser,
-                name: tagInput.name,
-                color: tagInput.color,
-            }
+            data: tagData
         });
 
         return { status: 200, data: tag };
@@ -152,36 +129,22 @@ export async function deleteTag(idTag: number): Promise<PrismaResponse<Tag>> {
 }
 
 /**
- * Represents the updated information for a tag.
- */
-interface TagUpdateInput {
-    name?: string;
-    color?: string;
-}
-
-
-/**
  * Updates a tag with the given ID and update data.
  * @param idTag - The ID of the tag to update.
- * @param updateData - The data to update the tag with.
+ * @param tagUpdateInput - The data input to update the tag with.
  * @returns A promise that resolves to a PrismaResponse object containing the status and data of the updated tag, or an error message if the update fails.
  */
-export async function updateTag(idTag: number, updateData: TagUpdateInput): Promise<PrismaResponse<Tag>> {
+export async function updateTag(idTag: number, tagData: TagUpdateData): Promise<PrismaResponse<Tag>> {
     // Validate ID
     if (idTag <= 0) {
         return { status: 400, message: 'Invalid tag ID' };
     }
 
     // Trim name and color if provided
-    if (updateData.name) {
-        updateData.name = updateData.name.trim();
-    }
-    if (updateData.color) {
-        updateData.color = updateData.color.trim();
-    }
+    const normalizedTagData: TagUpdateData = normalizeTagUpdateData(tagData)
 
     // Validate name and color
-    if ((updateData.name && updateData.name.length < 3) || (updateData.color && !/^#[0-9A-F]{6}$/i.test(updateData.color))) {
+    if (!isValidTag(normalizedTagData)) {
         return { status: 400, message: 'Invalid name or color value given.' }
     }
 
@@ -190,10 +153,7 @@ export async function updateTag(idTag: number, updateData: TagUpdateInput): Prom
             where: {
                 id: idTag
             },
-            data: {
-                name: updateData.name,
-                color: updateData.color
-            }
+            data: normalizedTagData
         })
         return { status: 200, data: tag }
     } catch (error: any) {

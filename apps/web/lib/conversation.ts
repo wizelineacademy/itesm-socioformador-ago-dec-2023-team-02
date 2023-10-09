@@ -3,8 +3,11 @@
  * @packageDocumentation
  */
 
-import type { Tag, Conversation, Prisma } from "@prisma/client";
+import type { Conversation, Prisma } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
+import type { ConversationCreateData } from "@/types/conversation-types";
+import { areValidModelParameters, type ModelParameters } from "@/types/model-parameters-types";
+import type { Tag } from "@prisma/client";
 import prisma from "./prisma";
 
 /**
@@ -107,25 +110,12 @@ export async function getConversationById(
 }
 
 /**
- * Represents the creation information for a conversation.
- */
-interface ConversationDataInput {
-  idUser: number;
-  idModel: number;
-  title: string;
-  tags: { id: number }[]; // Assuming tags are identified by their ID
-  parameters: JSON; // Optional, if you have specific parameters for the conversation
-  active: boolean; // Optional, defaults to true based on your schema
-  useGlobalParameters: boolean; // New parameter to decide whether to use global parameters
-}
-
-/**
  * Creates a new conversation in the database.
  * @param input - The conversation data input.
  * @returns A promise that resolves to a PrismaResponse containing the newly created conversation or an error message.
  */
 export async function createConversation(
-  input: ConversationDataInput
+  input: ConversationCreateData
 ): Promise<PrismaResponse<Conversation>> {
   try {
 
@@ -194,9 +184,11 @@ export async function createConversation(
 /**
  * Represents the updated information for a conversation.
  */
-interface UpdatedInfo {
+export interface UpdatedInfo {
   tags?: Tag[]; // Array of tags associated with the conversation.
   title?: string; //The updated title of the conversation.
+  parameters?: JSON; // The updated parameters for the conversation.
+  includeRelatedEntities?: boolean; // Whether to include related entities in the returned conversation object.
 }
 
 /**
@@ -208,9 +200,7 @@ interface UpdatedInfo {
  */
 export async function updateConversationById(
   id: number,
-  updatedInfo: UpdatedInfo,
-  includeRelatedEntities: boolean
-): Promise<PrismaResponse<Conversation>> {
+  updatedInfo: UpdatedInfo): Promise<PrismaResponse<Conversation>> {
   try {
     // Validate id
     if (!id || id <= 0) {
@@ -222,14 +212,25 @@ export async function updateConversationById(
       return { status: 400, message: 'Title cannot be empty' };
     }
 
+    // Validate conversation exists in the database
+    const existingConversation = await prisma.conversation.findUnique({
+      where: { id },
+    });
+
+    if (!existingConversation) {
+      return { status: 404, message: 'Conversation not found' };
+    }
+
+
     // Attempt to update the conversation in the database
     const conversation: Conversation | null = await prisma.conversation.update({
       where: { id },
       data: {
         tags: updatedInfo.tags ? { set: updatedInfo.tags } : undefined,
         title: updatedInfo.title || undefined,
+        parameters: updatedInfo.parameters as any // Add parameters to the update
       },
-      include: includeRelatedEntities
+      include: updatedInfo.includeRelatedEntities
         ? {
           user: true,
           model: true,
@@ -251,6 +252,32 @@ export async function updateConversationById(
   } catch (error: any) {
     // Handle and return any errors that occur
     return { status: 500, message: error.message };
+  }
+}
+
+/**
+ * Updates the model parameters associated to the given conversation and used in the generation of promts. 
+ * @param id - The ID of the conversation whose parameters will be updated.
+ * @param parameters - An object of type ModelParameters that holds the parameter values with which to update the conversation. 
+ * @returns Promise that resolves to an object that implements PrismaResponse<Conversation>, and that potentially contains the updated Conversation. 
+ */
+export async function updateConversationParameters(id: number, parameters: ModelParameters): Promise<PrismaResponse<Conversation>> {
+  if (!areValidModelParameters(parameters)){
+    return {status: 400, message: "Invalid model parameters"}; 
+  }
+
+  try {
+    const conversation: Conversation = await prisma.conversation.update({
+      where: { id }, 
+      data: {
+        parameters: parameters as any 
+      }
+    })
+
+    return {status: 200, data: conversation}; 
+
+  } catch (error: any) {
+    return {status: 500, message: error.message}; 
   }
 }
 

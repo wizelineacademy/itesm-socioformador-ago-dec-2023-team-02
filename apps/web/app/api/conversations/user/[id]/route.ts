@@ -35,7 +35,7 @@ export async function GET(
 
     // If everything is fine, return the conversations data as JSON
     // This will be the successful outcome of the API call
-    return NextResponse.json(result.data);
+    return NextResponse.json(result.data, { status: 200 });
 }
 
 
@@ -72,5 +72,5 @@ export async function PATCH(
 
     // If everything went well, return a success response
     // The response will include a message and the count of conversations that were deactivated
-    return NextResponse.json({ message: "Conversations marked as inactive", count: result.data?.count });
+    return NextResponse.json({ message: "Conversations marked as inactive", count: result.data?.count }, { status: 200 });
 }

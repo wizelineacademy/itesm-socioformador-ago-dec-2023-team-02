@@ -1,14 +1,8 @@
 import type { User } from "@prisma/client";
 import type {PrismaResponse } from "@/types/prisma-client-types";
+import { isValidUser, type UserCreateData, type UserUpdateData } from "@/types/user-types";
+import { areValidGlobalParameters, type GlobalParameters } from "@/types/model-parameters-types";
 import prisma from "./prisma";
-
-function isValidUser(user: User): boolean {
-    return isValidUserEmail(user.email) // Más validación podría ser añadida. 
-}
-
-function isValidUserEmail(email: string): boolean {
-    return /^[a-zA-Z0-9._%+-]+@wizeline\.com$/.test(email) // Verificar 
-}
 
 /**
  * Retrieves the user that has the given user ID. 
@@ -24,6 +18,20 @@ export async function getUser(idUser: number): Promise<PrismaResponse<User>> {
         })
 
         return user === null ? {status: 404, message: "No tag was found"} : {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
+
+/**
+ * Retrieves all users. 
+ * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains all fetched users (User[]). 
+ */
+export async function getAllUsers(): Promise<PrismaResponse<User[]>> {
+    try {
+        const users: User[] = await prisma.user.findMany()
+
+        return {status: 200, data: users}
     } catch (error: any) {
         return {status: 500, message: error.message}
     }
@@ -103,15 +111,14 @@ export async function deleteManyUsers(idsUsers: number[]): Promise<PrismaRespons
  * @param groupIds - An array of group IDs, to which the newly created user will be added (number[]). 
  * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the created user (User). 
  */
-export async function createUser(newUser: User, groupIds: number[]): Promise<PrismaResponse<User>> {
-    if (!isValidUser(newUser)){
+export async function createUser(userData: UserCreateData, groupIds: number[] = []): Promise<PrismaResponse<User>> {
+    if (!isValidUser(userData)){
         return {status: 400, message: "Invalid user data given."}
     }
 
     try {
         const user = await prisma.user.create({
-            data: {...newUser, 
-                globalParameters: newUser.globalParameters as any, // Verificar que esto sea seguro. 
+            data: {...userData,
                 groups: {
                     connect: groupIds.map(groupId => {return {id: groupId}}) 
                 }
@@ -130,8 +137,8 @@ export async function createUser(newUser: User, groupIds: number[]): Promise<Pri
  * @param updatedUser - A user object that will overwrite the information of the selected user (User). 
  * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the updated user (User). 
  */
-export async function updateUser(idUser: number, updatedUser: User): Promise<PrismaResponse<User>> {
-    if (!isValidUser(updatedUser)){
+export async function updateUser(idUser: number, userData: UserUpdateData): Promise<PrismaResponse<User>> {
+    if (!isValidUser(userData)){
         return {status: 400, message: "Invalid user data given."}
     }
     
@@ -140,9 +147,35 @@ export async function updateUser(idUser: number, updatedUser: User): Promise<Pri
             where: {
                 id: idUser
             },
-            data: {...updatedUser, 
-                globalParameters: updatedUser.globalParameters as any, // Verificar que esto sea seguro. 
-            } 
+            data: userData
+        })
+
+        return {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
+
+/**
+ * Updates the global model parameters associated to the given user. 
+ * @param id - The ID of the user whose global model parameters will be updated.
+ * @param globalParameters - An object of type GlobalParameters that holds the parameter values with which
+ * to update the user's global parameters. 
+ * @returns Promise that resolves to an object that implements PrismaResponse<User>, and that potentially contains the updated User. 
+ */
+export async function updateUserGlobalParameters(idUser: number, globalParameters: GlobalParameters): Promise<PrismaResponse<User>> {
+    if (!areValidGlobalParameters(globalParameters)) {
+        return {status: 400, message: 'Invalid global paramters'}
+    }
+
+    try {
+        const user: User = await prisma.user.update({
+            where: {
+                id: idUser
+            }, 
+            data: {
+                globalParameters: globalParameters as any 
+            }
         })
 
         return {status: 200, data: user}

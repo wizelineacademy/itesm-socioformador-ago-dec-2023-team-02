@@ -3,8 +3,9 @@
  * @packageDocumentation
  */
 
-import type { Group, User } from "@prisma/client";
+import type { Group } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
+import type { GroupCreateData, GroupUpdateData } from "@/types/group-types";
 import prisma from "./prisma";
 
 /**
@@ -113,19 +114,11 @@ export async function getGroupsByUserId(idUser: number): Promise<PrismaResponse<
 }
 
 /**
- * Represents the information neded to create a group.
- */
-interface CreateGroupData {
-    name: string;
-    description: string;
-    creditsAssigned: number;
-};
-/**
  * Creates a new group in the database with the provided data.
  * @param groupData - The data for the group to be created.
  * @returns A promise that resolves to a PrismaResponse object containing the created group data or an error message.
  */
-export async function createGroup(groupData: CreateGroupData): Promise<PrismaResponse<Group>> {
+export async function createGroup(groupData: GroupCreateData): Promise<PrismaResponse<Group>> {
     try {
         // Trim name and description
         groupData.name = groupData.name.trim();
@@ -149,22 +142,12 @@ export async function createGroup(groupData: CreateGroupData): Promise<PrismaRes
 }
 
 /**
- * Represents the updated information for a group.
- */
-interface UpdateGroupData {
-    name?: string;
-    description?: string;
-    creditsAssigned?: number;
-    users: User[];
-};
-
-/**
  * Updates a group by its ID with the provided data.
  * @param idGroup - The ID of the group to update.
  * @param updateData - The data to update the group with.
  * @returns A promise that resolves to a PrismaResponse object containing the updated group data or an error message and status code.
  */
-export async function updateGroupById(idGroup: number, updateData: UpdateGroupData): Promise<PrismaResponse<Group>> {
+export async function updateGroupById(idGroup: number, updateData: GroupUpdateData): Promise<PrismaResponse<Group>> {
     try {
         //Validate ID
         if (!idGroup || isNaN(idGroup) || idGroup <= 0) {
