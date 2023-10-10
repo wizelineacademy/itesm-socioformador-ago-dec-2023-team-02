@@ -9,6 +9,7 @@ import type { ConversationCreateData } from "@/types/conversation-types";
 import { areValidModelParameters, type ModelParameters } from "@/types/model-parameters-types";
 import type { Tag } from "@prisma/client";
 import prisma from "./prisma";
+import { JSONValue } from "ai";
 
 /**
  * Retrieves all conversations from the database that match the given user ID.
@@ -120,19 +121,19 @@ export async function createConversation(
   try {
 
     const { idUser, idModel, title } = input || {};
+    const userId = Number(idUser);
+    const modelId = Number(idModel);
 
     // Validate input
     if (!idUser || !idModel || !title) {
       return { status: 400, message: 'Invalid input for creating conversation' };
     }
 
+
     // Validate that the user exists and fetch globalParameters if needed
     const user = await prisma.user.findUnique({
       where: {
-        id: idUser,
-      },
-      select: {
-        globalParameters: true, // Select globalParameters
+        id: userId,
       },
     });
 
@@ -143,7 +144,7 @@ export async function createConversation(
     // Validate that the model exists
     const model = await prisma.model.findUnique({
       where: {
-        id: idModel,
+        id: modelId,
       },
     });
 
@@ -152,15 +153,16 @@ export async function createConversation(
     }
 
     // Prepare parameters based on useGlobalParameters flag
-    const userGlobalParameters: Record<string, unknown> = user.globalParameters ? JSON.parse(String(user.globalParameters)) : {};
-    const modelParameters: Record<string, unknown> | undefined = userGlobalParameters[model.name] as Record<string, unknown> | undefined;
-    const parameters: Record<string, unknown> | undefined | null = input.useGlobalParameters ? modelParameters : undefined;
+    const userGlobalParameters: string = JSON.stringify(user.globalParameters);
+    const parameters: string = JSON.stringify(JSON.parse(userGlobalParameters)[model.name]);
+
+
 
     // Create a new conversation in the database
     const newConversation = await prisma.conversation.create({
       data: {
         ...input,
-        parameters: parameters ? JSON.stringify(parameters) : JSON.stringify({}), // Set parameters if applicable
+        parameters: parameters ? parameters : "", // Set parameters if applicable
         tags: input.tags ? { connect: input.tags } : undefined, // Connect tags if provided
         active: true, // Set the 'active' field to true by default
       },
