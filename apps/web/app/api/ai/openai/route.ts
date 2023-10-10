@@ -1,18 +1,17 @@
 //route.ts Route Handlers
 import {Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
-import { createMessage } from "@/lib/message";
 
 export const runtime = 'edge'; // Provide infraestructure for our API route (https://edge-runtime.vercel.ap/)
 
 const config = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 const openai = new OpenAIApi(config);
 
 // POST localhost:3000/api/ai/openai/route.ts
-export async function POST(request: Request){
+export async function POST(request: Request): Promise<StreamingTextResponse>{
     const {messages} = await request.json(); //{messages:[]}
 
     //messages [{users and he says "hello there"}]
@@ -31,7 +30,7 @@ export async function POST(request: Request){
     console.log(response)
 
     //create a stream of data from OpenAI (stream data to the frontend)
-    const stream = await OpenAIStream(response);
+    const stream = OpenAIStream(response);
 
     //send the stream as a response to our client / frontend
     return new StreamingTextResponse(stream);

@@ -1,6 +1,4 @@
-import Image from "next/image";
-import Link from "next/link";
-import ChatComponent from "./components/chatComponent";
+import ChatComponent from "./components/chat-component";
 
 // Prisma does not support Edge without the Data Proxy currently
 // export const runtime = 'edge'

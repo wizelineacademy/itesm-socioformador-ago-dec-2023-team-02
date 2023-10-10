@@ -1,54 +1,53 @@
 "use client"
-import { createMessage, getAllMessages } from "@/lib/message";
-import { useChat, Message } from "ai/react"
+import { useChat,  } from "ai/react"
+import type {Message} from "ai/react"
 import { useState, useEffect } from "react";
 
+interface WizepromptMessage {
+    id: string;
+    createdAt?: Date;
+    content: string;
+    role: 'system' | 'user' | 'assistant' | 'function';
+    name?: string;
+    function_call?: string | {arguments?: string, name?: string};
+    sender?: string;
+    creditsUsed?: number;
+    idConversation?: number;
+}
 
 export default function ChatComponent(){
     const [messageData, setMessageData] = useState<Message[]>([])
 
-    async function getData(){
-        let data = await (await fetch("/api/messages/conversation/2")).json()
-        console.log("Resultado", data)
-        await data.forEach((item: any) => {
-            item["content"] = item.content[0]
-            item["role"] = item.sender === 'USER' ? 'user' : 'assistant'
-        })
-        console.log(data)
-        setMessageData(data)
-    }
+
+    const getData = async () => {
+        const response = await fetch('/api/messages/conversation/2');
+        const data: Message[] = await response.json(); // Explicitly set the type here
+        const processedData: Message[] = data.map((item: Message) => {
+          return {
+            ...item,
+            content: item.content[0],
+          };
+        });
+        setMessageData(processedData);
+      };
+
+      
+    
     useEffect(() => {
-      getData()
+      void getData()
     }, [])
 
 
-    interface WizepromptMessage {
-        id: string;
-        createdAt?: Date;
-        content: string;
-        role: 'system' | 'user' | 'assistant' | 'function';
-        name?: string;
-        function_call?: string | {arguments?: string, name?: string};
-        sender?: string;
-        creditsUsed?: number;
-        idConversation?: number;
-    }
-    function saveMessage(messages: Array<WizepromptMessage>) {
-        messages.map((message) => {
-            message.sender = message.role === 'user' ? 'USER' : 'MODEL'
-            console.log('editado:', message)
-        })
 
-        // const msg = messages[messages.length - 1];
-        // msg["sender"] = msg.role === 'user' ? 'USER' : 'MODEL'
-        // const response = await fetch("api/messages", {
-        //     method: "POST",
-        // })
-    }
+    function saveMessage(messages: WizepromptMessage[]) {
+        messages.forEach((message: WizepromptMessage) => {
+          message.sender = message.role === 'user' ? 'USER' : 'MODEL';
+        });
+      }
     
     // Vercerl AI SDK (ai package) use chat()
     // useChat -> handles the part of messages for us, handles user inputs, handling user submits, etc.
-    const {input, handleInputChange, handleSubmit, isLoading, messages} = useChat({
+    const {input, handleInputChange, handleSubmit, messages} = useChat({
         api: '/api/ai/openai',
         initialMessages: messageData
     });
@@ -106,3 +105,4 @@ export default function ChatComponent(){
         </div>
     )
 }
+

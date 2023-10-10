@@ -9,7 +9,6 @@ import type { ConversationCreateData } from "@/types/conversation-types";
 import { areValidModelParameters, type ModelParameters } from "@/types/model-parameters-types";
 import type { Tag } from "@prisma/client";
 import prisma from "./prisma";
-import { JSONValue } from "ai";
 
 /**
  * Retrieves all conversations from the database that match the given user ID.
