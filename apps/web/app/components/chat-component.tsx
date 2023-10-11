@@ -21,8 +21,8 @@ export default function ChatComponent() : JSX.Element {
 
     // Function that fetches data from messages api route and 
     // sets the content of a message to the first content instance
-    const getData = async () => {
-        const response = await fetch('/api/messages/conversation/2');
+    const getData: () => Promise<void> = async () => {
+        const response: Response = await fetch('/api/messages/conversation/2');
         const data: Message[] = await response.json(); // Explicitly set the type here
         const processedData: Message[] = data.map((item: Message): Message => {
           return {
@@ -77,9 +77,9 @@ export default function ChatComponent() : JSX.Element {
                         {/* Formatting the message */}
                         {message.content.split("\n").map((currentTextBlock: string, index : number) => {
                             if(currentTextBlock === ""){
-                                return <p key={message.id + index} className="px-1"></p>
+                                return <p className="px-1" key={message.id + index}  />
                             }
-                            return <p key={message.id + index} className="px-1">{currentTextBlock}</p>
+                            return <p className="px-1" key={message.id + index} >{currentTextBlock}</p>
                         })}
                     </div>
                 )
@@ -94,7 +94,7 @@ export default function ChatComponent() : JSX.Element {
                     value={input}
 
                 />
-                <button type="submit" className="rounded-md bg-wizelinered p-2 mt-2">
+                <button className="rounded-md bg-wizelinered p-2 mt-2" type="submit">
                     Send message
                 </button>
             </form>

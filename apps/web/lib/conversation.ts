@@ -3,11 +3,10 @@
  * @packageDocumentation
  */
 
-import type { Conversation, Prisma } from "@prisma/client";
+import type { Conversation, Prisma, Tag } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import type { ConversationCreateData } from "@/types/conversation-types";
 import { areValidModelParameters, type ModelParameters } from "@/types/model-parameters-types";
-import type { Tag } from "@prisma/client";
 import prisma from "./prisma";
 
 /**
