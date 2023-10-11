@@ -69,7 +69,7 @@ export async function getMessage(id: number): Promise<PrismaResponse<Message>> {
 export interface MessageDataInput {
     idConversation: number;
     sender: Sender;
-    content: string[];
+    content: string;
     creditsUsed: number;
 }
 
@@ -87,7 +87,7 @@ export async function createMessage(
     try {
 
         // Remove extra whitespace from beginning and end of strings in content
-        const contentTrimmed = messageData.content.map(message => message.trim());
+        const contentTrimmed = messageData.content.trim();
 
         // Validate input parameters
         if (!messageData.idConversation || !messageData.sender || !contentTrimmed || !messageData.creditsUsed) {
