@@ -3,6 +3,7 @@ import { useChat,  } from "ai/react"
 import type {Message} from "ai/react"
 import { useState, useEffect } from "react";
 
+// Interface that includes the Message schemas attributes, as well as the Message type from ai/react
 interface WizepromptMessage {
     id: string;
     createdAt?: Date;
@@ -15,14 +16,15 @@ interface WizepromptMessage {
     idConversation?: number;
 }
 
-export default function ChatComponent(){
+export default function ChatComponent() : JSX.Element {
     const [messageData, setMessageData] = useState<Message[]>([])
 
-
-    const getData = async () => {
-        const response = await fetch('/api/messages/conversation/2');
+    // Function that fetches data from messages api route and 
+    // sets the content of a message to the first content instance
+    const getData: () => Promise<void> = async () => {
+        const response: Response = await fetch('/api/messages/conversation/2');
         const data: Message[] = await response.json(); // Explicitly set the type here
-        const processedData: Message[] = data.map((item: Message) => {
+        const processedData: Message[] = data.map((item: Message): Message => {
           return {
             ...item,
             content: item.content[0],
@@ -32,38 +34,34 @@ export default function ChatComponent(){
       };
 
       
-    
+
     useEffect(() => {
       void getData()
     }, [])
 
 
-
-    function saveMessage(messages: WizepromptMessage[]) {
+    // function that will use the post method in messages api route
+    // sets the sender of a message before saving
+    function saveMessage(messages: WizepromptMessage[]): void {
         messages.forEach((message: WizepromptMessage) => {
           message.sender = message.role === 'user' ? 'USER' : 'MODEL';
         });
       }
     
-    // Vercerl AI SDK (ai package) use chat()
-    // useChat -> handles the part of messages for us, handles user inputs, handling user submits, etc.
+    // set api route that handleSubmit will use and load initial messages
     const {input, handleInputChange, handleSubmit, messages} = useChat({
         api: '/api/ai/openai',
         initialMessages: messageData
     });
-    //messages -> (uses asks a question, gpt-4 response, users asks again, gpt-4 keeps responding)
-    // console.log(messages);
-    // console.log(input)
 
-    console.log('last:', messages[messages.length - 1])
     saveMessage(messages)
 
     return (
         <div>
-            {messages.map((message : Message) => {
+            {messages.map((message : Message) : JSX.Element => {
                 return (
                     <div key={message.id}>
-                        {/*Name of the person talking */}
+                        {/*Displays the name of the person who sent a message*/}
                         {
                             message.role ==="assistant" 
                             ?
@@ -79,11 +77,9 @@ export default function ChatComponent(){
                         {/* Formatting the message */}
                         {message.content.split("\n").map((currentTextBlock: string, index : number) => {
                             if(currentTextBlock === ""){
-                                return <p key={message.id + index} className="px-1"></p> // " "
+                                return <p className="px-1" key={message.id + index}  />
                             }
-                            else {
-                                return <p key={message.id + index} className="px-1">{currentTextBlock}</p>
-                            }
+                            return <p className="px-1" key={message.id + index} >{currentTextBlock}</p>
                         })}
                     </div>
                 )
@@ -93,12 +89,12 @@ export default function ChatComponent(){
                 <p className="p-1">Users Message</p>
                 <textarea 
                     className="mt-2 w-full bg-textarea p-2 rounded-md text-slate-300"
-                    placeholder={"What are data structures and algorithms?"}
-                    value={input}
                     onChange={handleInputChange}
+                    placeholder="What are data structures and algorithms?"
+                    value={input}
 
                 />
-                <button className="rounded-md bg-wizelinered p-2 mt-2">
+                <button className="rounded-md bg-wizelinered p-2 mt-2" type="submit">
                     Send message
                 </button>
             </form>

@@ -1,9 +1,12 @@
-//route.ts Route Handlers
+//route.ts OpenAi route 
 import {Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 
-export const runtime = 'edge'; // Provide infraestructure for our API route (https://edge-runtime.vercel.ap/)
+//Tool Edge Runtime provides infraestructure for the api route
+// https://edge-runtime.vercel.app/
+export const runtime = 'edge'; 
 
+// Stores the api key of our OpenAi model
 const config = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -17,7 +20,11 @@ export async function POST(request: Request): Promise<StreamingTextResponse>{
     //messages [{users and he says "hello there"}]
     console.log(messages);
 
-    //get response from openai "createChatCompletion"
+    /**Function that uses the tool "createChatCompletion"
+     * This defines the type of chat model that is going to be used
+     * Activate or Deactivate the use of streaming in the web app
+     * Get the message response of OpenAi from "createChatCompletion"
+    */
     const response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         stream: true,
@@ -27,12 +34,15 @@ export async function POST(request: Request): Promise<StreamingTextResponse>{
         ]
     })
 
-    console.log(response)
+    /**
+     * Front end section ->
+     * The following functions serve to stream the messages to user
+    */
 
-    //create a stream of data from OpenAI (stream data to the frontend)
+    //Creates a stream of data from OpenAI using the tool "OpenAIStream" 
     const stream = OpenAIStream(response);
 
-    //send the stream as a response to our client / frontend
+    //Sends the stream as a response to our user.
     return new StreamingTextResponse(stream);
 
 }
