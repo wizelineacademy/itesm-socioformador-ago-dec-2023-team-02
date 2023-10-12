@@ -69,7 +69,7 @@ model Message {
   idConversation Int // Conversation ID
   conversation   Conversation @relation(fields: [idConversation], references: [id]) // Relation to Conversation
   sender         Sender // Sender of the message (User/Model)
-  content        String[] // Content of the message/messages
+  content        String // Content of the message
   creditsUsed    Float // Credits used for this message
   createdAt      DateTime     @default(now()) // Timestamp of message creation
 }
