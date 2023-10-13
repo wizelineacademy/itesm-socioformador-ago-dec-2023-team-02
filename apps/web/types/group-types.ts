@@ -32,11 +32,23 @@ export interface GroupUpdateData {
  */
 export function isGroupUpdateData(obj: any): obj is GroupUpdateData {
     return (
-      (obj.id === undefined || typeof obj.id === 'string') &&
       (obj.name === undefined || typeof obj.name === 'string') &&
       (obj.description === undefined || typeof obj.description === 'string') &&
       (obj.creditsAssigned === undefined || typeof obj.creditsAssigned === 'number')
     );
   }
 
+/**
+ * Type-guard that determines if an object implements the interface GroupCreateData. 
+ * @param obj - An object whose adherence to GroupCreateData will be tested. 
+ * @returns A boolean value that indicates whether or not the given obj implements GroupCreateData. 
+ */
+export function isGroupCreateData(obj: any): obj is GroupCreateData {
+  return (
+    typeof obj === 'object' &&
+    typeof obj.name === 'string' &&
+    typeof obj.description === 'string' &&
+    typeof obj.creditsRemaining === 'number'
+  );
+}
 // -- Validation --- 
