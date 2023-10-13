@@ -1,60 +1,68 @@
 "use client"
 import { useChat,  } from "ai/react"
 import type {Message} from "ai/react"
+import type { Sender, Message as WizepromptMessage } from "@prisma/client";
 import { useState, useEffect } from "react";
+import { UseChatOptions } from "ai";
 
-// Interface that includes the Message schemas attributes, as well as the Message type from ai/react
-interface WizepromptMessage {
-    id: string;
-    createdAt?: Date;
-    content: string;
-    role: 'system' | 'user' | 'assistant' | 'function';
-    name?: string;
-    function_call?: string | {arguments?: string, name?: string};
-    sender?: string;
-    creditsUsed?: number;
-    idConversation?: number;
+
+interface ExtendedUseChatOptions extends UseChatOptions {
+    messages: Message[];
+    temperature: number;
+    customInstructions: string;
 }
+  
 
 export default function ChatComponent() : JSX.Element {
     const [messageData, setMessageData] = useState<Message[]>([])
 
+
+    function convertToGptMessage(item: WizepromptMessage): Message {
+      let role: "function" | "user" | "assistant" | "system" = item.sender === "USER" ? "user" : "assistant";
+      return {
+        id: String(item.id),
+        role: role,
+        content: item.content,
+      };
+    }
+    
+    function convertToWizepromptMessage(item: Message): WizepromptMessage {
+      let sender: Sender = item.role === "user" ? "USER" : "MODEL";
+      return {
+        id: Number(item.id),
+        idConversation: 1,  // Set this value as needed
+        sender: sender,
+        content: item.content,
+        creditsUsed: 0,  // Set this value as needed
+        createdAt: new Date(),  // Set this value as needed
+      };
+    }
+
+
     // Function that fetches data from messages api route and 
     // sets the content of a message to the first content instance
     const getData: () => Promise<void> = async () => {
-        const response: Response = await fetch('/api/messages/conversation/2');
-        const data: Message[] = await response.json(); // Explicitly set the type here
-        const processedData: Message[] = data.map((item: Message): Message => {
-          return {
-            ...item,
-            content: item.content[0],
-          };
-        });
-        setMessageData(processedData);
-      };
+      const response: Response = await fetch('/api/messages/conversation/1');
+      const data: WizepromptMessage[] = await response.json();
+      const processedData: Message[] = data.map(convertToGptMessage);
+      setMessageData(processedData);
+    };
 
       
-
     useEffect(() => {
       void getData()
     }, [])
 
-
-    // function that will use the post method in messages api route
-    // sets the sender of a message before saving
-    function saveMessage(messages: WizepromptMessage[]): void {
-        messages.forEach((message: WizepromptMessage) => {
-          message.sender = message.role === 'user' ? 'USER' : 'MODEL';
-        });
-      }
+      const options: ExtendedUseChatOptions= {
+        api: '/api/ai/openai/gpt-4',
+        messages: messageData,
+        temperature: 0.5, 
+        customInstructions: "",
+      };
     
     // set api route that handleSubmit will use and load initial messages
-    const {input, handleInputChange, handleSubmit, messages} = useChat({
-        api: '/api/ai/openai',
-        initialMessages: messageData
-    });
+    const {input, handleInputChange, handleSubmit, messages} = useChat(options);
 
-    saveMessage(messages)
 
     return (
         <div>
@@ -101,4 +109,3 @@ export default function ChatComponent() : JSX.Element {
         </div>
     )
 }
-
