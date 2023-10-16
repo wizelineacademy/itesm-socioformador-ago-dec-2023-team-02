@@ -25,7 +25,8 @@
   "dependencies": {
     "ai": "^2.2.14",
     "git-cz": "^4.9.0",
-    "openai-edge": "^1.2.2"
+    "openai-edge": "^1.2.2",
+    "@auth0/nextjs-auth0": "^3.1.0"
   },
   "config": {
     "commitizen": {
