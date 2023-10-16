@@ -6,7 +6,7 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"],
       "cache": true,
-      "env": ["NODE_ENV"],
+      "env": ["NODE_ENV", "OPENAI_API_KEY"],
       "dotEnv": [".env.local", ".env"]
     },
     "lint": {},
