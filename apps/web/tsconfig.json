@@ -71,5 +71,5 @@
     "prisma/seed.ts",
     "app/api/auth/[auth0]/route.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
