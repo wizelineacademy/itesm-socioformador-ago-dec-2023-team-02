@@ -13,7 +13,6 @@ export default function Home(): JSX.Element {
       <h2 className= "text-2x1 text-center">GPT-3.5-Turbo</h2>
       <ChatComponent/>
       </div>
-      <a href="/api/auth/login">login</a>
     </main>
   );
 }

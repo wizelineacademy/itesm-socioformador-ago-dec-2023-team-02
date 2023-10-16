@@ -69,6 +69,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "prisma/seed.ts"
-, "app/api/auth/[auth0]/route.ts"  ],
+  ],
   "exclude": ["node_modules"]
 }
