@@ -1,7 +1,7 @@
 "use client"
 import { useChat, } from "ai/react"
 import type { Message } from "ai/react"
-import type { Sender, Message as WizepromptMessage } from "@prisma/client";
+import type { Message as WizepromptMessage } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { UseChatOptions } from "ai";
 
@@ -29,16 +29,18 @@ export default function ChatComponent(): JSX.Element {
         handleInputChange, // Handler for the onChange event of the input field to control the input's value.
         handleSubmit, // Form submission handler that automatically resets the input field and appends a user message.
          messages, // The current array of chat messages.
+         /*
         isLoading, // Boolean flag indicating whether a request is currently in progress.
         stop, // Function that aborts the current request
         reload,//Function to reload the last AI chat response for the given chat history.
         append, //append(message: Message | CreateMessage, chatRequestOptions: { options: { headers, body } }) Function to append a message to the chat, triggering an API call for the AI response.
         error, //An error object returned by SWR, if any.
+        */
     } = useChat(options);
 
 
     function convertToGptMessage(item: WizepromptMessage): Message {
-        let role: "function" | "user" | "assistant" | "system" = item.sender === "USER" ? "user" : "assistant";
+        const role: "function" | "user" | "assistant" | "system" = item.sender === "USER" ? "user" : "assistant";
         return {
             id: String(item.id),
             role: role,
@@ -46,6 +48,7 @@ export default function ChatComponent(): JSX.Element {
         };
     }
 
+    /*
     function convertToWizepromptMessage(item: Message): WizepromptMessage {
         let sender: Sender = item.role === "user" ? "USER" : "MODEL";
         return {
@@ -57,6 +60,7 @@ export default function ChatComponent(): JSX.Element {
             createdAt: new Date(),  // Set this value as needed
         };
     }
+    */
 
 
     // Function that fetches data from messages api route and 

@@ -2,10 +2,9 @@
 import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { NextResponse } from "next/server";
-import { MessageDataInput, createMessage } from "@/lib/message";
+import { createMessage } from "@/lib/message";
+import type {MessageDataInput} from "@/lib/message";
 import { Sender } from "@prisma/client";
-import { data } from "autoprefixer";
-import { Completions } from "openai/resources";
 
 // Stores the API key of our OpenAI model
 const config = new Configuration({
@@ -60,8 +59,8 @@ export async function POST(request: Request): Promise<StreamingTextResponse | Ne
             console.log(res);
         };
         
-        let tokens: number = 0;
-        const onToken = (token: any) => {
+        let tokens = 0;
+        const onToken = (_token: any) => {
             tokens += 1;
         };
         
