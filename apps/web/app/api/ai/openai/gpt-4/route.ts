@@ -4,12 +4,8 @@ import { OpenAIStream, StreamingTextResponse } from "ai";
 import { NextResponse } from "next/server";
 import { MessageDataInput, createMessage } from "@/lib/message";
 import { Sender } from "@prisma/client";
-// Enumeración de modelos válidos
-
-
-// Tool Edge Runtime provides infrastructure for the api route
-// See documentation at: https://edge-runtime.vercel.app/
-export const runtime = 'edge'; 
+import { data } from "autoprefixer";
+import { Completions } from "openai/resources";
 
 // Stores the API key of our OpenAI model
 const config = new Configuration({
@@ -25,19 +21,20 @@ const openai = new OpenAIApi(config);
  */
 export async function POST(request: Request): Promise<StreamingTextResponse | NextResponse> {
     // Destructure the incoming request to get the messages array, model, and temperature
-    const {messages, temperature = 0.5, customInstructions = ""} = await request.json(); // {messages:[], model: '', temperature: 0.5}
+    const {
+        messages, //previous messages of chat
+        temperature = 0.5, //temperatur of chat
+        customInstructions = "" //custom instructions of chat
+    } = await request.json(); // {messages:[], model: '', temperature: 0.5}
+    console.log(messages);
 
     try {
-        // Log the messages to the console for debugging purposes
-        //console.log(messages);
-
         /**
          * Function that utilizes the tool "createChatCompletion".
          * This defines the type of chat model that is going to be used.
          * Activate or deactivate the use of streaming in the web app.
          * Get the message response from OpenAI using "createChatCompletion".
          */
-
         const response = await openai.createChatCompletion({
             model: "gpt-4",
             stream: true,  // Enable streaming
@@ -46,37 +43,34 @@ export async function POST(request: Request): Promise<StreamingTextResponse | Ne
                 {role: "system", content: customInstructions},
                 ...messages
             ],
-        })
+        });
         
         // Define the onCompletion and onToken callbacks
-        const onCompletion = (completion: any) => {
+        const onCompletion = async (completion: any) => {
             console.log('Stream complete:', completion);
-
-            const message: MessageDataInput = {
+            const messageInfo: MessageDataInput = {
                 idConversation: 1,
                 sender: Sender.MODEL,
-                content: completion.choices[0].text,
-                creditsUsed: 1,
-            }
-            createMessage(message);
-            //guardar mensaje
-            /*
-            Agregar id de la conversación
-            */
+                content: completion,
+                creditsUsed: tokens,
+            };
+            
+            // Create a new message in the database using Prisma
+            const res = await createMessage(messageInfo);
+            console.log(res);
         };
-
+        
+        let tokens: number = 0;
         const onToken = (token: any) => {
-            console.log('Token received:', token);
+            tokens += 1;
         };
-        //se puede contar los tokens, por el precio por token para sacar los creditos usados
+        
         
         // Creates a stream of data from OpenAI using the tool "OpenAIStream"
-        //const stream = OpenAIStream(response, { onCompletion, onToken });
-        const stream = OpenAIStream(response, { onCompletion});
-        //const stream = OpenAIStream(response);
+        const stream = OpenAIStream(response, { onCompletion, onToken });
 
         // Sends the stream as a response to our user.
-        return new StreamingTextResponse(stream, { status: 200 });
+        return new StreamingTextResponse(stream, { status: 200});
 
     } catch (error: any) {
         // If an error occurs, log it to the console and send a message to the user
