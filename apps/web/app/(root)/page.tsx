@@ -1,4 +1,4 @@
-import ThemeButton from "./components/theme-button";
+import ThemeButton from "../../components/theme-button";
 //Just for testing light and dark themes
 export default function Home() {
     return (

@@ -27,7 +27,7 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body className={inter.className}>
                 <Providers themeProps={{ attribute: "class", defaultTheme: "system" }}>
-                    <main><div id="app-root">{children}</div></main>
+                    <main>{children}</main>
                     <Toaster position="top-center" richColors theme="dark" />
                 </Providers>
             </body>
