@@ -23,6 +23,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "eslint": "8.48.0",
+    "gpt-tokenizer": "^2.1.2",
     "framer-motion": "^10.16.4",
     "lucide-react": "^0.286.0",
     "ms": "^2.1.3",
