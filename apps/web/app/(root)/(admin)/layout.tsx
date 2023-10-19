@@ -1,5 +1,5 @@
 
-export default function UserRootLayout({
+export default function AdminRootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -12,3 +12,4 @@ export default function UserRootLayout({
     </html>
   );
 }
+  

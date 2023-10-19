@@ -18,6 +18,7 @@ import {
 } from "@nextui-org/react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/navigation";
+import ThemeButton from "../theme-button";
 
 function LeftSidebar(): any {
   // const router = useRouter();
@@ -154,6 +155,7 @@ function LeftSidebar(): any {
           </DropdownMenu>
         </Dropdown>
         <p>Creditos</p>
+        <ThemeButton />
       </div>
       {/* <p className="text-small-regular text-zinc-400 text-center">v1.0.0</p> */}
     </section>
