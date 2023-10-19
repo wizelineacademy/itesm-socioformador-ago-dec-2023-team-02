@@ -2,9 +2,11 @@
 import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { NextResponse } from "next/server";
-import { createMessage } from "@/lib/message";
-import type {MessageDataInput} from "@/lib/message";
-import { Sender } from "@prisma/client";
+// import { createMessage } from "@/lib/message";
+// import type {MessageDataInput} from "@/lib/message";
+// import { Sender } from "@prisma/client";
+
+export const runtime = 'edge';
 
 // Stores the API key of our OpenAI model
 const config = new Configuration({
@@ -22,7 +24,7 @@ export async function POST(request: Request): Promise<StreamingTextResponse | Ne
     // Destructure the incoming request to get the messages array, model, and temperature
     const {
         messages, //previous messages of chat
-        temperature = 0.5, //temperatur of chat
+        temperature = 0.5, //temperature of chat
         customInstructions = "" //custom instructions of chat
     } = await request.json(); // {messages:[], model: '', temperature: 0.5}
     console.log(messages);
@@ -37,7 +39,7 @@ export async function POST(request: Request): Promise<StreamingTextResponse | Ne
         const response = await openai.createChatCompletion({
             model: "gpt-4",
             stream: true,  // Enable streaming
-            temperature: temperature,  // Set temperature, default is 0.5 if not provided
+            temperature,  // Set temperature, default is 0.5 if not provided
             messages: [
                 {role: "system", content: customInstructions},
                 ...messages
@@ -45,28 +47,28 @@ export async function POST(request: Request): Promise<StreamingTextResponse | Ne
         });
         
         // Define the onCompletion and onToken callbacks
-        const onCompletion = async (completion: any) => {
-            console.log('Stream complete:', completion);
-            const messageInfo: MessageDataInput = {
-                idConversation: 1,
-                sender: Sender.MODEL,
-                content: completion,
-                creditsUsed: tokens,
-            };
+        // const onCompletion = async (completion: any) => {
+        //     console.log('Stream complete:', completion);
+        //     const messageInfo: MessageDataInput = {
+        //         idConversation: 1,
+        //         sender: Sender.MODEL,
+        //         content: completion,
+        //         creditsUsed: tokens,
+        //     };
             
-            // Create a new message in the database using Prisma
-            const res = await createMessage(messageInfo);
-            console.log(res);
-        };
+        //     // Create a new message in the database using Prisma
+        //     const response = createMessage(messageInfo)
+        //     console.log(response)
+        // };
         
-        let tokens = 0;
-        const onToken = (_token: any) => {
-            tokens += 1;
-        };
+        // let tokens = 0;
+        // const onToken = (_token: any): void => {
+        //     tokens += 1;
+        // };
         
         
         // Creates a stream of data from OpenAI using the tool "OpenAIStream"
-        const stream = OpenAIStream(response, { onCompletion, onToken });
+        const stream = OpenAIStream(response);
 
         // Sends the stream as a response to our user.
         return new StreamingTextResponse(stream, { status: 200});
