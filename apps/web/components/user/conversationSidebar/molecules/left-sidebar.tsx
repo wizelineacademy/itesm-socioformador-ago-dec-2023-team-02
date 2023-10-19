@@ -18,7 +18,7 @@ import {
 } from "@nextui-org/react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/navigation";
-import ThemeButton from "../theme-button";
+import ThemeButton from "../../../theme-button";
 
 function LeftSidebar(): any {
   // const router = useRouter();

@@ -1,7 +1,7 @@
 import "../../../globals.css";
 import type { Metadata } from "next";
+import LeftSidebar from "@/components/user/conversationSidebar/molecules/left-sidebar";
 import Topbar from "@/components/shared/topbar";
-import LeftSidebar from "@/components/shared/left-sidebar";
 import Bottombar from "@/components/shared/bottom-bar";
 
 export const metadata: Metadata = {
