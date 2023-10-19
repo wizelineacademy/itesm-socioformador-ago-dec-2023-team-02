@@ -5,7 +5,7 @@ export const GET = handleAuth({
     authorizationParams: {
       prompt: "login",
     },
-    returnTo: "/home",
+    returnTo: "/conversation/new",
   }),
   signup: handleLogin({
     authorizationParams: {

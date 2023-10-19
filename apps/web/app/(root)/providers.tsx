@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * Provides context providers for the app.
+ * @param children - The child components to be wrapped by the providers.
+ * @param themeProps - The theme provider props.
+ * @returns The JSX element containing the wrapped child components.
+ */
+
 import * as React from "react";
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
@@ -18,7 +25,9 @@ export function Providers({
   return (
     <UserProvider>
       <NextUIProvider>
-        <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+        <NextThemesProvider {...themeProps} enableSystem>
+          {children}
+        </NextThemesProvider>
       </NextUIProvider>
     </UserProvider>
   );

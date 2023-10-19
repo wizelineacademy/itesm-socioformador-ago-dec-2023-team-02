@@ -13,6 +13,90 @@ module.exports = {
     "./node_modules/@nextui-org/theme/dist/components/(button|snippet|code|input).js",
   ],
   theme: {
+    extend: {
+      fontFamily: {
+        default: ["var(--font-inter)"],
+      },
+      colors: {
+        "dark-1": "#000000",
+        "dark-2": "#121417",
+        "dark-3": "#101012",
+        "dark-4": "#1F1F22",
+        "light-1": "#FFFFFF",
+        "light-2": "#EFEFEF",
+        "light-3": "#7878A3",
+        "light-4": "#5C5C7B",
+        "gray-1": "#697C89",
+        glassmorphism: "rgba(16, 16, 18, 0.60)",
+      },
+      boxShadow: {
+        "count-badge": "0px 0px 6px 2px rgba(219, 188, 159, 0.30)",
+        "groups-sidebar": "-30px 0px 60px 0px rgba(28, 28, 31, 0.50)",
+      },
+      screens: {
+        xs: "400px",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: 0 },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: 0 },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+      },
+    },
+  },
+  darkMode: "class",
+  plugins: [
+    require("tailwindcss-animate"),
+    nextui({
+      themes: {
+        "wizeline-brand": {
+          extend: "dark", // <- inherit default values from dark theme
+          colors: {
+            background: "#0D001A",
+            foreground: "#ffffff",
+            primary: {
+              50: "#751F22",
+              100: "#AF2E33",
+              200: "#E93D44",
+              300: "#EF5F6A",
+              400: "#F3818B",
+              500: "#F6A3AC",
+              600: "#F8C5CD",
+              700: "#FBE8EE",
+              800: "#FDF2F4",
+              900: "#FEFBFC",
+              DEFAULT: "#E93D44",
+              foreground: "#ffffff",
+            },
+            focus: "#F3818B",
+          },
+          layout: {
+            disabledOpacity: "0.3",
+            radius: {
+              small: "4px",
+              medium: "6px",
+              large: "8px",
+            },
+            borderWidth: {
+              small: "1px",
+              medium: "2px",
+              large: "3px",
+            },
+          },
+        },
+      },
+    }),
+  ],
+  /*
+  theme: {
     container: {
       center: true,
       padding: "2rem",
@@ -217,6 +301,5 @@ module.exports = {
       },
     },
   },
-  darkMode: "class",
-  plugins: [require("tailwindcss-animate"), nextui()],
+  */
 };
