@@ -67,11 +67,11 @@
 
   /* Message Backgrounds*/
   .senderUser-bg {
-    @apply light:bg-gray-400 dark:bg-white dark:bg-opacity-10;
+    @apply light:bg-gray-400 dark:bg-white dark:bg-opacity-10 wizeline-brand:bg-white wizeline-brand:bg-opacity-10  ;
   }
 
   .senderModel-bg {
-    @apply bg-gray-100 dark:bg-black;
+    @apply bg-gray-100 dark:bg-black wizeline-brand:bg-black;
   }
 }
 
