@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
-const ThemeButton = () => {
+export default function ThemeButton(): JSX.Element | null {
   const { resolvedTheme, setTheme } = useTheme(); // get the theme and setTheme function from the context
 
   const [mounted, setMounted] = useState(false); // variable to check if the component is mounted
@@ -25,5 +25,3 @@ const ThemeButton = () => {
     </button>
   );
 };
-
-export default ThemeButton;
