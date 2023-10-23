@@ -24,40 +24,14 @@ export default function MessageItem({
 
       <div className="justify-center grid md:grid-cols-[.1fr,.8fr,.1fr] xl:grid-cols-[.25fr,.5fr,.25fr]   grid-cols-1 gap-4 p-4">
 
-        {/*
-
-
-
-        /*
-        <div className="grid md:grid-cols-[.5fr,.5fr] grid-cols-1">
-          <div className="flex items-center justify-end">
-            <Chip size="sm" radius="sm" avatar={<TbCoins />}>{creditsUsed}</Chip>
-          </div>
-
-
-          <div className="flex items-start md:justify-end justify-start">
-            <Image
-              alt="Sender Image"
-              height={30}
-              radius="sm"
-              src={senderImage}
-              width={30}
-            />
-          </div>
-          
-
-        </div>
-        */}
-
         {/* Left column: Sender's image */}
-
         <div className="flex items-start md:justify-end justify-start">
           <Image
             alt="Sender Image"
-            height={30}
-            radius="sm"
+            height={40}
+            radius="md"
             src={senderImage}
-            width={30}
+            width={35}
 
           />
         </div>
@@ -74,7 +48,7 @@ export default function MessageItem({
             className="hover:bg-opacity-100 bg-inherit opacity-50 hover:opacity-100 p-0"
             size="sm"
           >
-            <BsClipboard className="text-md" />
+            <BsClipboard />
           </Button>
         </div>
       </div>
