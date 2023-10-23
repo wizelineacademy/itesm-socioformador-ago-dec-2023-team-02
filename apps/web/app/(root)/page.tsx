@@ -52,6 +52,38 @@ const messages = [
       creditsUsed: 0.5,
       createdAt: new Date('2023-10-20T08:18:00Z'),
   },
+{
+    id: 7,
+    idConversation: 101,
+    sender: Sender.USER,
+    content: "Can I replace ricotta cheese with cottage cheese?",
+    creditsUsed: 0.5,
+    createdAt: new Date('2023-10-20T08:15:00Z'),
+},
+{
+    id: 8,
+    idConversation: 101,
+    sender: Sender.MODEL,
+    content: "Yes, you can replace ricotta cheese with cottage cheese in lasagna. It will give a slightly different texture and flavor, but it's a common substitute. It's best to drain the cottage cheese before using it to prevent the lasagna from becoming too watery.",
+    creditsUsed: 0.5,
+    createdAt: new Date('2023-10-20T08:18:00Z'),
+},
+{
+  id: 9,
+  idConversation: 101,
+  sender: Sender.USER,
+  content: "Can I replace ricotta cheese with cottage cheese?",
+  creditsUsed: 0.5,
+  createdAt: new Date('2023-10-20T08:15:00Z'),
+},
+{
+  id: 10,
+  idConversation: 101,
+  sender: Sender.MODEL,
+  content: "Yes, you can replace ricotta cheese with cottage cheese in lasagna. It will give a slightly different texture and flavor, but it's a common substitute. It's best to drain the cottage cheese before using it to prevent the lasagna from becoming too watery.",
+  creditsUsed: 0.5,
+  createdAt: new Date('2023-10-20T08:18:00Z'),
+},
 ];
 
 const providerImage =
@@ -63,7 +95,7 @@ const Callback = (message: Message) => {
   console.log("Mensaje copiado:", message.content);
 };
 */
-const userImage = "https://ui-avatars.com/api/?name=David";
+const userImage = "https://ui-avatars.com/api/?background=fff&color=000&name=David";
 
 //Just for testing
 export default function Home() {

@@ -67,7 +67,7 @@
 
   /* Message Backgrounds*/
   .senderUser-bg {
-    @apply light:bg-gray-400 dark:bg-white dark:bg-opacity-10 wizeline-brand:bg-white wizeline-brand:bg-opacity-10  ;
+    @apply bg-white bg-opacity-10 dark:bg-white dark:bg-opacity-10 wizeline-brand:bg-white wizeline-brand:bg-opacity-10  ;
   }
 
   .senderModel-bg {
@@ -100,7 +100,7 @@
   }
 
   .gradient-shadow-light {
-    background: linear-gradient(to top, rgb(255, 255, 255) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(to top, rgb(255, 255, 255) 70%, rgba(255, 255, 255, 0) 100%);
   }
 }
 
@@ -108,7 +108,7 @@
 @media (prefers-color-scheme: dark) {
   @layer utilities {
     .gradient-shadow-dark {
-      background: linear-gradient(to top, rgb(0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%);
+      background: linear-gradient(to top, rgb(0, 0, 0) 70%, rgba(0, 0, 0, 0) 100%);
     }
   }
 }
