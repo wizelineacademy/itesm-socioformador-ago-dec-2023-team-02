@@ -95,7 +95,7 @@ const Callback = (message: Message) => {
   console.log("Mensaje copiado:", message.content);
 };
 */
-const userImage = "https://ui-avatars.com/api/?background=fff&color=000&name=David";
+const userImage = "https://ui-avatars.com/api/?background=6d6d6d&color=fff&name=David";
 
 //Just for testing
 export default function Home() {

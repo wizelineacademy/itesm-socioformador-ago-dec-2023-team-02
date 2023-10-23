@@ -28,7 +28,7 @@ export default function PromptTextInput() {
                         size="lg"
                         isIconOnly
                         variant="flat"
-                        className="text-white bg-red-600 rounded-r-xl"
+                        className="text-white  rounded-r-xl"
                     >
                         <IoMdSend className="text-lg" />
                     </Button>

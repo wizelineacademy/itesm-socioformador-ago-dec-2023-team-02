@@ -38,7 +38,13 @@ export default function MessageItem({
 
         {/* Middle column: Message content */}
         <CardBody className="flex items-center max-w-[800px] w-full p-0">
-          <p className="w-full p-0 text-sm text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200">{message.content}</p>
+          {/* <p className="w-full p-0 text-sm text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200">{message.content}</p> */}
+          {message.content.split("\n").map((currentTextBlock: string, index: number) => {
+                            if (currentTextBlock === "") {
+                                return <p className="w-full p-0 text-sm text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200" key={message.id + index} />
+                            }
+                            return <p className="w-full p-0 text-sm text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200" key={message.id + index} >{currentTextBlock}</p>
+                        })}
         </CardBody>
 
         {/* Right column: Copy Message button */}
