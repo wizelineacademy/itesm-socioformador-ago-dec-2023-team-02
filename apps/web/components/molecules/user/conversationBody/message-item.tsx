@@ -1,8 +1,27 @@
+/**
+ * Renders a message item component with sender's image, message content and copy message button.
+ * @param message - The message object containing the message content and role (user or model).
+ * @param senderImage - The URL of the sender's image.
+ * @returns A JSX element representing the message item component.
+ */
 "use client";
 import { Card, CardBody, Image, Button } from "@nextui-org/react";
 import { Message } from 'ai';
 import React from "react";
 import { BsClipboard } from "react-icons/bs";
+
+
+/**
+ * Copies the given content to the clipboard.
+ * @param content - The text to be copied to the clipboard.
+ */
+function handleCopy(content:string) {
+  navigator.clipboard.writeText(content).then(() => {
+      console.log('Texto copiado al portapapeles');
+  }).catch(err => {
+      console.error('Error al copiar el texto: ', err);
+  });
+}
 
 // Define the MessageItem component
 export default function MessageItem({
@@ -54,6 +73,7 @@ export default function MessageItem({
             isIconOnly
             className="hover:bg-opacity-100 bg-inherit opacity-50 hover:opacity-100 p-0"
             size="sm"
+            onClick={() => {handleCopy(message.content)}}
           >
             <BsClipboard />
           </Button>
