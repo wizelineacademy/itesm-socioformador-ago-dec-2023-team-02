@@ -35,7 +35,7 @@ export default function PromptTextInput() {
                 </div>
                 <div className="absolute bottom-1 w-full text-center">
                 <p className="p-0 m-0 text-xs text-slate-400 dark:text-slate-400 wizeline-brand:text-slate-200 text-center">
-                        © 2023 Team SAM, developed by Wizeline. All rights reserved.
+                        © 2023 Team SAM, developed by Wizeline.
                     </p>
                 </div>
 

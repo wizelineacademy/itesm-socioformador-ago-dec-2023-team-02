@@ -43,7 +43,7 @@ export default function MessageItem({
                             if (currentTextBlock === "") {
                                 return <p className="w-full p-0 text-sm text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200" key={message.id + index} />
                             }
-                            return <p className="w-full p-0 text-sm text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200" key={message.id + index} >{currentTextBlock}</p>
+                            return <p className="w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200" key={message.id + index} >{currentTextBlock}</p>
                         })}
         </CardBody>
 
