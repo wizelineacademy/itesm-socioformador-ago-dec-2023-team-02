@@ -1,3 +1,7 @@
+/**
+ * ConversationBody component that displays a chat interface and handles user input and AI responses.
+ * @returns JSX.Element
+ */
 "use client";
 import React, { useState, useEffect } from 'react';
 import MessageList from './message-list';
@@ -6,44 +10,38 @@ import { useChat, } from "ai/react"
 import type { Message } from "ai/react"
 import { Sender, type Message as WizepromptMessage } from "@prisma/client";
 import type { UseChatOptions } from "ai";
-import { encode } from 'gpt-tokenizer';
 import type { MessageDataInput } from "@/lib/message";
-
+import { calculateCredits, calculateTokens } from '@/lib/helper/gpt/credits-and-tokens';
+import { convertToGptMessage } from '@/lib/helper/gpt/convert-message-type';
 
 const providerImage =
     "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"; // URL de la imagen del remitente
 
-// Función dummy para simular el callback de copiar mensaje
-/*
-const Callback = (message: Message) => {
-  console.log("Mensaje copiado:", message.content);
-};
-*/
 const userImage = "https://ui-avatars.com/api/?background=007CFF&color=fff&name=David";
 
+/**
+ * Extended options for the useChat hook.
+ */
 interface ExtendedUseChatOptions extends UseChatOptions {
+    /**
+     * An array of messages to be displayed in the conversation body.
+     */
     messages: Message[];
+    /**
+     * The temperature of the conversation, represented as a number.
+     */
     temperature: number;
+    /**
+     * Custom instructions for the conversation.
+     */
     customInstructions: string;
 }
 
-function calculateTokens(input: string): number {
-    const tokens: number[] = encode(input)
-    return tokens.length
-}
-
-function calculateCredits(tokens: number, model: string, isInput: boolean): number {
-    // Checks if the message was user created or output by the model to determine the price
-    let price: number
-    if (isInput) {
-        price = model === 'gpt-3.5-turbo' ? Number(process.env.NEXT_PUBLIC_GPT_35_INPUT) : Number(process.env.NEXT_PUBLIC_GPT_4_INPUT)
-    } else {
-        price = model === 'gpt-3.5-turbo' ? Number(process.env.NEXT_PUBLIC_GPT_35_OUTPUT) : Number(process.env.NEXT_PUBLIC_GPT_4_OUTPUT)
-    }
-    // GPT pricing per 1000 tokens
-    return (tokens / 1000) * price
-}
-
+/**
+ * Saves a message to the server.
+ * @param message The message to be saved.
+ * @returns A Promise that resolves when the message is successfully saved, or rejects if an error occurs.
+ */
 async function saveMessage(message: MessageDataInput): Promise<void> {
     try {
         await fetch('/api/messages', {
@@ -53,15 +51,6 @@ async function saveMessage(message: MessageDataInput): Promise<void> {
     } catch {
         console.log("Error ocurred while saving message.")
     }
-}
-
-function convertToGptMessage(item: WizepromptMessage): Message {
-    const role: "function" | "user" | "assistant" | "system" = item.sender === "USER" ? "user" : "assistant";
-    return {
-        id: String(item.id),
-        role,
-        content: item.content,
-    };
 }
 
 export default function ConversationBody(): JSX.Element {

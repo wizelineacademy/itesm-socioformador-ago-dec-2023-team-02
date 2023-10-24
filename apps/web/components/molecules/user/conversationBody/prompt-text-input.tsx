@@ -1,29 +1,26 @@
+/**
+ * A component that renders a text input field and a send button for the user to send messages.
+ * @param input - The current value of the text input field.
+ * @param handleInputChange - A function that handles changes to the text input field.
+ * @param handleSubmit - A function that handles the submission of the text input field.
+ * @returns A React component that renders a text input field and a send button.
+ */
+
 "use client";
 import React from "react";
 import { Textarea, Button } from "@nextui-org/react";
 import { IoMdSend } from "react-icons/io";
 import CreditsBadge from "@/components/atoms/credits-badge";
 import type { MessageDataInput } from "@/lib/message";
-import { encode } from 'gpt-tokenizer';
 import { Sender } from "@prisma/client";
+import { calculateTokens, calculateCredits } from "@/lib/helper/gpt/credits-and-tokens";
 
-function calculateTokens(input: string): number {
-    const tokens: number[] = encode(input)
-    return tokens.length
-}
 
-function calculateCredits(tokens: number, model: string, isInput: boolean): number {
-    // Checks if the message was user created or output by the model to determine the price
-    let price: number
-    if (isInput) {
-        price = model === 'gpt-3.5-turbo' ? Number(process.env.NEXT_PUBLIC_GPT_35_INPUT) : Number(process.env.NEXT_PUBLIC_GPT_4_INPUT)
-    } else {
-        price = model === 'gpt-3.5-turbo' ? Number(process.env.NEXT_PUBLIC_GPT_35_OUTPUT) : Number(process.env.NEXT_PUBLIC_GPT_4_OUTPUT)
-    }
-    // GPT pricing per 1000 tokens
-    return (tokens / 1000) * price
-}
-
+/**
+ * Saves a message to the server.
+ * @param message The message data to be saved.
+ * @returns A Promise that resolves when the message is successfully saved, or rejects if an error occurs.
+ */
 async function saveMessage(message: MessageDataInput): Promise<void> {
     try {
         await fetch('/api/messages', {
@@ -34,7 +31,6 @@ async function saveMessage(message: MessageDataInput): Promise<void> {
         console.log("Error ocurred while saving message.")
     }
 }
-
 
 export default function PromptTextInput({ input, handleInputChange, handleSubmit }: { input: string, handleInputChange: any, handleSubmit: any }) {
     return (
@@ -79,6 +75,7 @@ export default function PromptTextInput({ input, handleInputChange, handleSubmit
                         <IoMdSend className="text-lg" />
                     </Button>
                 </form>
+                {/* Footer */}
                 <div className="absolute bottom-1 w-full text-center">
                     <p className="p-0 m-0 text-xs text-slate-400 dark:text-slate-400 wizeline-brand:text-slate-200 text-center">
                         © 2023 Team SAM, developed by Wizeline.
