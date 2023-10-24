@@ -1,6 +1,6 @@
 "use client";
 import { Card, CardBody, Image, Button } from "@nextui-org/react";
-import { Message } from "@prisma/client";
+import { Message } from 'ai';
 import React from "react";
 import { BsClipboard } from "react-icons/bs";
 
@@ -18,7 +18,7 @@ export default function MessageItem({
 }): JSX.Element {
   return (
     <Card
-      className={`${message.sender === "USER" ? "senderUser-bg" : "senderModel-bg"
+      className={`${message.role === "user" ? "senderUser-bg" : "senderModel-bg"
         } w-full justify-center border-none border-bottom rounded-none shadow-none py-3`}
     >
 

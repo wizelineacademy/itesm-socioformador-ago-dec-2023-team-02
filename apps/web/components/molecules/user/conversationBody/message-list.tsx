@@ -1,9 +1,8 @@
 "use client";
 import React from 'react';
-import { Message } from '@prisma/client';
+import { Message } from 'ai';
 import MessageItem from '@/components/molecules/user/conversationBody/message-item';
 import { Divider } from '@nextui-org/react';
-import PromptTextInput from './prompt-text-input';
 
 /**
  * Props for the MessageList component
@@ -27,20 +26,19 @@ interface MessageListProps {
  */
 export default function MessageList({ messages, userImage, providerImage }: { messages: Message[], userImage: string, providerImage: string }): JSX.Element {
     return (
-        <div className="pb-36">
+        <>
             {/* Messages display */}
                 {messages.map((message, index) => (
                     <>
                         <MessageItem
                             key={index}
                             message={message}
-                            senderImage={message.sender === "USER" ? userImage : providerImage}
+                            senderImage={message.role === "user" ? userImage : providerImage}
                         //creditsUsed={message.creditsUsed}
                         />
                         <Divider className="my-0" />
                     </>
                 ))}
-            <PromptTextInput />
-        </div>
+        </>
     );
 };
