@@ -9,17 +9,21 @@ import { Card, CardBody, Image, Button } from "@nextui-org/react";
 import { Message } from 'ai';
 import React from "react";
 import { BsClipboard } from "react-icons/bs";
+import { toast } from "sonner";
 
 
 /**
  * Copies the given content to the clipboard.
  * @param content - The text to be copied to the clipboard.
  */
-function handleCopy(content:string) {
+function handleCopy(content:string) {;
   navigator.clipboard.writeText(content).then(() => {
       console.log('Texto copiado al portapapeles');
+      toast('Message copied to clipboard.',{ duration: 1000})
+      
   }).catch(err => {
       console.error('Error al copiar el texto: ', err);
+      toast('Error copying message to clipboard.',{ duration: 1000, style: { backgroundColor: "red"} })
   });
 }
 
