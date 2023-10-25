@@ -11,7 +11,7 @@ import type { Message } from "ai/react"
 import { Sender, type Message as WizepromptMessage } from "@prisma/client";
 import type { UseChatOptions } from "ai";
 import { convertToGptMessage } from '@/lib/helper/gpt/convert-message-type';
-import { saveMessage } from '@/lib/helper/save-message';
+import { saveMessage } from '@/lib/helper/data-handles';
 import { toast } from 'sonner';
 
 const providerImage =
@@ -62,18 +62,15 @@ async function handleSaveMessage(idConversation: number, model: string, sender: 
 export default function ConversationBody(): JSX.Element {
     const [messageData, setMessageData] = useState<Message[]>([])
     const model = 'gpt-4';
-   // const [wizepromptMessageData, setWizepromptMessageData] = useState<WizepromptMessage[]>([])
 
     // Function that fetches data from messages api route and 
     // sets the content of a message to the first content instance
-    const getData: () => Promise<void> = async () => {
+    async function getData(): Promise<void> {
         const response: Response = await fetch('/api/messages/conversation/1');
         const data: WizepromptMessage[] = await response.json();
         const processedData: Message[] = data.map(convertToGptMessage);
         setMessageData(processedData);
-        //setWizepromptMessageData(data);
     };
-
 
     useEffect(() => {
         void getData()
@@ -99,19 +96,25 @@ export default function ConversationBody(): JSX.Element {
         handleInputChange, // Handler for the onChange event of the input field to control the input's value.
         handleSubmit, // Form submission handler that automatically resets the input field and appends a user message.
         messages, // The current array of chat messages.
+        error, // An error object returned by SWR, if any.
         /*
        isLoading, // Boolean flag indicating whether a request is currently in progress.
        stop, // Function that aborts the current request
        reload,//Function to reload the last AI chat response for the given chat history.
        append, //append(message: Message | CreateMessage, chatRequestOptions: { options: { headers, body } }) Function to append a message to the chat, triggering an API call for the AI response.
-       error, //An error object returned by SWR, if any.
        */
     } = useChat(options);
 
     return (
         <div className="pb-36">
             <MessageList messages={messages} providerImage={providerImage} userImage={userImage} />
-            <PromptTextInput input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmit} />
+
+            {error ?
+                <div className="w-full fixed bottom-0 pb-4 z-10 gradient-shadow-light dark:gradient-shadow-dark py-0" role="alert">
+                    {error.message}
+                </div> :
+                <PromptTextInput input={input} handleInputChange={handleInputChange} handleSubmit={handleSubmit} />
+            }
         </div>
     );
 }

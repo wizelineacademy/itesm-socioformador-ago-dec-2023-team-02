@@ -28,7 +28,8 @@ export default function MessageList({ messages, userImage, providerImage }: { me
             scrollToBottom();
             setAutoScroll(false);
         }
-    }, [messages, autoScroll]);
+    }, [autoScroll]);
+
 
     return (
         <>

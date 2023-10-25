@@ -2,9 +2,7 @@
 import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { NextResponse } from "next/server";
-// import { createMessage } from "@/lib/message";
-// import type {MessageDataInput} from "@/lib/message";
-// import { Sender } from "@prisma/client";
+
 
 export const runtime = 'edge';
 
@@ -45,27 +43,6 @@ export async function POST(request: Request): Promise<StreamingTextResponse | Ne
                 ...messages
             ],
         });
-        
-        // Define the onCompletion and onToken callbacks
-        // const onCompletion = async (completion: any) => {
-        //     console.log('Stream complete:', completion);
-        //     const messageInfo: MessageDataInput = {
-        //         idConversation: 1,
-        //         sender: Sender.MODEL,
-        //         content: completion,
-        //         creditsUsed: tokens,
-        //     };
-            
-        //     // Create a new message in the database using Prisma
-        //     const response = createMessage(messageInfo)
-        //     console.log(response)
-        // };
-        
-        // let tokens = 0;
-        // const onToken = (_token: any): void => {
-        //     tokens += 1;
-        // };
-        
         
         // Creates a stream of data from OpenAI using the tool "OpenAIStream"
         const stream = OpenAIStream(response);

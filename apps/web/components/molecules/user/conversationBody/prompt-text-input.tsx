@@ -13,7 +13,7 @@ import { IoMdSend } from "react-icons/io";
 import CreditsBadge from "@/components/atoms/credits-badge";
 import { Sender } from "@prisma/client";
 import { calculateTokens } from "@/lib/helper/gpt/credits-and-tokens";
-import { saveMessage } from "@/lib/helper/save-message";
+import { saveMessage } from "@/lib/helper/data-handles";
 import { toast } from "sonner";
 
 /**
@@ -76,7 +76,6 @@ export default function PromptTextInput({ input, handleInputChange, handleSubmit
                         © 2023 Team SAM, developed by Wizeline.
                     </p>
                 </div>
-
             </div>
         </div>
     );
