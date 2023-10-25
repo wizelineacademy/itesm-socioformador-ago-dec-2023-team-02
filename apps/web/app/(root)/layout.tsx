@@ -28,7 +28,7 @@ export default function RootLayout({
             <body className={inter.className}>
                 <Providers themeProps={{ attribute: "class", defaultTheme: "system" }}>
                     <main>{children}</main>
-                    <Toaster position="top-center" richColors theme="dark" />
+                    <Toaster position="top-center"  theme="dark" />
                 </Providers>
             </body>
         </html>
