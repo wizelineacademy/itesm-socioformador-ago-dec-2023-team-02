@@ -64,7 +64,7 @@ export default function PromptTextInput({ input, handleInputChange, handleSubmit
                         variant="flat"
                         className={`${!input ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10": "bg-red-500" } text-white  rounded-r-xl`}
                         // Saves user's message when the send button is clicked
-                        onClick={() => {handleSaveMessage(idConv, model, Sender.USER, input)}}
+                        onClick={() => {void handleSaveMessage(idConv, model, Sender.USER, input)}}
                         type="submit"
                     >
                         <IoMdSend className="text-lg" />
