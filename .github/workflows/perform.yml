@@ -1,18 +1,21 @@
-on: [workflow_dispatch]
+name: "JMeter testing"
+on: 
+  workflow_dispatch:
+  
 jobs:
-  jmeter_job:
+  build:
     runs-on: ubuntu-latest
-    name: JMeter Test Execution
+    name: JMeter Test
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Run JMeter Tests
-        uses: ./
+      - name: JMeter Test
+        uses: QAInsights/PerfAction@v3.1
         with:
-          test-plan-path: ./tests/TestPlans/PlanDePruebas.jmx
-          args: ""
-
+            test-plan-path: ./apps/web/tests/TestPlans/PlanDePruebas.jmx
+            args: ""
+            
       - name: Upload Results
         uses: actions/upload-artifact@v2
         with:
