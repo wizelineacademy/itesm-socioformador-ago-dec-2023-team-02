@@ -64,6 +64,8 @@
   .rightsidebar {
     @apply sticky right-0 top-0 z-20 flex h-screen w-fit flex-col justify-between gap-12 overflow-auto border-l border-l-dark-4 px-10 pb-6 pt-28 max-xl:hidden;
   }
+
+
 }
 
 @layer utilities {
@@ -88,6 +90,28 @@
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #7878a3;
+  }
+
+  .gradient-shadow-light {
+    background: linear-gradient(to top, rgb(255, 255, 255) 70%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  /* Message Backgrounds*/
+  .senderUser-bg {
+    @apply bg-black bg-opacity-0 dark:bg-white dark:bg-opacity-0;
+  }
+
+  .senderModel-bg {
+    @apply  bg-black bg-opacity-5 dark:bg-white dark:bg-opacity-10;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  @layer utilities {
+    .gradient-shadow-dark {
+      background: linear-gradient(to top, rgb(0, 0, 0) 70%, rgba(0, 0, 0, 0) 100%);
+    }
   }
 }
 
