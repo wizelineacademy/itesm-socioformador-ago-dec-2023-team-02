@@ -1,8 +1,6 @@
-import "../../../globals.css";
+import "../../..globals.css";
 import type { Metadata } from "next";
-import LeftSidebar from "@/components/user/conversationSidebar/molecules/left-sidebar";
-import Topbar from "@/components/shared/topbar";
-import Bottombar from "@/components/shared/bottom-bar";
+import LeftSidebar from "@/components/shared/left-sidebar";
 
 export const metadata: Metadata = {
   title: "WizePrompt",
@@ -15,16 +13,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }): any {
   return (
-    <>
-      <Topbar />
-      <main className="flex flex-row">
-        <LeftSidebar />
-        <section className="main-container">
-          <div className="w-full max-w-4xl">{children}</div>
-        </section>
-      </main>
-
-      <Bottombar />
-    </>
+    <main className="flex flex-row">
+      <LeftSidebar />
+      <section className="main-container">
+        <div className="w-full max-w-4xl">{children}</div>
+      </section>
+    </main>
   );
 }
