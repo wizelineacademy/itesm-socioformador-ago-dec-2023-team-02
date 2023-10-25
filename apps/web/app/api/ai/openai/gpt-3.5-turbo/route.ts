@@ -35,7 +35,7 @@ export async function POST(request: Request): Promise<StreamingTextResponse | Ne
          * Get the message response from OpenAI using "createChatCompletion".
          */
         const response = await openai.createChatCompletion({
-            model: "gpt-4",
+            model: "gpt-3.5-turbo",
             stream: true,  // Enable streaming
             temperature,  // Set temperature, default is 0.5 if not provided
             messages: [
