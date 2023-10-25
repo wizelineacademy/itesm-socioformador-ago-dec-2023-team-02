@@ -59,7 +59,8 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/types/*": ["./types/*"]
     }
   },
   "include": [
@@ -67,7 +68,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "prisma/seed.ts"
+    "prisma/seed.ts",
+    "app/api/auth/[auth0]/route.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

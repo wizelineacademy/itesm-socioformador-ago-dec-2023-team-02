@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };

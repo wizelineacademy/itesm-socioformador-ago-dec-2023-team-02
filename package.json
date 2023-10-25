@@ -14,16 +14,18 @@
     "@semantic-release/github": "^9.0.6",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.48.0",
+    "husky": "^8.0.0",
     "prettier": "^3.0.3",
     "semantic-release": "^22.0.0",
     "tsconfig": "workspace:*",
-    "turbo": "latest",
-    "husky": "^8.0.0"
+    "turbo": "latest"
   },
   "packageManager": "pnpm@8.6.10",
   "name": "itesm-socioformador-ago-dec-2023-team-02",
   "dependencies": {
-    "git-cz": "^4.9.0"
+    "ai": "^2.2.14",
+    "git-cz": "^4.9.0",
+    "openai-edge": "^1.2.2"
   },
   "config": {
     "commitizen": {
