@@ -13,6 +13,7 @@ import type { UseChatOptions } from "ai";
 import { convertToGptMessage } from '@/lib/helper/gpt/convert-message-type';
 import { saveMessage } from '@/lib/helper/data-handles';
 import { toast } from 'sonner';
+import ConversationHeader from '../conversationHeader/conversation-top-header';
 
 const providerImage =
     "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"; // URL de la imagen del remitente
@@ -106,7 +107,8 @@ export default function ConversationBody(): JSX.Element {
     } = useChat(options);
 
     return (
-        <div className="pb-36">
+        <div className="pb-36 pt-14">
+            <ConversationHeader />
             <MessageList messages={messages} providerImage={providerImage} userImage={userImage} />
 
             {error ?
