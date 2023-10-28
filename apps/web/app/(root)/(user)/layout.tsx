@@ -1,4 +1,3 @@
-
 export default function UserRootLayout({
   children,
 }: {
@@ -6,9 +5,7 @@ export default function UserRootLayout({
 }): any {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
