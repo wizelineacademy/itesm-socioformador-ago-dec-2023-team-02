@@ -107,7 +107,7 @@ export default function ConversationBody(): JSX.Element {
     } = useChat(options);
 
     return (
-        <div className="pb-36 pt-14">
+        <div className="pb-36">
             <ConversationHeader />
             <MessageList messages={messages} providerImage={providerImage} userImage={userImage} />
 
