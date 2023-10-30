@@ -7,6 +7,7 @@ import type { Conversation, Prisma, Tag } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import type { ConversationCreateData } from "@/types/conversation-types";
 import { areValidModelParameters, type ModelParameters } from "@/types/model-parameters-types";
+import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import prisma from "./prisma";
 
 /**
@@ -16,7 +17,7 @@ import prisma from "./prisma";
  */
 export async function getAllConversationsByUserId(
   idUser: number
-): Promise<PrismaResponse<Conversation[]>> {
+): Promise<PrismaResponse<SidebarConversation[]>> {
   try {
     // Validate idUser
     if (!idUser || idUser < 0) {
@@ -33,24 +34,27 @@ export async function getAllConversationsByUserId(
     }
 
     // Search all conversations in the database that match the user ID
-    const conversations: Conversation[] = await prisma.conversation.findMany({
+    const conversations: SidebarConversation[] = await prisma.conversation.findMany({
       where: {
         idUser, // User id to filter conversations
         active: true, // Only fetch active conversations
       },
-      include: {
-        messages: false, // Do not include messages from each conversation
-        tags: true, // Include tags from each conversation
+      select: {
+        id: true, 
+        title: true,
+        createdAt: true,
+        tags: true,
+        active: true,
         model: {
           select: {
-            name: true, // Only select the name of the model
+            name: true,
             provider: {
               select: {
-                image: true, // Only select the logo (image) of the provider
-              },
-            },
-          },
-        }, // Include only specific fields from model and provider
+                image: true
+              }
+            }
+          }
+        }
       },
     });
 
@@ -115,7 +119,7 @@ export async function getConversationById(
  */
 export async function createConversation(
   input: ConversationCreateData
-): Promise<PrismaResponse<Conversation>> {
+): Promise<PrismaResponse<SidebarConversation>> {
   try {
 
     const { idUser, idModel, title } = input || {};
@@ -154,22 +158,30 @@ export async function createConversation(
     const userGlobalParameters: string = JSON.stringify(user.globalParameters);
     const parameters: string = JSON.stringify(JSON.parse(userGlobalParameters)[model.name]);
 
-
-
     // Create a new conversation in the database
-    const newConversation = await prisma.conversation.create({
+    const newConversation: SidebarConversation = await prisma.conversation.create({
       data: {
         ...input,
         parameters: parameters ? parameters : "", // Set parameters if applicable
-        tags: input.tags ? { connect: input.tags } : undefined, // Connect tags if provided
         active: true, // Set the 'active' field to true by default
       },
       // Include additional models (relations) in the result
-      include: {
-        user: true, // Include user details
-        model: true, // Include model details
-        messages: true, // Include messages in the conversation
-        tags: true, // Include tags associated with the conversation
+      select: {
+        id: true, 
+        title: true,
+        createdAt: true,
+        tags: true,
+        active: true,
+        model: {
+          select: {
+            name: true,
+            provider: {
+              select: {
+                image: true
+              }
+            }
+          }
+        }
       },
     });
 

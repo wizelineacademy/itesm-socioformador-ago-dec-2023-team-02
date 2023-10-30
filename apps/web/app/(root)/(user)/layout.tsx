@@ -5,10 +5,8 @@ export default function UserRootLayout({
   children: React.ReactNode;
 }): any {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body>
+    <section>
         {children}
-      </body>
-    </html>
+    </section>
   );
 }

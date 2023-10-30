@@ -1,30 +1,33 @@
 import "../../../globals.css";
 import type { Metadata } from "next";
-import LeftSidebar from "@/components/user/conversationSidebar/molecules/left-sidebar";
-import Topbar from "@/components/shared/topbar";
-import Bottombar from "@/components/shared/bottom-bar";
+import type { Tag } from "@prisma/client";
+import ConversationSideBar from "@/components/user/conversationSidebar/molecules/conversation-sidebar";
+import { getAllConversationsByUserId } from "@/lib/conversation";
+import { getAllTagsByUserID } from "@/lib/tag";
+import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 
 export const metadata: Metadata = {
   title: "WizePrompt",
   description: "",
 };
 
-export default function RootLayout({
+export default async function ConversationRootLayout({
   children,
 }: {
   children: React.ReactNode;
-}): any {
+}): Promise<any> {
+  const userId = 1; 
+  const userConversations: SidebarConversation[] = ((await getAllConversationsByUserId(userId)).data || [])
+  const userTags: Tag[] = ((await getAllTagsByUserID(userId)).data || [])
+  
   return (
-    <>
-      <Topbar />
-      <main className="flex flex-row">
-        <LeftSidebar />
+      <div className="flex flex-row">
+        <ConversationSideBar userConversations={userConversations} userTags={userTags}/>
         <section className="main-container">
-          <div className="w-full max-w-4xl">{children}</div>
+          <div className="w-full max-w-4xl">
+            {children}
+          </div>
         </section>
-      </main>
-
-      <Bottombar />
-    </>
+      </div>
   );
 }
