@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { type ChangeEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { MouseEventHandler , ChangeEvent, KeyboardEventHandler } from "react";
 import type { Tag } from "@prisma/client";
 import { AiOutlineEdit } from "react-icons/ai";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
@@ -20,7 +21,11 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
     const [tags, setTags] = useState<Tag[]>(conversation.tags)
     const [editingTitle, setEditingTitle] = useState<boolean>(false)
     const [editingTags, setEditingTags] = useState<boolean>(false)
-    const cardContainerRef = useRef<HTMLLIElement | null>(null);
+    const cardContainerRef = useRef<HTMLButtonElement | null>(null);
+
+    console.log(tags)
+    console.log(setTags)
+    console.log(editingTags)
 
     useEffect(() => {
         document.addEventListener('click', handleOutsideClick);
@@ -34,9 +39,9 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
             setEditingTitle(false)
         }
     }
-    const handleTitleClick: (e: MouseEvent) => void = (e) => {e.stopPropagation()}
+    const handleTitleClick: MouseEventHandler<HTMLInputElement> = (e) => {e.stopPropagation()}
     const handleTitleChange: (e: ChangeEvent<HTMLInputElement>) => void = (e) => {setTitle(e.target.value)}
-    const handleTitleKeydown: (e: KeyboardEvent) => void = (e) => {
+    const handleTitleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
         if (e.key === "Enter"){
             if (conversation.title !== title) {
                 saveConversationTitle()
@@ -93,10 +98,17 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
         {key: "remove", name: "Remove", style: "text-danger", action: ()=>{removeThisConversation()}}
     ]
 
+    let cardBackgroundColor = ""
+    if (isSelected) {
+        cardBackgroundColor = "bg-neutral-700"
+    } else {
+        cardBackgroundColor = editingTitle ? "bg-neutral-800" : "hover:bg-neutral-800"
+    }
+
     return (
-        <li className={`group relative flex flex-row justify-start space-x-5 px-5 items-center w-full h-10 rounded-md overflow-hidden
-            ${isSelected ? "bg-neutral-700" : (editingTitle ? "bg-neutral-800" : "hover:bg-neutral-800")}`}
-            onClick={onClick} ref={cardContainerRef}>
+        <button className={`group relative flex flex-row justify-start space-x-5 px-5 items-center w-full h-10 rounded-md overflow-hidden 
+            ${cardBackgroundColor}`} onClick={onClick}
+            ref={cardContainerRef} type="button">
             <div className="rounded-full">
                 <Image alt="Model Image" height={8} src={conversation.model.provider.image} width={8}/>
             </div>
@@ -110,6 +122,6 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
                     <div><AiOutlineEdit/></div>
                 </SingleSelectionList>
             </div>
-        </li>
+        </button>
     ); 
 }

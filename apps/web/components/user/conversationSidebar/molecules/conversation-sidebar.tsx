@@ -23,9 +23,12 @@ export default function ConversationSideBar({userConversations, userTags}: Conve
     const [showingSidebar, setShowingSidebar] = useState<boolean>(true)
     const sidebarTopPadding = 5
 
+    console.log(setTags)
+
+
     const handleSearchTextChange: (value: string) => void = (value) => {setSearchText(value)}
 
-    const handleNewConversationPress: (e: any) => void = (e) => {
+    const handleNewConversationPress: (e: any) => void = (_) => {
         const fetchOptions: RequestInit = {method: "POST", headers: {"Content-Type": "application/json",}, body: JSON.stringify({
             title: "New Conversation",
             idUser: 1,
@@ -42,8 +45,8 @@ export default function ConversationSideBar({userConversations, userTags}: Conve
             dispatch({type: ConversationActionType.Create, conversationId: createdConversation.id, conversation: createdConversation})
             console.log("Success")
           })
-        .catch((_) => {
-            console.log("Error")
+        .catch((error) => {
+            console.log(error)
         });
     }
 

@@ -21,7 +21,7 @@ export function ConversationList({conversations, dispatch}: ConversationListProp
     
     return (
         <div className="overflow-x-hidden overflow-y-auto w-full">
-            <ul className="space-y-2 w-full">
+            <div className="space-y-2 w-full">
             {conversations.map(conversation => 
                 <ConversationCard
                     conversation={conversation}
@@ -31,7 +31,7 @@ export function ConversationList({conversations, dispatch}: ConversationListProp
                     onClick={()=>{handleConversationClick(conversation.id)}}
                 />  
             )}
-            </ul>
+            </div>
         </div>
     ); 
 }
