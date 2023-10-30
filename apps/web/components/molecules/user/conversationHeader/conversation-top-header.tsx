@@ -1,12 +1,18 @@
-import { Button, Navbar, NavbarItem } from "@nextui-org/react";
+"use client";
+import { Button, Navbar, NavbarItem, useDisclosure } from "@nextui-org/react";
 import { ModelCard } from "./model-card";
 import ThemeButton from "@/components/theme-button";
 import { BiBrain } from "react-icons/bi";
+import ModalParametersGPT from "./modal-gpt-parameters";
 
 const providerImage =
   "https://avatars.githubusercontent.com/u/86160567?s=200&v=4";
 
 export default function ConversationHeader() {
+
+    const {isOpen, onOpen, onClose, onOpenChange} = useDisclosure();
+
+
   return (
     <Navbar
       shouldHideOnScroll // Prop to hide the navbar on scroll.
@@ -22,14 +28,14 @@ export default function ConversationHeader() {
 
       {/* Context Button on xs and small screen sizes*/}
       <NavbarItem className="ml-auto md:hidden">
-        <Button isIconOnly>
+        <Button isIconOnly onPress={onOpen}>
           <BiBrain />
         </Button>
       </NavbarItem>
 
       {/* Context Button on md and above screen sizes */}
       <NavbarItem className="ml-auto hidden md:inline">
-        <Button className="flex items-center">
+        <Button className="flex items-center" onPress={onOpen}>
           <BiBrain />
           <span className="hidden md:inline">Context</span>
         </Button>
@@ -39,6 +45,8 @@ export default function ConversationHeader() {
       <NavbarItem>
         <ThemeButton />
       </NavbarItem>
+
+      <ModalParametersGPT isOpen={isOpen} onClose={onClose} onOpenChange={onOpenChange} />
     </Navbar>
   );
 }
