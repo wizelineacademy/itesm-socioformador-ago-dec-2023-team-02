@@ -6,10 +6,16 @@ const groupName= {
     name: "Team SAM",
     credits: 840
 }
+//insert into function parameters 
+// name: string, cedits: number
 
+export default function CustomGroupBadge( ) {
+  //uncomment when you need to connect tag name and color to the users page
+  // const groupName = {
+  //   name: name,
+  //   credits: credits
+  // }
 
-export default function CustomGroupBadge() {
-    
   return (
     <div className="flex gap-4">
         <Tooltip delay={(1000)} placement="bottom" color= "default"
