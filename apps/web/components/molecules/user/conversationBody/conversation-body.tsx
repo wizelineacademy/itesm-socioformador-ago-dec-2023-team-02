@@ -61,7 +61,7 @@ async function handleSaveMessage(idConversation: number, model: string, sender: 
 
 export default function ConversationBody(): JSX.Element {
     const [messageData, setMessageData] = useState<Message[]>([])
-    const model = 'gpt-4';
+    const model = 'gpt-3.5-turbo';
 
     // Function that fetches data from messages api route and 
     // sets the content of a message to the first content instance
