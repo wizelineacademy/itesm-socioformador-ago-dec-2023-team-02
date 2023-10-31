@@ -6,33 +6,36 @@
  */
 "use client";
 import { Card, CardBody, Image, Button } from "@nextui-org/react";
-import { Message } from 'ai';
+import type { Message } from "ai";
 import React from "react";
 import { BsClipboard } from "react-icons/bs";
 import { toast } from "sonner";
-
 
 /**
  * Copies the given content to the clipboard.
  * @param content - The text to be copied to the clipboard.
  */
-function handleCopy(content:string) {;
-  navigator.clipboard.writeText(content).then(() => {
-      console.log('Texto copiado al portapapeles');
-      toast('Message copied to clipboard.',{ duration: 1000})
-      
-  }).catch(err => {
-      console.error('Error al copiar el texto: ', err);
-      toast('Error copying message to clipboard.',{ duration: 1000, style: { backgroundColor: "red"} })
-  });
+function handleCopy(content: string): void {
+  navigator.clipboard
+    .writeText(content)
+    .then(() => {
+      console.log("Texto copiado al portapapeles");
+      toast("Message copied to clipboard.", { duration: 1000 });
+    })
+    .catch((err) => {
+      console.error("Error al copiar el texto: ", err);
+      toast("Error copying message to clipboard.", {
+        duration: 1000,
+        style: { backgroundColor: "red" },
+      });
+    });
 }
 
 // Define the MessageItem component
 export default function MessageItem({
   message,
   //Callback,
-  senderImage,
-  //creditsUsed,
+  senderImage, //creditsUsed,
 }: {
   message: Message; //este podría ser content y solo ser un string, de todos modos este string sería el que copiemos
   //Callback: any;
@@ -41,12 +44,11 @@ export default function MessageItem({
 }): JSX.Element {
   return (
     <Card
-      className={`${message.role === "user" ? "senderUser-bg" : "senderModel-bg"
-        } w-full justify-center border-none border-bottom rounded-none shadow-none py-3`}
+      className={`${
+        message.role === "user" ? "senderUser-bg" : "senderModel-bg"
+      } w-full justify-center border-none border-bottom rounded-none shadow-none py-3`}
     >
-
       <div className="justify-center grid md:grid-cols-[.1fr,.8fr,.1fr] xl:grid-cols-[.25fr,.5fr,.25fr] grid-cols-1 gap-4 p-4">
-
         {/* Left column: Sender's image */}
         <div className="flex items-start md:justify-end justify-start">
           <Image
@@ -55,29 +57,44 @@ export default function MessageItem({
             radius="md"
             src={senderImage}
             width={35}
-
           />
         </div>
 
         {/* Middle column: Message content */}
         <CardBody className="flex items-center max-w-[800px] w-full p-0">
           {/* <p className="w-full p-0 text-sm text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200">{message.content}</p> */}
-          {message.content.split("\n").map((currentTextBlock: string, index: number) => {
-                            if (currentTextBlock === "") {
-                                return <p className="w-full p-0 text-sm text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200" key={message.id + index} />
-                            }
-                            return <p className="w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200" key={message.id + index} >{currentTextBlock}</p>
-                        })}
+          {message.content
+            .split("\n")
+            .map((currentTextBlock: string, index: number) => {
+              if (currentTextBlock === "") {
+                return (
+                  <p
+                    className="w-full p-0 text-sm text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200"
+                    key={message.id + index}
+                  />
+                );
+              }
+              return (
+                <p
+                  className="w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
+                  key={message.id + index}
+                >
+                  {currentTextBlock}
+                </p>
+              );
+            })}
         </CardBody>
 
         {/* Right column: Copy Message button */}
         <div className="flex items-start md:justify-start justify-end p-0 m-0">
           <Button
-          variant="solid"
-            isIconOnly
             className="hover:bg-opacity-100 bg-inherit opacity-50 hover:opacity-100 p-0"
+            isIconOnly
+            onClick={() => {
+              handleCopy(message.content);
+            }}
             size="sm"
-            onClick={() => {handleCopy(message.content)}}
+            variant="solid"
           >
             <BsClipboard />
           </Button>
