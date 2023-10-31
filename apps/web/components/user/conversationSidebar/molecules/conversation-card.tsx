@@ -1,8 +1,8 @@
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { MouseEventHandler , ChangeEvent, KeyboardEventHandler } from "react";
 import type { Tag } from "@prisma/client";
 import { AiOutlineEdit } from "react-icons/ai";
+import { Avatar } from "@nextui-org/react";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
@@ -100,18 +100,17 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
 
     let cardBackgroundColor = ""
     if (isSelected) {
-        cardBackgroundColor = "bg-neutral-700"
+        cardBackgroundColor = "bg-neutral-500"
     } else {
-        cardBackgroundColor = editingTitle ? "bg-neutral-800" : "hover:bg-neutral-800"
+        cardBackgroundColor = editingTitle ? "bg-neutral-600" : "hover:bg-neutral-600"
     }
 
     return (
         <button className={`group relative flex flex-row justify-start space-x-5 px-5 items-center w-full h-10 rounded-md overflow-hidden 
             ${cardBackgroundColor}`} onClick={onClick}
             ref={cardContainerRef} type="button">
-            <div className="rounded-full">
-                <Image alt="Model Image" height={8} src={conversation.model.provider.image} width={8}/>
-            </div>
+
+            <Avatar className="h-6 w-6" radius="md" src={conversation.model.provider.image}/>
 
             <div className="overflow-hidden w-30">
                 {editingTitle ? titleWhenEditing : titleWhenNotEditing}

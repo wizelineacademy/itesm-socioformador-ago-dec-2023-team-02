@@ -2,10 +2,11 @@
 
 import type { Tag } from "@prisma/client";
 import { useReducer, useState } from "react";
-import { Button, Input } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi"
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import MultipleSelectionDropdown from "@/components/shared/molecules/multiple-selection-dropdown";
+import SearchBar from "@/components/shared/molecules/search-bar";
 import { ConversationActionType, conversationReducer, filterConversations, sortConversationsByDate } from "../operations/sidebar-conversation-operations";
 import { tagsToListItems } from "../operations/tag-operationst";
 import { ConversationList } from "./conversation-list";
@@ -21,10 +22,8 @@ export default function ConversationSideBar({userConversations, userTags}: Conve
     const [selectedTags, setSelectedTags] = useState<Tag[]>([])
     const [searchText, setSearchText] = useState<string>("");
     const [showingSidebar, setShowingSidebar] = useState<boolean>(true)
-    const sidebarTopPadding = 5
 
     console.log(setTags)
-
 
     const handleSearchTextChange: (value: string) => void = (value) => {setSearchText(value)}
 
@@ -60,29 +59,28 @@ export default function ConversationSideBar({userConversations, userTags}: Conve
 
     return (
         <div className="flex flex-row items-start space-x-3">
-            <div className={`h-screen bg-red-400 flex flex-col justify-start items-center px-5 space-y-5 overflow-hidden ${showingSidebar ?  "w-50" : "w-0"}`}>
-                <Button className={`w-full h-10 mt-${sidebarTopPadding}`} onPress={handleNewConversationPress}>
+            <div className={`h-screen bg-neutral-700 flex flex-col justify-start items-center px-5 space-y-5 overflow-hidden ${showingSidebar ?  "w-50" : "w-0"}`}>
+                <Button className="w-full h-10 mt-5 bg-neutral-600" onPress={handleNewConversationPress}>
                     <p>New Conversation +</p>
                 </Button>
-            
-                <Input onValueChange={handleSearchTextChange} value={searchText}/>
 
-                <div className="flex flex-row justify-center items-center space-x-5 p-2 bg-black">
-                    <MultipleSelectionDropdown
-                        dropdownItems={tagsToListItems(tags)}
-                        onCloseAction={handleMultipleSelectionDropdownClosing}
-                        selectedDropdownItems={selectedTags.map(tag => tag.id.toString())}>
-                        <div>{selectedTags.length}</div>
-                    </MultipleSelectionDropdown>
-                    <p>Tags</p>
+                <div className="flex flex-row items-center space-x-2">
+                    <SearchBar onTextChange={handleSearchTextChange} overridingStyle="w-3/4" placeholder="Search conversations" takeFullWidth={false}/>
+
+                    <div className="w-1/4 h-full bg-black rounded-lg overflow-hidden">
+                        <MultipleSelectionDropdown dropdownItems={tagsToListItems(tags)} onCloseAction={handleMultipleSelectionDropdownClosing}
+                            selectedDropdownItems={selectedTags.map(tag => tag.id.toString())}>
+                            <button className="w-full h-full" type="button">
+                                {selectedTags.length}
+                            </button>
+                        </MultipleSelectionDropdown>
+                    </div>
                 </div>
-
-                <ConversationList
-                conversations={filterConversations(conversations, searchText, selectedTags)}
-                dispatch={dispatch}/>
+            
+                <ConversationList conversations={filterConversations(conversations, searchText, selectedTags)} dispatch={dispatch}/>
             </div>
 
-            <Button className={`mt-${sidebarTopPadding}`} onPress={handleSidebarVisibilityPress}>
+            <Button className="mt-5 w-2" isIconOnly onPress={handleSidebarVisibilityPress}>
                 <PiSidebarSimple/>
             </Button>
         </div>
