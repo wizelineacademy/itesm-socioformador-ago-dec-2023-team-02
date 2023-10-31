@@ -45,7 +45,7 @@ export default function MessageItem({
         } w-full justify-center border-none border-bottom rounded-none shadow-none py-3`}
     >
 
-      <div className="justify-center grid md:grid-cols-[.1fr,.8fr,.1fr] xl:grid-cols-[.25fr,.5fr,.25fr] grid-cols-1 gap-4 p-4">
+      <div className="justify-center grid md:grid-cols-[auto,.7fr,auto] xl:grid-cols-[.25fr,.5fr,.25fr] grid-cols-1 gap-4 p-4">
 
         {/* Left column: Sender's image */}
         <div className="flex items-start md:justify-end justify-start">

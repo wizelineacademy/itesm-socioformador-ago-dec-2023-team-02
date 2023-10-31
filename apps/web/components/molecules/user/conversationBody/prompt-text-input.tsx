@@ -32,11 +32,10 @@ async function handleSaveMessage(idConversation: number, model: string, sender: 
 
     }
 }
-const idConv = 1;
 const model = 'gpt-4';
 
 
-export default function PromptTextInput({ input, handleInputChange, handleSubmit }: { input: string, handleInputChange: any, handleSubmit: any }) {
+export default function PromptTextInput({idConversation, input, handleInputChange, handleSubmit }: {idConversation: number, input: string, handleInputChange: any, handleSubmit: any }) {
     return (
         <div className="w-full fixed bottom-0 pb-4 z-10 gradient-shadow-light dark:gradient-shadow-dark py-0">
             <div className="flex flex-col justify-center items-center max-w-[750px] md:w-11/12 mx-auto p-2">
@@ -62,9 +61,9 @@ export default function PromptTextInput({ input, handleInputChange, handleSubmit
                         size="lg"
                         isIconOnly
                         variant="flat"
-                        className={`${!input ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10": "bg-red-500" } text-white  rounded-r-xl`}
+                        className={`${!input ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10": "bg-danger" } text-white  rounded-r-xl`}
                         // Saves user's message when the send button is clicked
-                        onClick={() => {void handleSaveMessage(idConv, model, Sender.USER, input)}}
+                        onClick={() => {void handleSaveMessage(idConversation, model, Sender.USER, input)}}
                         type="submit"
                     >
                         <IoMdSend className="text-lg" />
