@@ -1,13 +1,15 @@
+/**
+ * Types defining the shape of data passed between components. Decoupled from the application`s data model . 
+ */
 
-
-export interface SingleSelectionListItem {
+export interface SingleSelectionDropdownItem {
     key: string;
     name: string;
     action: ()=>void;
     style?: string;
 }
 
-export interface MultipleSelectionListItem {
+export interface MultipleSelectionDropdownItem {
     key: string;
     name: string;
     style?: string;

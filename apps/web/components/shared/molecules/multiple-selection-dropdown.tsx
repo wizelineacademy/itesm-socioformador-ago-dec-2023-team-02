@@ -1,10 +1,10 @@
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
 import { useState } from "react";
-import type { MultipleSelectionListItem } from "@/types/component-types";
+import type { MultipleSelectionDropdownItem } from "@/types/component-types";
 
 interface MultipleSelectionDropdownProps {
     children: JSX.Element;
-    dropdownItems: MultipleSelectionListItem[];
+    dropdownItems: MultipleSelectionDropdownItem[];
     selectedDropdownItems: string[];
     onCloseAction: (selectedDropdownItems: string[])=>void;
 }

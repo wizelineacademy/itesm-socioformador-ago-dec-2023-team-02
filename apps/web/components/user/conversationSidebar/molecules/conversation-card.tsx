@@ -5,7 +5,7 @@ import type { Tag } from "@prisma/client";
 import { AiOutlineEdit } from "react-icons/ai";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
-import type { SingleSelectionListItem } from "@/types/component-types";
+import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import { ConversationActionType } from "../operations/sidebar-conversation-operations";
 import type {  ConversationAction } from "../operations/sidebar-conversation-operations";
 
@@ -92,7 +92,7 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
         <input className="text-sm rounded-sm" onChange={handleTitleChange} onClick={handleTitleClick} onKeyDown={handleTitleKeydown} type="text" value={title}/>
     )
 
-    const singleSelectionListItems: SingleSelectionListItem[] = [
+    const singleSelectionListItems: SingleSelectionDropdownItem[] = [
         {key: "editTitle", name: "Edit Title", action: ()=>{setEditingTitle(true)}}, 
         {key: "editTags", name: "Edit Tags", action: ()=>{setEditingTags(true)}},
         {key: "remove", name: "Remove", style: "text-danger", action: ()=>{removeThisConversation()}}

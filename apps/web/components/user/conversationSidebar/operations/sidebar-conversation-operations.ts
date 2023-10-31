@@ -61,10 +61,22 @@ export function conversationReducer(state: SidebarConversation[], action: Conver
     }
 }
 
+/**
+ * Modifies the title of a conversation, without modifying the given conversation.  
+ * @param conversation - A conversation whose title will be edited. 
+ * @param newTitle - The new title the conversation will be edited with. 
+ * @returns A new, edited conversation, that has as title newTitle. 
+ */
 export function editTitle(conversation: SidebarConversation, newTitle: string): SidebarConversation {
     return {...conversation, title: newTitle}
 }
 
+/**
+ * Modifies the array of tags associated to the given conversation. 
+ * @param conversation - A conversation whose array of tags will be edited. 
+ * @param newTags - An array containing the new tag objects the given conversation will be associated to. 
+ * @returns A new, edited conversation, that has as array of tags newTags. 
+ */
 export function editTags(conversation: SidebarConversation, newTags: Tag[]): SidebarConversation {
     return {...conversation, tags: newTags}
 }
@@ -86,24 +98,43 @@ export function filterConversations(conversations: SidebarConversation[], search
     })
 }
 
+/**
+ * Sorts an array of conversations by their creation date, in descending order; that is, newest conversations are placed first. 
+ * @param conversations - An array of conversations to sort by creation date.  
+ * @returns A sorted array of conversations. 
+ */
 export function sortConversationsByDate(conversations: SidebarConversation[]): SidebarConversation[] {
     return [...conversations].sort((convA, convB) => convB.createdAt.getTime() - convA.createdAt.getTime());
 }
 
 /**
  * Prepares a string variable for string matching, by removing uppercase characters and whitespaces. 
- * @param str - The string variable to clean .
+ * @param str - The string variable to clean. 
  * @returns A potentially modified string, removed of its uppercase characters and whitespaces. 
  */
 function cleanString(str: string): string {
     return str.toLowerCase().replace(/\s/g, '')
 }
 
+/**
+ * Determines to what degree, from 0 to 1, two strings are similar. The function measures how similar two string are with 
+ * the following expression: (length of the largest common substring between the two) / (length of the smallest of the two strings). 
+ * @param str1 - A string variable whose degree of similarity will be measured with str2. 
+ * @param str2 - A string variable whose degree of similarity will be measured with str1. 
+ * @returns A number that indicates how similar the given strings are; ranges from 0 to 1. 
+ */
 function findMatchRatio(str1: string, str2: string): number {
     const minSize: number = str1.length < str2.length ? str1.length : str2.length
     return lcsSize(str1, str2) / minSize
 }
 
+/**
+ * Finds the length of the longest common substring between str1 and str2, applying dynamic programming, in O(n*m) time, 
+ * where n = str1.length and m = str2.length.
+ * @param str1 - A string variable whose longest common substring with str2 will be found. 
+ * @param str2 - A string variable whose longest common substring with str1 will be found. 
+ * @returns The number of characters comprising the longest common substring between str1 and str2. 
+ */
 function lcsSize(str1: string, str2: string): number {
     const lcs = Array.from(Array(str1.length + 1), () => new Array<number>(str2.length + 1).fill(0));
     let maxSize = 0 
