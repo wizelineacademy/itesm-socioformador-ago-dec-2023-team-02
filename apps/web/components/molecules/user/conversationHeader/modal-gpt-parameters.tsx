@@ -1,3 +1,10 @@
+/**
+ * ModalParametersGPT Component
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Prop to control the open state of the modal
+ * @param {function} props.onOpenChange - Handler for changes to the open state
+ * @return {JSX.Element} ModalParametersGPT component
+ */
 // Importing necessary libraries and components
 "use client";
 import React from "react";
@@ -11,12 +18,19 @@ import {
   Textarea,
   Tooltip,
   Switch,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 } from "@nextui-org/react";
+import { AiOutlineInfoCircle } from "react-icons/ai";
+
+import { Slider } from "@/components/ui/slider";
 
 // ModalParametersGPT Component
 export default function ModalParametersGPT(props: any) {
   // Destructuring props to get isOpen and onOpenChange properties
-  const { isOpen, onOpenChange } = props;
+  const { isOpen, onOpenChange, userContext, responseContext, temperature } =
+    props;
 
   // Returning the Modal component
   return (
@@ -52,6 +66,7 @@ export default function ModalParametersGPT(props: any) {
                   variant="faded"
                   minRows={8}
                   maxRows={8}
+                  defaultValue={userContext}
                 />
               </Tooltip>
 
@@ -71,8 +86,53 @@ export default function ModalParametersGPT(props: any) {
                   variant="faded"
                   minRows={8}
                   maxRows={8}
+                  defaultValue={responseContext}
                 />
               </Tooltip>
+
+              {/* Label and Slider for temperature parameters */}
+
+              {/* Label for temperature parameters for xs and sm screens */}
+              <div className="md:hidden">
+                <Popover className="ml-auto md:hidden" placement="top">
+                  <PopoverTrigger>
+                    <label
+                      className="mb-2 ml-auto md:hidden"
+                      htmlFor="customInstructions"
+                    >
+                      <p className="flex text-xs text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200">
+                        How creative should ChatGPT be?{" "}
+                        <span className="text-lg">
+                          <AiOutlineInfoCircle className="p-0 pl-1" />
+                        </span>
+                      </p>
+                    </label>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <TemperatureTooltip />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Label for temperature parameters for md and above screens*/}
+              <div className="hidden md:inline">
+                <Tooltip placement="right" content={<TemperatureTooltip />}>
+                  <label
+                    className="mb-0 hidden md:inline "
+                    htmlFor="customInstructions"
+                  >
+                    <p className="flex text-xs text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200">
+                      How creative should ChatGPT be?{" "}
+                      <span className="text-lg">
+                        <AiOutlineInfoCircle className="p-0 pl-1" />
+                      </span>
+                    </p>
+                  </label>
+                </Tooltip>
+              </div>
+
+              {/* Slider for temperature parameters */}
+              <Slider defaultValue={[temperature]} max={1} min={0} step={0.1} />
             </ModalBody>
             <ModalFooter className="flex flex-col md:flex-row justify-between">
               <div className="flex items-center justify-between mb-4 md:mb-0">
@@ -106,33 +166,50 @@ export default function ModalParametersGPT(props: any) {
 
 // Component to display a tooltip with personal parameter prompts
 function PersonalParameterTooltip() {
-    return (
-        <div className="p-2">
-          <h2 className="text-sm mb-1">Thought starters</h2>
-          <ul className="list-disc list-inside text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
-            {/* List of response parameter prompts */}
-            <li>Where are you based?</li>
-            <li>What do you do for work?</li>
-            <li>What are your hobbies and interests?</li>
-            <li>What subjects can you talk about for hours?</li>
-            <li>What are some goals you have?</li>
-          </ul>
-        </div>
-      );
+  return (
+    <div className="p-2">
+      <h2 className="text-sm mb-1">Thought starters</h2>
+      <ul className="list-disc list-inside text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
+        {/* List of response parameter prompts */}
+        <li>Where are you based?</li>
+        <li>What do you do for work?</li>
+        <li>What are your hobbies and interests?</li>
+        <li>What subjects can you talk about for hours?</li>
+        <li>What are some goals you have?</li>
+      </ul>
+    </div>
+  );
 }
 
 // Component to display a tooltip with response parameter prompts
 function ResponseParameterTooltip() {
-    return (
-        <div className="p-2">
-          <h2 className="text-sm mb-1">Thought starters</h2>
-          <ul className="list-disc list-inside text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
-            {/* List of personal parameter prompts */}
-            <li>How formal or casual should ChatGPT be?</li>
-            <li>How long or short should responses generally be?</li>
-            <li>How do you want to be addressed?</li>
-            <li>Should ChatGPT have opinions on topics or remain neutral?</li>
-          </ul>
-        </div>
-      );
+  return (
+    <div className="p-2">
+      <h2 className="text-sm mb-1">Thought starters</h2>
+      <ul className="list-disc list-inside text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
+        {/* List of personal parameter prompts */}
+        <li>How formal or casual should ChatGPT be?</li>
+        <li>How long or short should responses generally be?</li>
+        <li>How do you want to be addressed?</li>
+        <li>Should ChatGPT have opinions on topics or remain neutral?</li>
+      </ul>
+    </div>
+  );
+}
+
+// Component to display a tooltip with information about temperature and creativity levels
+function TemperatureTooltip() {
+  return (
+    <div className="p-2">
+      <h2 className="text-sm mb-1">Temperature and Creativity</h2>
+      <ul className="list-disc list-inside text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
+        {/* List of personal parameter prompts */}
+        <li>
+          Lower temperature ( left ) makes ChatGPT more focused and
+          deterministic
+        </li>
+        <li>Higher temperature ( right ) makes it more creative and random</li>
+      </ul>
+    </div>
+  );
 }
