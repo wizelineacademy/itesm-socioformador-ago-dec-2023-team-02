@@ -2,22 +2,20 @@ import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-o
 import { useState } from "react";
 import type { MultipleSelectionListItem } from "@/types/component-types";
 
-interface MultipleSelectionListProps {
+interface MultipleSelectionDropdownProps {
     children: JSX.Element;
-    listItems: MultipleSelectionListItem[];
-    selectedListItems: string[];
-    onCloseAction: (selectedListItems: string[])=>void;
+    dropdownItems: MultipleSelectionListItem[];
+    selectedDropdownItems: string[];
+    onCloseAction: (selectedDropdownItems: string[])=>void;
 }
 
-export default function MultipleSelectionList({children, listItems, selectedListItems, onCloseAction}: MultipleSelectionListProps): JSX.Element {
-    const [selectedItems, setSelectedItems] = useState<string[]>(selectedListItems)
-
+export default function MultipleSelectionDropdown({children, dropdownItems, selectedDropdownItems, onCloseAction}: MultipleSelectionDropdownProps): JSX.Element {
+    const [selectedItems, setSelectedItems] = useState<string[]>(selectedDropdownItems)
 
     const handleItemPress: (pressedItemKey: string) => void = (pressedItemKey) => {
-        const selectedItemsOriginalLength: number = selectedItems.length
         const filteredSelectedItems: string[] = selectedItems.filter(key => key !== pressedItemKey)
 
-        if (selectedItemsOriginalLength === filteredSelectedItems.length){
+        if (selectedItems.length === filteredSelectedItems.length){
             setSelectedItems([...selectedItems, pressedItemKey])
         } else {
             setSelectedItems(filteredSelectedItems)
@@ -25,7 +23,7 @@ export default function MultipleSelectionList({children, listItems, selectedList
     }
 
     const handleClosing: ()=>void = () => {
-        onCloseAction(selectedListItems)
+        onCloseAction(selectedItems)
     }
 
     return (
@@ -33,8 +31,8 @@ export default function MultipleSelectionList({children, listItems, selectedList
             <DropdownTrigger>
                 {children}
             </DropdownTrigger>
-            <DropdownMenu closeOnSelect={false} selectedKeys={Object.keys(selectedItems)} selectionMode="multiple">
-                {listItems.map(item => (
+            <DropdownMenu closeOnSelect={false} selectedKeys={selectedItems} selectionMode="multiple">
+                {dropdownItems.map(item => (
                     <DropdownItem className={item.style || ""} key={item.key} onPress={(_) => { handleItemPress(item.key); }}>
                         {item.name}
                     </DropdownItem>

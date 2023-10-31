@@ -4,10 +4,10 @@ import type { MouseEventHandler , ChangeEvent, KeyboardEventHandler } from "reac
 import type { Tag } from "@prisma/client";
 import { AiOutlineEdit } from "react-icons/ai";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
-import SingleSelectionList from "@/components/shared/molecules/single-selection-list";
+import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionListItem } from "@/types/component-types";
-import { ConversationActionType } from "../sidebar-conversation-operations";
-import type {  ConversationAction } from "../sidebar-conversation-operations";
+import { ConversationActionType } from "../operations/sidebar-conversation-operations";
+import type {  ConversationAction } from "../operations/sidebar-conversation-operations";
 
 interface ConversationCardProps {
     conversation: SidebarConversation;
@@ -118,9 +118,9 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
             </div>
 
             <div className={`absolute flex justify-center items-center right-0 h-full w-1/5 bg-gradient-to-l from-neutral-500 ${!isSelected && "opacity-0 group-hover:opacity-100"}`}>
-                <SingleSelectionList listItems={singleSelectionListItems}>
+                <SingleSelectionDropdown dropdownItems={singleSelectionListItems}>
                     <div><AiOutlineEdit/></div>
-                </SingleSelectionList>
+                </SingleSelectionDropdown>
             </div>
         </button>
     ); 

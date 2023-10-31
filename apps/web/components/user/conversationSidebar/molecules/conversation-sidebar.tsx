@@ -5,9 +5,9 @@ import { useReducer, useState } from "react";
 import { Button, Input } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi"
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
-import MultipleSelectionList from "@/components/shared/molecules/multiple-selection-list";
-import { ConversationActionType, conversationReducer, filterConversations, sortConversationsByDate } from "../sidebar-conversation-operations";
-import { tagsToListItems } from "../tag-operationst";
+import MultipleSelectionDropdown from "@/components/shared/molecules/multiple-selection-dropdown";
+import { ConversationActionType, conversationReducer, filterConversations, sortConversationsByDate } from "../operations/sidebar-conversation-operations";
+import { tagsToListItems } from "../operations/tag-operationst";
 import { ConversationList } from "./conversation-list";
 
 interface ConversationSideBarProps {
@@ -52,9 +52,10 @@ export default function ConversationSideBar({userConversations, userTags}: Conve
 
     const handleSidebarVisibilityPress: (e: any) => void = (_) => {setShowingSidebar(!showingSidebar)}
 
-    const handleMultipleSelectionListClosing: (selectedItems: string[]) => void = (selectedItems) => {
+    const handleMultipleSelectionDropdownClosing: (selectedItems: string[]) => void = (selectedItems) => {
         const selectedItemsSet: Set<string> = new Set<string>(selectedItems)
         setSelectedTags(tags.filter(tag => selectedItemsSet.has(tag.id.toString())))
+        console.log("selectedTags", selectedTags)
     }
 
     return (
@@ -67,12 +68,12 @@ export default function ConversationSideBar({userConversations, userTags}: Conve
                 <Input onValueChange={handleSearchTextChange} value={searchText}/>
 
                 <div className="flex flex-row justify-center items-center space-x-5 p-2 bg-black">
-                    <MultipleSelectionList
-                        listItems={tagsToListItems(tags)}
-                        onCloseAction={handleMultipleSelectionListClosing}
-                        selectedListItems={selectedTags.map(tag => tag.id.toString())}>
+                    <MultipleSelectionDropdown
+                        dropdownItems={tagsToListItems(tags)}
+                        onCloseAction={handleMultipleSelectionDropdownClosing}
+                        selectedDropdownItems={selectedTags.map(tag => tag.id.toString())}>
                         <div>{selectedTags.length}</div>
-                    </MultipleSelectionList>
+                    </MultipleSelectionDropdown>
                     <p>Tags</p>
                 </div>
 

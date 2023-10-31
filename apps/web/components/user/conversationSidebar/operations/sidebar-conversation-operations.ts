@@ -5,7 +5,7 @@
 
 import type { Tag } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
-import { arraysIntersect } from "./array-operations";
+import { containsAllElements } from "./array-operations";
 
 /**
  * Enum containing the various types of modifications one can perform to an array of conversations. 
@@ -82,7 +82,7 @@ export function filterConversations(conversations: SidebarConversation[], search
     const cleanedSearchText: string = cleanString(searchText)
     return conversations.filter(({title, tags, active}) => {
         return (cleanedSearchText.length === 0 || findMatchRatio(cleanedSearchText, cleanString(title)) > 0.5) &&
-        (selectedTags.length === 0 || arraysIntersect<Tag>(tags, selectedTags)) && active
+        (selectedTags.length === 0 || containsAllElements<number>(tags.map(tag => tag.id), selectedTags.map(tag => tag.id))) && active
     })
 }
 

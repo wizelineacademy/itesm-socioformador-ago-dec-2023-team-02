@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
-import type { ConversationAction } from "../sidebar-conversation-operations";
+import type { ConversationAction } from "../operations/sidebar-conversation-operations";
 import { ConversationCard } from "./conversation-card";
 
 interface ConversationListProps {
