@@ -1,9 +1,9 @@
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
-import type { SingleSelectionListItem } from "@/types/component-types";
+import type { SingleSelectionDropdownItem } from "@/types/component-types";
 
 interface SingleSelectionDropdownProps {
     children: JSX.Element;
-    dropdownItems: SingleSelectionListItem[];
+    dropdownItems: SingleSelectionDropdownItem[];
 }
 
 export default function SingleSelectionDropdown({children, dropdownItems}: SingleSelectionDropdownProps): JSX.Element {    

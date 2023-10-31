@@ -21,13 +21,13 @@ export default async function ConversationRootLayout({
   const userTags: Tag[] = ((await getAllTagsByUserID(userId)).data || [])
   
   return (
-      <div className="flex flex-row">
-        <ConversationSideBar userConversations={userConversations} userTags={userTags}/>
-        <section className="main-container">
-          <div className="w-full max-w-4xl">
-            {children}
-          </div>
-        </section>
-      </div>
+    <div className="flex flex-row">
+      <ConversationSideBar userConversations={userConversations} userTags={userTags}/>
+      <section className="main-container">
+        <div className="w-full max-w-4xl">
+          {children}
+        </div>
+      </section>
+    </div>
   );
 }

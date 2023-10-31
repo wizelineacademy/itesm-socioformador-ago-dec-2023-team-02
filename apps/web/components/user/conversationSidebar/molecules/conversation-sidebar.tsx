@@ -59,7 +59,7 @@ export default function ConversationSideBar({userConversations, userTags}: Conve
 
     return (
         <div className="flex flex-row items-start space-x-3">
-            <div className={`h-screen bg-neutral-700 flex flex-col justify-start items-center px-5 space-y-5 overflow-hidden ${showingSidebar ?  "w-50" : "w-0"}`}>
+            <div className={`transition-all duration-200 linear h-screen bg-neutral-700 flex flex-col justify-start items-center space-y-5 overflow-hidden ${showingSidebar ?  "w-50  px-5" : "w-0"}`}>
                 <Button className="w-full h-10 mt-5 bg-neutral-600" onPress={handleNewConversationPress}>
                     <p>New Conversation +</p>
                 </Button>
