@@ -7,7 +7,7 @@
  */
 // Importing necessary libraries and components
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Modal,
@@ -26,11 +26,45 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 
 import { Slider } from "@/components/ui/slider";
 
+interface Parameters {
+  userContext: string;
+  responseContext: string;
+  temperature: number;
+}
+
 // ModalParametersGPT Component
 export default function ModalParametersGPT(props: any) {
   // Destructuring props to get isOpen and onOpenChange properties
-  const { isOpen, onOpenChange, userContext, responseContext, temperature } =
-    props;
+  const {
+    isOpen,
+    onOpenChange,
+    userContext,
+    responseContext,
+    temperature,
+    saveParameters,
+  }:{
+    isOpen: boolean;
+    onOpenChange: () => void;
+    userContext: string;
+    responseContext: string;
+    temperature: number;
+    saveParameters: (updatedParameters: Parameters) => void;
+  } = props;
+
+  const [updatedUserContext, setUpdatedUserContext] = useState<string>(userContext);
+  const [updatedResponseContext, setUpdatedResponseContext] =
+    useState<string>(responseContext);
+  const [updatedTemperature, setUpdatedTemperature] =
+    useState<number>(temperature);
+
+  const handleSave = () => {
+    const updatedParameters: Parameters = {
+      userContext: updatedUserContext,
+      responseContext: updatedResponseContext,
+      temperature: updatedTemperature,
+    };
+    saveParameters(updatedParameters);
+  };
 
   // Returning the Modal component
   return (
@@ -67,6 +101,7 @@ export default function ModalParametersGPT(props: any) {
                   minRows={8}
                   maxRows={8}
                   defaultValue={userContext}
+                  onChange={(e) => {setUpdatedUserContext(e.target.value)}}
                 />
               </Tooltip>
 
@@ -87,6 +122,7 @@ export default function ModalParametersGPT(props: any) {
                   minRows={8}
                   maxRows={8}
                   defaultValue={responseContext}
+                  onChange={(e) => {setUpdatedResponseContext(e.target.value)}}
                 />
               </Tooltip>
 
@@ -132,7 +168,14 @@ export default function ModalParametersGPT(props: any) {
               </div>
 
               {/* Slider for temperature parameters */}
-              <Slider defaultValue={[temperature]} max={1} min={0} step={0.1} />
+              <Slider
+                defaultValue={[updatedTemperature]}
+                value={[updatedTemperature]}
+                max={1}
+                min={0}
+                step={0.1}
+                onValueChange={(value:number[]) => {setUpdatedTemperature(value[0])}}
+                />
             </ModalBody>
             <ModalFooter className="flex flex-col md:flex-row justify-between">
               <div className="flex items-center justify-between mb-4 md:mb-0">
@@ -152,7 +195,7 @@ export default function ModalParametersGPT(props: any) {
                 >
                   Cancel
                 </Button>
-                <Button color="danger" onPress={onClose}>
+                <Button color="danger" onPress={onClose} onClick={handleSave}>
                   Save
                 </Button>
               </div>
