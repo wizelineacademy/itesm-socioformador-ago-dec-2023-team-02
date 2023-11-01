@@ -28,6 +28,7 @@ export default function MessageList({ messages, userImage, providerImage }: { me
             scrollToBottom();
             setAutoScroll(false);
         }
+        scrollToBottom(); //scroll to bottom when new message is added
     }, [autoScroll]);
 
 
