@@ -22,7 +22,7 @@ export default function ConversationHeader(props: any) {
       maxWidth="full" // Prop to set the maximum width of the navbar to full.
       isBlurred={false} // Prop to disable blur effect.
       isBordered // Prop to add border to the navbar.
-      className="shadow-md items-center flex justify-between" // Applying Tailwind CSS classes for styling.
+      className=" items-center flex justify-between" // Applying Tailwind CSS classes for styling.
     >
       {/* Model Card */}
       <NavbarItem className="flex-grow flex justify-center">

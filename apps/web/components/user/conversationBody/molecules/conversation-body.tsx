@@ -255,19 +255,21 @@ export default function ConversationBody(): JSX.Element {
   } = useChat(options);
 
   return (
-    <div className="pb-36">
+    <div>
       <ConversationHeader
         saveParameters={saveParameters}
         responseContext={responseContext}
         temperature={temperature}
         userContext={userContext}
       />
+<div className="message-list-container h-[calc(100vh-100px)] overflow-y-auto">
 
       <MessageList
         messages={messages}
         providerImage={providerImage}
         userImage={userImage}
       />
+      </div>
 
       {error ? (
         <div

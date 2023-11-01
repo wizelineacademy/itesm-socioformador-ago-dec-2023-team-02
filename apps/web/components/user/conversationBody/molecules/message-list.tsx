@@ -29,11 +29,11 @@ export default function MessageList({ messages, userImage, providerImage }: { me
             setAutoScroll(false);
         }
         scrollToBottom(); //scroll to bottom when new message is added
-    }, [autoScroll]);
+    }, [autoScroll, messages]);
 
 
     return (
-        <>
+        <div className='pb-32'>
             {/* Messages display */}
             {messages.map((message, index) => (
                 <>
@@ -53,6 +53,6 @@ export default function MessageList({ messages, userImage, providerImage }: { me
                     <AiOutlineArrowDown />
                 </Button>
             </div>
-        </>
+        </div>
     );
 }
