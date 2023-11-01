@@ -10,11 +10,11 @@
 import React from "react";
 import { Textarea, Button } from "@nextui-org/react";
 import { IoMdSend } from "react-icons/io";
-import CreditsBadge from "@/components/atoms/credits-badge";
 import { Sender } from "@prisma/client";
+import { toast } from "sonner";
+import CreditsBadge from "@/components/user/conversationBody/atoms/credits-badge";
 import { calculateTokens } from "@/lib/helper/gpt/credits-and-tokens";
 import { saveMessage } from "@/lib/helper/data-handles";
-import { toast } from "sonner";
 
 /**
  * Saves a message to the server.
@@ -32,11 +32,10 @@ async function handleSaveMessage(idConversation: number, model: string, sender: 
 
     }
 }
-const idConv = 1;
 const model = 'gpt-4';
 
 
-export default function PromptTextInput({ input, handleInputChange, handleSubmit }: { input: string, handleInputChange: any, handleSubmit: any }) {
+export default function PromptTextInput({idConversation, input, handleInputChange, handleSubmit }: {idConversation: number, input: string, handleInputChange: any, handleSubmit: any }) {
     return (
         <div className="w-full fixed bottom-0 pb-4 z-10 gradient-shadow-light dark:gradient-shadow-dark py-0">
             <div className="flex flex-col justify-center items-center max-w-[750px] md:w-11/12 mx-auto p-2">
@@ -46,26 +45,26 @@ export default function PromptTextInput({ input, handleInputChange, handleSubmit
                         <CreditsBadge creditsUsed={calculateTokens(input)} />
                     </div>
                 </div>
-                <form onSubmit={handleSubmit} className="flex items-center w-full rounded-xl">
+                <form className="flex items-center w-full rounded-xl" onSubmit={handleSubmit}>
                     {/* Textarea field */}
                     <Textarea
-                        placeholder="Send Message"
                         className="flex-grow p-0 mr-2"
-                        variant="faded"
                         maxRows={2}
-                        value={input}
                         onChange={handleInputChange}
+                        placeholder="Send Message"
+                        value={input}
+                        variant="faded"
                     />
                     {/* Send button */}
                     <Button
                         disabled={!input}
-                        size="lg"
                         isIconOnly
-                        variant="flat"
-                        className={`${!input ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10": "bg-red-500" } text-white  rounded-r-xl`}
-                        // Saves user's message when the send button is clicked
-                        onClick={() => {void handleSaveMessage(idConv, model, Sender.USER, input)}}
+                        size="lg"
                         type="submit"
+                        variant="flat"
+                        className={`${!input ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10": "bg-danger" } text-white  rounded-r-xl`}
+                        // Saves user's message when the send button is clicked
+                        onClick={() => {void handleSaveMessage(idConversation, model, Sender.USER, input)}}
                     >
                         <IoMdSend className="text-lg" />
                     </Button>

@@ -11,7 +11,7 @@ export const ModelCard: React.FC<ModelCardProps> = ({ modelName, providerImageUr
             <CardHeader className="flex gap-3 px-2 py-1">
                 <Image
                     alt="nextui logo"
-                    height={30}
+                    height={40}
                     radius="sm"
                     src={providerImageUrl}
                     width={30}
