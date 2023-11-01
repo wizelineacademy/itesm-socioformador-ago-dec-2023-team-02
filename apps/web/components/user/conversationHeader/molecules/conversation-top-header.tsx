@@ -13,7 +13,7 @@ const providerImage =
   "https://avatars.githubusercontent.com/u/86160567?s=200&v=4";
 
 export default function ConversationHeader(props: any) {
-  const { userContext, responseContext, temperature } = props;
+  const { userContext, responseContext, temperature, saveParameters } = props;
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   return (
@@ -51,6 +51,7 @@ export default function ConversationHeader(props: any) {
 
       {/* Modal for entering context parameters */}
       <ModalParametersGPT
+        saveParameters={saveParameters}
         userContext={userContext}
         responseContext={responseContext}
         temperature={temperature}

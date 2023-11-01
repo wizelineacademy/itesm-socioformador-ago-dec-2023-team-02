@@ -15,6 +15,7 @@ import { saveMessage } from "@/lib/helper/data-handles";
 import ConversationHeader from "@/components/user/conversationHeader/molecules/conversation-top-header";
 import MessageList from "@/components/user/conversationBody/molecules/message-list";
 import PromptTextInput from "./prompt-text-input";
+import type { ConversationUpdateData } from "@/types/conversation-types";
 
 const providerImage =
   "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"; // URL de la imagen del remitente
@@ -53,6 +54,8 @@ interface Parameters {
   temperature: number;
 }
 
+
+
 /**
  * Saves a message to the server.
  * @param message The message to be saved.
@@ -79,7 +82,7 @@ export default function ConversationBody(): JSX.Element {
   const [messageData, setMessageData] = useState<Message[]>([]);
   const [userContext, setUserContext] = useState<string>("");
   const [responseContext, setResponseContext] = useState<string>("");
-  const [temperature, setTemperature] = useState<number>(0.7);
+  const [temperature, setTemperature] = useState<number>(0.5);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const model = "gpt-4";
 
@@ -161,11 +164,57 @@ export default function ConversationBody(): JSX.Element {
   }
   */
 
+  async function saveParameters(updatedParameters: Parameters): Promise<void> {
+
+    //create objecto for update
+    const updatedInfo: ConversationUpdateData = {
+      parameters: {
+        userContext: updatedParameters.userContext,
+        responseContext: updatedParameters.responseContext,
+        temperature: updatedParameters.temperature,
+      }
+    };
+
+    try {
+
+      // Making a fetch request to the API endpoint.
+      const response = await fetch(`/api/conversations/${idConversation}`, { 
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedInfo),
+      });
+
+      // Checking if the response is ok (status code 200-299),
+      if (!response.ok) {
+        throw new Error('Failed to save parameters');
+      }
+
+      // Parsing the JSON response from the API.
+      /*
+      const result: Parameters = await response.json();
+      console.log('result', result);
+
+      setUserContext(result.userContext);
+      setResponseContext(result.responseContext);
+      setTemperature(result.temperature);
+      */
+     setIsMounted(false);
+
+      toast.success('Parameters saved');
+
+    } catch (error) {
+      console.error('Error saving parameters:', error);
+      toast.error('Error saving parameters');
+    }
+  };
+
   //podria actualizarse solo cuando messages se actualice
   useEffect(() => {
     void getData();
     setIsMounted(true);
-  }, [isMounted]);
+  }, [isMounted, userContext, responseContext, temperature]);
 
   const options: ExtendedUseChatOptions = {
     api: `/api/ai/openai/${model}?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}`,
@@ -208,6 +257,7 @@ export default function ConversationBody(): JSX.Element {
   return (
     <div className="pb-36">
       <ConversationHeader
+        saveParameters={saveParameters}
         responseContext={responseContext}
         temperature={temperature}
         userContext={userContext}
