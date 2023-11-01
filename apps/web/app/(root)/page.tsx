@@ -1,12 +1,12 @@
-import ThemeButton from "../../components/theme-button";
-//Just for testing light and dark themes
-export default function Home() {
-    return (
-        <section className="py-24">
-            <div className="container">
-                <h1 className="text-3x1 font-bold">Home</h1>
-                <ThemeButton />
-            </div>
-        </section>
-    )
+"use client";
+import ConversationBody from "@/components/user/conversationBody/molecules/conversation-body";
+
+//Just for testing
+export default function Home(): JSX.Element {
+  return (
+    <section className="w-full justify-center">
+    
+    <ConversationBody />
+    </section>
+  );
 }

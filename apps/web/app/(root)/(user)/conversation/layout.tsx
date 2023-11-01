@@ -1,4 +1,3 @@
-import "../../../globals.css";
 import type { Metadata } from "next";
 import ConversationSideBar from "@/components/user/conversationSidebar/molecules/conversation-sidebar";
 import { getAllConversationsByUserId } from "@/lib/conversation";
