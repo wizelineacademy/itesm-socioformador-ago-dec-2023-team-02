@@ -26,7 +26,8 @@
   "dependencies": {
     "ai": "^2.2.14",
     "git-cz": "^4.9.0",
-    "openai-edge": "^1.2.2"
+    "openai-edge": "^1.2.2",
+    "pg": "^8.11.3"
   },
   "config": {
     "commitizen": {
