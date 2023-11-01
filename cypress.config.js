@@ -6,17 +6,17 @@ module.exports = defineConfig({
     baseUrl: 'http://localhost:3000/',
     setupNodeEvents(on, config) {
       on("task", {
-        async connectDB(){
+        async connectDB(query){
           const client = new Client({
-            user: "equiposam",
-            password: "equiposam",
-            host: "ls-92ab26ead039cd8076ca151fd065fa2cd83161f0.cbksars5o389.us-east-1.rds.amazonaws.com ",
-            database: "postgress",
-            ssl: false,
+            user: "william-monroy",
+            password: "FE90vBORUCgp",
+            host: "ep-broken-salad-00817204.us-east-2.aws.neon.tech",
+            database: "neondb",
+            ssl: true,
             port: 5432
           })
           await client.connect()
-          const res = await client.query('SELECT NOW()')
+          const res = await client.query(query)
           await client.end()
           return res.rows;
         }
