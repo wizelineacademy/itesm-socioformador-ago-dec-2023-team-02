@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import type { MouseEventHandler , ChangeEvent, KeyboardEventHandler } from "react";
-import type { Tag } from "@prisma/client";
 import { AiOutlineEdit } from "react-icons/ai";
 import { Avatar } from "@nextui-org/react";
+import { toast } from "sonner";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
+import type { SidebarTag } from "@/types/sidebar-tag-types";
 import { ConversationActionType } from "../operations/sidebar-conversation-operations";
 import type {  ConversationAction } from "../operations/sidebar-conversation-operations";
 
@@ -18,7 +19,7 @@ interface ConversationCardProps {
 
 export function ConversationCard({conversation, dispatch, isSelected, onClick}: ConversationCardProps): JSX.Element {
     const [title, setTitle] = useState<string>(conversation.title)
-    const [tags, setTags] = useState<Tag[]>(conversation.tags)
+    const [tags, setTags] = useState<SidebarTag[]>(conversation.tags)
     const [editingTitle, setEditingTitle] = useState<boolean>(false)
     const [editingTags, setEditingTags] = useState<boolean>(false)
     const cardContainerRef = useRef<HTMLButtonElement | null>(null);
@@ -37,13 +38,14 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
     const handleOutsideClick: (e: MouseEvent) => void = (e) => {
         if (cardContainerRef.current && !cardContainerRef.current.contains(e.target as Node)){
             setEditingTitle(false)
+            setTitle(conversation.title)
         }
     }
     const handleTitleClick: MouseEventHandler<HTMLInputElement> = (e) => {e.stopPropagation()}
     const handleTitleChange: (e: ChangeEvent<HTMLInputElement>) => void = (e) => {setTitle(e.target.value)}
     const handleTitleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
         if (e.key === "Enter"){
-            if (conversation.title !== title) {
+            if (conversation.title !== title){
                 saveConversationTitle()
             } else {
                 setEditingTitle(false)
@@ -65,10 +67,10 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
             dispatch({type: ConversationActionType.EditTitle,
                 conversationId: conversation.id,
                 title: updatedConversation.title})
-            console.log("Success")
+            toast.success("Conversation title updated.")
           })
         .catch((_) => {
-            console.log("Error")
+            toast.error("The conversation's title couldn't be updated.")
         });
     }
 
@@ -80,14 +82,14 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
               throw new Error("Network response was not ok")
             }
             dispatch({type: ConversationActionType.Delete, conversationId: conversation.id})
-            console.log("Success")
+            toast.success("Conversation removed.")
         })
         .catch((_) => {
-            console.log("Error")
+            toast.error("The conversation couldn't be deleted.")
         });
     }
 
-    const titleWhenNotEditing: JSX.Element = <p className="text-sm ">{title}</p>
+    const titleWhenNotEditing: JSX.Element = <p className="text-sm">{title}</p>
     const titleWhenEditing: JSX.Element = (
         <input className="text-sm rounded-sm" onChange={handleTitleChange} onClick={handleTitleClick} onKeyDown={handleTitleKeydown} type="text" value={title}/>
     )

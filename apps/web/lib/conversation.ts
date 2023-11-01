@@ -43,7 +43,13 @@ export async function getAllConversationsByUserId(
         id: true, 
         title: true,
         createdAt: true,
-        tags: true,
+        tags: {
+          select: {
+            id: true, 
+            name: true,
+            color: true
+          }
+        },
         active: true,
         model: {
           select: {
@@ -170,7 +176,13 @@ export async function createConversation(
         id: true, 
         title: true,
         createdAt: true,
-        tags: true,
+        tags: {
+          select: {
+            id: true,
+            name: true,
+            color: true
+          }
+        },
         active: true,
         model: {
           select: {

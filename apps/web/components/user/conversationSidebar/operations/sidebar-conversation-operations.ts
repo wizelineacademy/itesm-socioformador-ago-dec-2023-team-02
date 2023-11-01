@@ -3,8 +3,8 @@
  * deletion, editing, creation, and filtering.
  */
 
-import type { Tag } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
+import type { SidebarTag } from "@/types/sidebar-tag-types";
 import { containsAllElements } from "./array-operations";
 
 /**
@@ -24,7 +24,7 @@ export interface ConversationAction {
     type: ConversationActionType;
     conversationId: number;
     title?: string;
-    tags?: Tag[];
+    tags?: SidebarTag[];
     conversation?: SidebarConversation; 
 }
 
@@ -47,14 +47,14 @@ export function conversationReducer(state: SidebarConversation[], action: Conver
         case ConversationActionType.EditTitle:
             if (action.title){
                 return state.map((conversation) => {
-                    return conversation.id === action.conversationId ? editTitle(conversation, (action.title || conversation.title)): conversation
+                    return conversation.id === action.conversationId && action.title ? editConversationTitle(conversation, action.title) : conversation
                 })
             }
             return state   
         case ConversationActionType.EditTags:
             if (action.tags){
                 return state.map((conversation) => {
-                    return conversation.id === action.conversationId ? editTags(conversation, (action.tags || conversation.tags)) : conversation
+                    return conversation.id === action.conversationId && action.tags ? editConversationTags(conversation, action.tags) : conversation
                 })
             }
             return state 
@@ -67,7 +67,7 @@ export function conversationReducer(state: SidebarConversation[], action: Conver
  * @param newTitle - The new title the conversation will be edited with. 
  * @returns A new, edited conversation, that has as title newTitle. 
  */
-export function editTitle(conversation: SidebarConversation, newTitle: string): SidebarConversation {
+export function editConversationTitle(conversation: SidebarConversation, newTitle: string): SidebarConversation {
     return {...conversation, title: newTitle}
 }
 
@@ -77,7 +77,7 @@ export function editTitle(conversation: SidebarConversation, newTitle: string): 
  * @param newTags - An array containing the new tag objects the given conversation will be associated to. 
  * @returns A new, edited conversation, that has as array of tags newTags. 
  */
-export function editTags(conversation: SidebarConversation, newTags: Tag[]): SidebarConversation {
+export function editConversationTags(conversation: SidebarConversation, newTags: SidebarTag[]): SidebarConversation {
     return {...conversation, tags: newTags}
 }
 
@@ -90,7 +90,7 @@ export function editTags(conversation: SidebarConversation, newTags: Tag[]): Sid
  * any of the tags found in in selectedTags. 
  * @returns A filtered array of conversations. 
  */
-export function filterConversations(conversations: SidebarConversation[], searchText: string, selectedTags: Tag[]): SidebarConversation[] {
+export function filterConversations(conversations: SidebarConversation[], searchText: string, selectedTags: SidebarTag[]): SidebarConversation[] {
     const cleanedSearchText: string = cleanString(searchText)
     return conversations.filter(({title, tags, active}) => {
         return (cleanedSearchText.length === 0 || findMatchRatio(cleanedSearchText, cleanString(title)) > 0.5) &&

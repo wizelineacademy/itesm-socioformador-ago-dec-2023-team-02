@@ -1,25 +1,25 @@
 "use client"
 
-import type { Tag } from "@prisma/client";
 import { useReducer, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi"
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import MultipleSelectionDropdown from "@/components/shared/molecules/multiple-selection-dropdown";
 import SearchBar from "@/components/shared/molecules/search-bar";
+import type { SidebarTag } from "@/types/sidebar-tag-types";
 import { ConversationActionType, conversationReducer, filterConversations, sortConversationsByDate } from "../operations/sidebar-conversation-operations";
-import { tagsToListItems } from "../operations/tag-operationst";
+import { tagsToListItems } from "../operations/sidebar-tag-operations";
 import { ConversationList } from "./conversation-list";
 
 interface ConversationSideBarProps {
-    userConversations: SidebarConversation[]; 
-    userTags: Tag[];
+    sidebarConversations: SidebarConversation[]; 
+    sidebarTags: SidebarTag[];
 }
 
-export default function ConversationSideBar({userConversations, userTags}: ConversationSideBarProps): JSX.Element {
-    const [conversations, dispatch] = useReducer(conversationReducer, sortConversationsByDate(userConversations))
-    const [tags, setTags] = useState<Tag[]>(userTags); 
-    const [selectedTags, setSelectedTags] = useState<Tag[]>([])
+export default function ConversationSideBar({sidebarConversations, sidebarTags}: ConversationSideBarProps): JSX.Element {
+    const [conversations, dispatch] = useReducer(conversationReducer, sortConversationsByDate(sidebarConversations))
+    const [tags, setTags] = useState<SidebarTag[]>(sidebarTags); 
+    const [selectedTags, setSelectedTags] = useState<SidebarTag[]>([])
     const [searchText, setSearchText] = useState<string>("");
     const [showingSidebar, setShowingSidebar] = useState<boolean>(true)
 

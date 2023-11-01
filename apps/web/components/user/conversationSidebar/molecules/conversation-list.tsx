@@ -18,6 +18,14 @@ export function ConversationList({conversations, dispatch}: ConversationListProp
         router.push(`/conversation/${conversationId}`)
         setSelectedConversation(conversationId)
     }
+
+    if (conversations.length === 0){
+        return (
+            <div className="w-full border-t-1 border-neutral-800 flex flex-col justify-center items-center">
+                <p className="text-neutral-300 p-4">No items to display</p>
+            </div>
+        ); 
+    }
     
     return (
         <div className="overflow-x-hidden overflow-y-auto w-full">
