@@ -22,10 +22,8 @@ export default async function ConversationRootLayout({
   return (
     <div className="flex flex-row">
       <ConversationSideBar sidebarConversations={sidebarConversations} sidebarTags={sidebarTags}/>
-      <section className="main-container">
-        <div className="w-full max-w-4xl">
+      <section className="w-full">
           {children}
-        </div>
       </section>
     </div>
   );
