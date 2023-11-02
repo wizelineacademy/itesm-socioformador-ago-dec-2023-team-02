@@ -29,7 +29,7 @@ export function ConversationList({conversations, dispatch}: ConversationListProp
     
     return (
         <div className="overflow-x-hidden overflow-y-auto w-full">
-            <div className="space-y-2 w-full">
+            <div className="flex flex-col space-y-2 w-full">
             {conversations.map(conversation => 
                 <ConversationCard
                     conversation={conversation}

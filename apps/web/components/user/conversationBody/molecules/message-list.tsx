@@ -8,10 +8,10 @@
 
 "use client";
 import React, {useEffect, useRef, useState} from 'react';
-import { Message } from 'ai';
-import MessageItem from '@/components/molecules/user/conversationBody/message-item';
+import type { Message } from 'ai';
 import { Divider, Button } from '@nextui-org/react';
 import { AiOutlineArrowDown } from "react-icons/ai";
+import MessageItem from '@/components/user/conversationBody/molecules/message-item';
 
 
 export default function MessageList({ messages, userImage, providerImage }: { messages: Message[], userImage: string, providerImage: string }): JSX.Element {
@@ -28,11 +28,12 @@ export default function MessageList({ messages, userImage, providerImage }: { me
             scrollToBottom();
             setAutoScroll(false);
         }
-    }, [autoScroll]);
+        scrollToBottom(); //scroll to bottom when new message is added
+    }, [autoScroll, messages]);
 
 
     return (
-        <>
+        <div className='pb-32'>
             {/* Messages display */}
             {messages.map((message, index) => (
                 <>
@@ -45,13 +46,13 @@ export default function MessageList({ messages, userImage, providerImage }: { me
                     <Divider className="my-0" />
                 </>
             ))}
-            <div ref={messagesEndRef}></div>
+            <div ref={messagesEndRef} />
             {/* Scroll to bottom button */}
             <div className="fixed z-20 bottom-28 right-5">
-                <Button size='sm' radius='lg' isIconOnly onClick={() => { setAutoScroll(true); scrollToBottom(); }}>
+                <Button isIconOnly onClick={() => { setAutoScroll(true); scrollToBottom(); }} radius='lg' size='sm'>
                     <AiOutlineArrowDown />
                 </Button>
             </div>
-        </>
+        </div>
     );
 }

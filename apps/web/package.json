@@ -18,6 +18,7 @@
     "@nextui-org/system": "^2.0.10",
     "@nextui-org/theme": "^2.1.9",
     "@prisma/client": "^5.2.0",
+    "@radix-ui/react-slider": "^1.1.2",
     "@vercel/postgres": "^0.4.1",
     "autoprefixer": "10.4.15",
     "class-variance-authority": "^0.7.0",

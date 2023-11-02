@@ -1,4 +1,3 @@
-import "../../..globals.css";
 import type { Metadata } from "next";
 import ConversationSideBar from "@/components/user/conversationSidebar/molecules/conversation-sidebar";
 import { getAllConversationsByUserId } from "@/lib/conversation";
@@ -23,10 +22,8 @@ export default async function ConversationRootLayout({
   return (
     <div className="flex flex-row">
       <ConversationSideBar sidebarConversations={sidebarConversations} sidebarTags={sidebarTags}/>
-      <section className="main-container">
-        <div className="w-full max-w-4xl">
+      <section className="w-full">
           {children}
-        </div>
       </section>
     </div>
   );
