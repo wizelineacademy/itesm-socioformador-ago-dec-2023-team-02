@@ -113,8 +113,10 @@ export function ConversationCard({
         toast.error("The conversation couldn't be deleted.");
       });
   };
-  
-  const titleWhenNotEditing: JSX.Element = <p className="text-xs whitespace-nowrap overflow-scroll">{title}</p>;
+
+  const titleWhenNotEditing: JSX.Element = (
+    <p className="text-xs whitespace-nowrap overflow-scroll">{title}</p>
+  );
   const titleWhenEditing: JSX.Element = (
     <input
       className="text-xs rounded-sm pr-10"
@@ -163,42 +165,40 @@ export function ConversationCard({
 
   return (
     <button
-    onClick={onClick}
-    ref={cardContainerRef}
-    type="button"
-    className="w-full group relative p-0"
-  >
-    <Card
-      radius="none"
-      className={`max-w-[200px] py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-black hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-20 ${cardBackgroundColor}`}
+      onClick={onClick}
+      ref={cardContainerRef}
+      type="button"
+      className="w-full group relative p-0"
     >
-      <div className="flex justify-between items-center">
-        <div className="flex gap-1 items-center">
-          <Avatar
-            className="h-6 w-6"
-            radius="sm"
-            src={conversation.model.provider.image}
-          />
+      <Card
+        radius="none"
+        className={`max-w-[200px] py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-black hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-20 ${cardBackgroundColor}`}
+      >
+        <div className="flex justify-between items-center">
+          <div className="flex gap-1 items-center">
+            <Avatar
+              className="h-6 w-6"
+              radius="sm"
+              src={conversation.model.provider.image}
+            />
 
-          <div className="flex items-center max-w-10 overflow-hidden">
-            {editingTitle ? titleWhenEditing : titleWhenNotEditing}
+            <div className="flex items-center max-w-10 overflow-hidden">
+              {editingTitle ? titleWhenEditing : titleWhenNotEditing}
+            </div>
           </div>
-        </div>
 
-        {/* Botón como overlay */}
-        {isSelected && (
-          <div className="absolute right-0 gradient-shadow-light-conversation-card dark:gradient-shadow-dark-conversation-card py-2 pl-1">
-            <SingleSelectionDropdown dropdownItems={singleSelectionListItems}>
-              
+          {/* Button as overlay */}
+          {isSelected && (
+            <div className="absolute right-0 gradient-shadow-light-conversation-card dark:gradient-shadow-dark-conversation-card py-2 pl-1">
+              <SingleSelectionDropdown dropdownItems={singleSelectionListItems}>
                 <Button isIconOnly size="sm" variant="light">
                   <AiOutlineEdit />
                 </Button>
-              
-            </SingleSelectionDropdown>
-          </div>
-        )}
-      </div>
-    </Card>
-  </button>
+              </SingleSelectionDropdown>
+            </div>
+          )}
+        </div>
+      </Card>
+    </button>
   );
 }
