@@ -10,9 +10,7 @@ export default function SingleSelectionDropdown({children, dropdownItems}: Singl
     return (
         <Dropdown>
             <DropdownTrigger>
-                <>
                 {children}
-                </>
             </DropdownTrigger>
             <DropdownMenu>
                 {dropdownItems.map(item => (
