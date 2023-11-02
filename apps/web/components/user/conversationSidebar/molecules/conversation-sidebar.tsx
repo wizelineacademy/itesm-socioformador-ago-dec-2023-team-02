@@ -92,7 +92,7 @@ export default function ConversationSideBar({
     <div className="flex flex-row items-start space-x-3">
       {/* Sidebar section */}
       <div
-        className={`transition-all duration-200 linear h-screen bg-neutral-700 flex flex-col justify-start items-center space-y-5 overflow-hidden ${
+        className={`transition-all duration-200 linear h-screen bg-transparent flex flex-col justify-start items-center space-y-5 overflow-hidden ${
           showingSidebar ? "w-50  px-5" : "w-0"
         }`}
       >
