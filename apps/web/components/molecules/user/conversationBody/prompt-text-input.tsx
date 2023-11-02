@@ -32,8 +32,8 @@ async function handleSaveMessage(idConversation: number, model: string, sender: 
 
     }
 }
-const idConv = 1;
-const model = 'gpt-4';
+const idConv = 23;
+const model = 'dalle';
 
 
 export default function PromptTextInput({ input, handleInputChange, handleSubmit }: { input: string, handleInputChange: any, handleSubmit: any }) {

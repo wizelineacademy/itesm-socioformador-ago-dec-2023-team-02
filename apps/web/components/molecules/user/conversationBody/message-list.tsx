@@ -12,9 +12,10 @@ import { Message } from 'ai';
 import MessageItem from '@/components/molecules/user/conversationBody/message-item';
 import { Divider, Button } from '@nextui-org/react';
 import { AiOutlineArrowDown } from "react-icons/ai";
+import MessageItemImage from './message-item-image';
 
 
-export default function MessageList({ messages, userImage, providerImage }: { messages: Message[], userImage: string, providerImage: string }): JSX.Element {
+export default function MessageList({ messages, userImage, providerImage, model }: { messages: Message[], userImage: string, providerImage: string, model: string }): JSX.Element {
 
     const [autoScroll, setAutoScroll] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -36,6 +37,20 @@ export default function MessageList({ messages, userImage, providerImage }: { me
             {/* Messages display */}
             {messages.map((message, index) => (
                 <>
+                {
+                    (model === "dalle" && message.role === "assistant")
+                    ?
+                    <>
+                    <MessageItemImage
+                        key={index}
+                        message={message}
+                        senderImage={providerImage}
+                    //creditsUsed={message.creditsUsed}
+                    />
+                    <Divider className="my-0" />
+                    </>
+                    :
+                    <>
                     <MessageItem
                         key={index}
                         message={message}
@@ -43,6 +58,8 @@ export default function MessageList({ messages, userImage, providerImage }: { me
                     //creditsUsed={message.creditsUsed}
                     />
                     <Divider className="my-0" />
+                    </>
+                }
                 </>
             ))}
             <div ref={messagesEndRef}></div>

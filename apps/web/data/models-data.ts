@@ -7,7 +7,7 @@ export const modelsData: Model[] = [
     {
         id: 1,
         idProvider: 1,
-        name: 'ChatGPT-3.5-turbo',
+        name: 'GPT-3.5-turbo',
         active: true,
         modelType: 'TEXT',
         description: JSON.stringify({
@@ -36,7 +36,7 @@ export const modelsData: Model[] = [
                 "May produce biased content or fail to handle sensitive topics well",
                 "Limited knowledge of world and events after 2021"
             ],
-            pricePerToken: '0.005 USD',
+            pricePerToken: '0.0015 USD / 1k tokens for input and 0.002 USD / 1k tokens for output',
         }),
     },
     {
@@ -70,7 +70,7 @@ export const modelsData: Model[] = [
                 "May produce biased content or fail to handle sensitive topics well",
                 "Limited knowledge of world and events after 2021"
             ],
-            pricePerToken: '0.006 USD',
+            pricePerToken: '0.003 USD / 1k tokens for input and 0.004 USD / 1k tokens for output',
         }),
     },
 
@@ -105,7 +105,7 @@ export const modelsData: Model[] = [
                 "May produce biased content or not handle sensitive topics well",
                 "Limited knowledge of world and events after 2021"
             ],
-            pricePerToken: 'Pricing details not available',
+            pricePerToken: '0.03 USD / 1k tokens for input and 0.06 USD / 1k tokens for output',
         }),
     },
     {
@@ -139,7 +139,7 @@ export const modelsData: Model[] = [
                 "May not always interpret textual descriptions accurately",
                 "Limited to the information and training received up to 2021"
             ],
-            pricePerToken: 'Pricing details not available',
+            pricePerToken: 'Price is based on the image’s resolution; 0.016 USD for a resolution of 256x256 pixels, 0.018 USD for a resolution of 512x512 pixels and 0.02 USD for a resolution of 1024x1024 pixels.',
         }),
     }
 ]

@@ -6,11 +6,25 @@ import { encode } from 'gpt-tokenizer';
  * @param tokens The number of tokens to calculate credits for.
  * @param model The GPT model being used.
  * @param isInput Whether the message was user-created or output by the model.
+ * @param size Image resolution necessary to calculate credits for image models.
  * @returns The number of credits required for the given number of tokens.
  */
-export function calculateCredits(tokens: number, model: string, isInput: boolean): number {
+export function calculateCredits(tokens: number, model: string, isInput: boolean, size?: string): number {
     // Checks if the message was user created or output by the model to determine the price
     let price: number
+    if (model === 'dalle' && !isInput) {
+        if (size === '256x256')
+            price = Number(process.env.NEXT_PUBLIC_DALLE_256)
+        else if (size === '512x512')
+            price = Number(process.env.NEXT_PUBLIC_DALLE_512)
+        else
+            price = Number(process.env.NEXT_PUBLIC_DALLE_1024)
+        return price
+    }
+    if (model === 'dalle' && isInput) {
+        price = 0.00
+        return price
+    }
     if (isInput) {
         price = model === 'gpt-3.5-turbo' ? Number(process.env.NEXT_PUBLIC_GPT_35_INPUT) : Number(process.env.NEXT_PUBLIC_GPT_4_INPUT)
     } else {

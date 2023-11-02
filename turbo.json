@@ -12,7 +12,10 @@
         "NEXT_PUBLIC_GPT_35_INPUT",
         "NEXT_PUBLIC_GPT_35_OUTPUT",
         "NEXT_PUBLIC_GPT_4_INPUT",
-        "NEXT_PUBLIC_GPT_4_OUTPUT"
+        "NEXT_PUBLIC_GPT_4_OUTPUT",
+        "NEXT_PUBLIC_DALLE_256",
+        "NEXT_PUBLIC_DALLE_512",
+        "NEXT_PUBLIC_DALLE_1024"
       ],
       "dotEnv": [".env.local", ".env"]
     },
