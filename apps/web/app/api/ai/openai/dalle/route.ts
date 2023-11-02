@@ -18,22 +18,30 @@ const openai = new OpenAIApi(config);
  * @returns A base64 string or a NextResponse object.
  */
 export async function POST(request: Request): Promise<NextResponse> {
-    // Destructure the incoming request to get the messages array, model, and temperature
+    // Destructure the incoming request to get the messages array and image size
     const {
         messages, //previous messages of chat
-        size
-    } = await request.json(); // {messages:[], model: '', temperature: 0.5}
+        size // image size
+    } = await request.json(); // {messages:[], size: '256x256'}
 
     // Destructure the incoming request to get the messages array, model, and temperature
     try {
+        /**
+         * Function that uses the "createImage" tool.
+         * Sets the prompt to the last message sent.
+         * Sets response format to a base64.
+         * Sets image size.
+         */
         const response: Response = await openai.createImage({
             prompt: messages[messages.length -1].content,
             response_format: 'b64_json',
             size
         });
+
         const data = (await response.json() as ResponseTypes["createImage"])
-        const img = data.data[0].b64_json
-        console.log(img)
+
+        // Extracts the image string from the response data.
+        const img: string | undefined = data.data[0].b64_json
         return NextResponse.json(img)
 
     } catch (error: any) {
