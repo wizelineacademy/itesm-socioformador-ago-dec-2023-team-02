@@ -32,20 +32,20 @@ interface ExtendedUseChatOptions extends UseChatOptions {
    */
   messages: Message[];
 
-  body:{
+  body: {
     /**
-   * The user context for a conversation.
-   */
-  userContext: string;
-  /**
-   * The response context for a conversation
-   */
-  responseContext: string;
-  /**
-   * The temperature of the conversation, represented as a number.
-   */
-  temperature: number;
-  }
+     * The user context for a conversation.
+     */
+    userContext: string;
+    /**
+     * The response context for a conversation
+     */
+    responseContext: string;
+    /**
+     * The temperature of the conversation, represented as a number.
+     */
+    temperature: number;
+  };
 }
 
 interface Parameters {
@@ -53,8 +53,6 @@ interface Parameters {
   responseContext: string;
   temperature: number;
 }
-
-
 
 /**
  * Saves a message to the server.
@@ -106,7 +104,7 @@ export default function ConversationBody(): JSX.Element {
     // Checking if the response is ok (status code 200-299),
     // otherwise throwing an error.
     if (!response.ok) {
-      throw new Error(`Network response was not ok ${  response.statusText}`);
+      throw new Error(`Network response was not ok ${response.statusText}`);
     }
 
     // Parsing the JSON response from the API.
@@ -165,30 +163,28 @@ export default function ConversationBody(): JSX.Element {
   */
 
   async function saveParameters(updatedParameters: Parameters): Promise<void> {
-
     //create objecto for update
     const updatedInfo: ConversationUpdateData = {
       parameters: {
         userContext: updatedParameters.userContext,
         responseContext: updatedParameters.responseContext,
         temperature: updatedParameters.temperature,
-      }
+      },
     };
 
     try {
-
       // Making a fetch request to the API endpoint.
-      const response = await fetch(`/api/conversations/${idConversation}`, { 
-        method: 'PATCH',
+      const response = await fetch(`/api/conversations/${idConversation}`, {
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedInfo),
       });
 
       // Checking if the response is ok (status code 200-299),
       if (!response.ok) {
-        throw new Error('Failed to save parameters');
+        throw new Error("Failed to save parameters");
       }
 
       // Parsing the JSON response from the API.
@@ -200,15 +196,14 @@ export default function ConversationBody(): JSX.Element {
       setResponseContext(result.responseContext);
       setTemperature(result.temperature);
       */
-     setIsMounted(false);
+      setIsMounted(false);
 
-      toast.success('Parameters saved');
-
+      toast.success("Parameters saved");
     } catch (error) {
-      console.error('Error saving parameters:', error);
-      toast.error('Error saving parameters');
+      console.error("Error saving parameters:", error);
+      toast.error("Error saving parameters");
     }
-  };
+  }
 
   //podria actualizarse solo cuando messages se actualice
   useEffect(() => {
@@ -219,8 +214,8 @@ export default function ConversationBody(): JSX.Element {
   const options: ExtendedUseChatOptions = {
     api: `/api/ai/openai/${model}?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}`,
     initialMessages: messageData,
-    messages: messageData, 
-    body:{
+    messages: messageData,
+    body: {
       userContext,
       responseContext,
       temperature,
@@ -256,21 +251,24 @@ export default function ConversationBody(): JSX.Element {
 
   return (
     <div>
+      {/* Conversation Header Component */}
       <ConversationHeader
         saveParameters={saveParameters}
         responseContext={responseContext}
         temperature={temperature}
         userContext={userContext}
       />
-<div className="message-list-container h-[calc(100vh-100px)] overflow-y-auto">
 
-      <MessageList
-        messages={messages}
-        providerImage={providerImage}
-        userImage={userImage}
-      />
+      {/* Container for MessageList with custom styles */}
+      <div className="message-list-container h-[calc(100vh-100px)] overflow-y-auto">
+        <MessageList
+          messages={messages}
+          providerImage={providerImage}
+          userImage={userImage}
+        />
       </div>
 
+      {/* Conditional rendering: Show error message if there's an error, otherwise render PromptTextInput Component */}
       {error ? (
         <div
           className="w-full fixed bottom-0 pb-4 z-10 gradient-shadow-light dark:gradient-shadow-dark py-0"
