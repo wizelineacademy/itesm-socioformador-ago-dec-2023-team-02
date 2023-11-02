@@ -15,6 +15,7 @@ import {
 } from "../operations/sidebar-conversation-operations";
 import { tagsToListItems } from "../operations/sidebar-tag-operations";
 import { ConversationList } from "./conversation-list";
+import { AiOutlinePlus } from "react-icons/ai";
 
 interface ConversationSideBarProps {
   sidebarConversations: SidebarConversation[];
@@ -92,32 +93,39 @@ export default function ConversationSideBar({
     <div className="flex flex-row items-start space-x-3">
       {/* Sidebar section */}
       <div
-        className={`transition-all duration-200 linear h-screen bg-transparent flex flex-col justify-start items-center space-y-5 overflow-hidden ${
+        className={`transition-all duration-200 linear h-screen bg-transparent flex flex-col justify-start items-center space-y-5 overflow-hidden border-yellow-50 ${
           showingSidebar ? "w-50  px-5" : "w-0"
         }`}
       >
-
         {/* New Conversation button */}
         <Button
-          className="w-full h-10 mt-5 bg-neutral-600"
+          color="danger"
+          className="w-full  mt-5"
           onPress={handleNewConversationPress}
+          radius="sm"
         >
-          <p>New Conversation +</p>
+          <p className="text-xs">
+            <AiOutlinePlus />
+          </p>
+          <p className="text-xs">New Chat</p>
         </Button>
 
         {/* Search and tag filter section */}
         <div className="flex flex-row items-center space-x-2">
-
           {/* Search bar component */}
           <SearchBar
             onTextChange={handleSearchTextChange}
-            overridingStyle="w-3/4"
-            placeholder="Search conversations"
+            overridingStyle="w-full text-xs shadow-none"
+            placeholder="Search Chat"
             takeFullWidth={false}
           />
+        </div>
 
-          {/* Multiple selection dropdown for tags */}
-          <div className="w-1/4 h-full bg-black rounded-lg overflow-hidden">
+        {/* Tag filter section */}
+        {/* Multiple selection dropdown for tags */}
+
+        <div>
+          <div className="w-full h-full bg-black rounded-lg overflow-hidden">
             <MultipleSelectionDropdown
               dropdownItems={tagsToListItems(tags)}
               onCloseAction={handleMultipleSelectionDropdownClosing}
