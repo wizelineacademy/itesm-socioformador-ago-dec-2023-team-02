@@ -97,10 +97,12 @@ export default function ConversationSideBar({
           showingSidebar ? "w-50  px-5" : "w-0"
         }`}
       >
+
+        <div className="w-full flex items-center gap-1 justify-between">
         {/* New Conversation button */}
         <Button
           color="danger"
-          className="w-full mt-5 lg:h-16"
+          className="w-full mt-5 "
           onPress={handleNewConversationPress}
           radius="sm"
         >
@@ -109,6 +111,20 @@ export default function ConversationSideBar({
           </p>
           <p className="text-xs">New Chat</p>
         </Button>
+
+              {/* Sidebar toggle button */}
+      <Button
+        className={`${showingSidebar ? "block" : "inline"} mt-5 dark`}
+        isIconOnly
+        onPress={handleSidebarVisibilityPress}
+        radius="sm"
+      >
+        <div className="flex justify-center">
+        <PiSidebarSimple />
+        </div>
+      </Button>
+
+        </div>
 
         {/* Search and tag filter section */}
         <div className="flex flex-row items-center space-x-2">
@@ -154,12 +170,15 @@ export default function ConversationSideBar({
 
       {/* Sidebar toggle button */}
       <Button
-        className="mt-5 w-2 absolute -right-14 z-50 -top-2"
+        className={`${showingSidebar ? "hidden" : "block"} mt-5 w-2 absolute -right-14 z-50 -top-2`}
         isIconOnly
         onPress={handleSidebarVisibilityPress}
         radius="sm"
       >
+        <div className="flex justify-center">
         <PiSidebarSimple />
+        </div>
+        
       </Button>
     </div>
   );
