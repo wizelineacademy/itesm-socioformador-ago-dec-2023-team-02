@@ -16,6 +16,7 @@ import {
 import { tagsToListItems } from "../operations/sidebar-tag-operations";
 import { ConversationList } from "./conversation-list";
 import { AiOutlinePlus } from "react-icons/ai";
+import UserCard from "./user-card";
 
 interface ConversationSideBarProps {
   sidebarConversations: SidebarConversation[];
@@ -97,10 +98,12 @@ export default function ConversationSideBar({
           showingSidebar ? "w-50  px-5" : "w-0"
         }`}
       >
+
+        <div className="w-full flex items-center gap-1 justify-between">
         {/* New Conversation button */}
         <Button
           color="danger"
-          className="w-full mt-5 lg:h-16"
+          className="w-full mt-3"
           onPress={handleNewConversationPress}
           radius="sm"
         >
@@ -109,6 +112,20 @@ export default function ConversationSideBar({
           </p>
           <p className="text-xs">New Chat</p>
         </Button>
+
+              {/* Sidebar toggle button */}
+      <Button
+        className={`${showingSidebar ? "block" : "inline"} mt-3 dark`}
+        isIconOnly
+        onPress={handleSidebarVisibilityPress}
+        radius="sm"
+      >
+        <div className="flex justify-center">
+        <PiSidebarSimple />
+        </div>
+      </Button>
+
+        </div>
 
         {/* Search and tag filter section */}
         <div className="flex flex-row items-center space-x-2">
@@ -150,16 +167,23 @@ export default function ConversationSideBar({
           )}
           dispatch={dispatch}
         />
+
+        {/* User Information Component */}
+        <UserCard name={"Jane Doe"} description={""} avatarUrl={"https://i.pravatar.cc/150?u=a04258114e29026702d"} />
+
       </div>
 
       {/* Sidebar toggle button */}
       <Button
-        className="mt-5 w-2 absolute -right-14 z-50 -top-2"
+        className={`${showingSidebar ? "hidden" : "block"}  w-2 absolute -right-14 z-50 top-3`}
         isIconOnly
         onPress={handleSidebarVisibilityPress}
         radius="sm"
       >
+        <div className="flex justify-center">
         <PiSidebarSimple />
+        </div>
+        
       </Button>
     </div>
   );
