@@ -1,7 +1,7 @@
 "use client";
 
 import { useReducer, useState } from "react";
-import { Button } from "@nextui-org/react";
+import { Button, Divider } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import MultipleSelectionDropdown from "@/components/shared/molecules/multiple-selection-dropdown";
@@ -90,7 +90,7 @@ export default function ConversationSideBar({
   };
   // Rendering the sidebar with its contained components and data
   return (
-    <div className="flex flex-row items-start space-x-3">
+    <div suppressHydrationWarning className="flex flex-row items-start space-x-0 absolute z-50 md:z-auto md:relative pt-0 bg-black">
       {/* Sidebar section */}
       <div
         className={`transition-all duration-200 linear h-screen bg-transparent flex flex-col justify-start items-center space-y-5 overflow-hidden border-yellow-50 ${
@@ -100,7 +100,7 @@ export default function ConversationSideBar({
         {/* New Conversation button */}
         <Button
           color="danger"
-          className="w-full  mt-5"
+          className="w-full mt-5 lg:h-16"
           onPress={handleNewConversationPress}
           radius="sm"
         >
@@ -115,7 +115,7 @@ export default function ConversationSideBar({
           {/* Search bar component */}
           <SearchBar
             onTextChange={handleSearchTextChange}
-            overridingStyle="w-full text-xs shadow-none"
+            overridingStyle="w-full text-sm shadow-none dark text-white"
             placeholder="Search Chat"
             takeFullWidth={false}
           />
@@ -124,7 +124,7 @@ export default function ConversationSideBar({
         {/* Tag filter section */}
         {/* Multiple selection dropdown for tags */}
 
-        <div>
+        <div className="scrollbar-hide">
           <div className="w-full h-full bg-black rounded-lg overflow-hidden">
             <MultipleSelectionDropdown
               dropdownItems={tagsToListItems(tags)}
@@ -140,6 +140,7 @@ export default function ConversationSideBar({
           </div>
         </div>
 
+        <Divider className="dark my-0"/>
         {/* Conversation list section */}
         <ConversationList
           conversations={filterConversations(
@@ -153,9 +154,10 @@ export default function ConversationSideBar({
 
       {/* Sidebar toggle button */}
       <Button
-        className="mt-5 w-2"
+        className="mt-5 w-2 absolute -right-14 z-50 -top-2"
         isIconOnly
         onPress={handleSidebarVisibilityPress}
+        radius="sm"
       >
         <PiSidebarSimple />
       </Button>
