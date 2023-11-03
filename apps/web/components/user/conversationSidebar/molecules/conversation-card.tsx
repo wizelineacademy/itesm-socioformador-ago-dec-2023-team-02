@@ -115,11 +115,11 @@ export function ConversationCard({
   };
 
   const titleWhenNotEditing: JSX.Element = (
-    <p className="text-xs whitespace-nowrap overflow-scroll">{title}</p>
+    <p className="text-xs text-white whitespace-nowrap overflow-scroll">{title}</p>
   );
   const titleWhenEditing: JSX.Element = (
     <input
-      className="text-xs rounded-sm pr-10"
+      className="text-xs text-white rounded-sm pr-10"
       onChange={handleTitleChange}
       onClick={handleTitleClick}
       onKeyDown={handleTitleKeydown}
@@ -156,11 +156,11 @@ export function ConversationCard({
   let cardBackgroundColor = "";
   if (isSelected) {
     cardBackgroundColor =
-      "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-20";
+      "bg-white bg-opacity-20";
   } else {
     cardBackgroundColor = editingTitle
-      ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-20"
-      : "bg-black bg-opacity-0 dark:bg-white dark:bg-opacity-0 hover:bg-black hover:bg-opacity-5 dark:hover:bg-white dark:hover:bg-opacity-10";
+      ? "bg-white bg-opacity-20"
+      : "bg-white bg-opacity-0 hover:bg-white hover:bg-opacity-10";
   }
 
   return (
@@ -172,7 +172,7 @@ export function ConversationCard({
     >
       <Card
         radius="none"
-        className={`max-w-[200px] py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-black hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-20 ${cardBackgroundColor}`}
+        className={`max-w-[200px] py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
       >
         <div className="flex justify-between items-center">
           <div className="flex gap-1 items-center">
@@ -189,9 +189,9 @@ export function ConversationCard({
 
           {/* Button as overlay */}
           {isSelected && (
-            <div className="absolute right-0 gradient-shadow-light-conversation-card dark:gradient-shadow-dark-conversation-card py-2 pl-1">
-              <SingleSelectionDropdown dropdownItems={singleSelectionListItems}>
-                <Button isIconOnly size="sm" variant="light">
+            <div className="absolute right-0 gradient-shadow-dark-conversation-card py-2 pl-1">
+              <SingleSelectionDropdown dropdownItems={singleSelectionListItems} placement="right">
+                <Button isIconOnly size="sm" variant="solid" className="text-white bg-inherit">
                   <AiOutlineEdit />
                 </Button>
               </SingleSelectionDropdown>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useReducer, useState } from "react";
-import { Button } from "@nextui-org/react";
+import { Button, Divider } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import MultipleSelectionDropdown from "@/components/shared/molecules/multiple-selection-dropdown";
@@ -16,6 +16,7 @@ import {
 import { tagsToListItems } from "../operations/sidebar-tag-operations";
 import { ConversationList } from "./conversation-list";
 import { AiOutlinePlus } from "react-icons/ai";
+import UserCard from "./user-card";
 
 interface ConversationSideBarProps {
   sidebarConversations: SidebarConversation[];
@@ -90,17 +91,19 @@ export default function ConversationSideBar({
   };
   // Rendering the sidebar with its contained components and data
   return (
-    <div className="flex flex-row items-start space-x-3">
+    <div suppressHydrationWarning className="flex flex-row items-start space-x-0 absolute z-50 md:z-auto md:relative pt-0 bg-black">
       {/* Sidebar section */}
       <div
         className={`transition-all duration-200 linear h-screen bg-transparent flex flex-col justify-start items-center space-y-5 overflow-hidden border-yellow-50 ${
           showingSidebar ? "w-50  px-5" : "w-0"
         }`}
       >
+
+        <div className="w-full flex items-center gap-1 justify-between">
         {/* New Conversation button */}
         <Button
           color="danger"
-          className="w-full  mt-5"
+          className="w-full mt-3"
           onPress={handleNewConversationPress}
           radius="sm"
         >
@@ -110,12 +113,26 @@ export default function ConversationSideBar({
           <p className="text-xs">New Chat</p>
         </Button>
 
+              {/* Sidebar toggle button */}
+      <Button
+        className={`${showingSidebar ? "block" : "inline"} mt-3 dark`}
+        isIconOnly
+        onPress={handleSidebarVisibilityPress}
+        radius="sm"
+      >
+        <div className="flex justify-center">
+        <PiSidebarSimple />
+        </div>
+      </Button>
+
+        </div>
+
         {/* Search and tag filter section */}
         <div className="flex flex-row items-center space-x-2">
           {/* Search bar component */}
           <SearchBar
             onTextChange={handleSearchTextChange}
-            overridingStyle="w-full text-xs shadow-none"
+            overridingStyle="w-full text-sm shadow-none dark text-white"
             placeholder="Search Chat"
             takeFullWidth={false}
           />
@@ -124,7 +141,7 @@ export default function ConversationSideBar({
         {/* Tag filter section */}
         {/* Multiple selection dropdown for tags */}
 
-        <div>
+        <div className="scrollbar-hide">
           <div className="w-full h-full bg-black rounded-lg overflow-hidden">
             <MultipleSelectionDropdown
               dropdownItems={tagsToListItems(tags)}
@@ -140,6 +157,7 @@ export default function ConversationSideBar({
           </div>
         </div>
 
+        <Divider className="dark my-0"/>
         {/* Conversation list section */}
         <ConversationList
           conversations={filterConversations(
@@ -149,15 +167,23 @@ export default function ConversationSideBar({
           )}
           dispatch={dispatch}
         />
+
+        {/* User Information Component */}
+        <UserCard name={"Jane Doe"} description={""} avatarUrl={"https://i.pravatar.cc/150?u=a04258114e29026702d"} />
+
       </div>
 
       {/* Sidebar toggle button */}
       <Button
-        className="mt-5 w-2"
+        className={`${showingSidebar ? "hidden" : "block"}  w-2 absolute -right-14 z-50 top-3`}
         isIconOnly
         onPress={handleSidebarVisibilityPress}
+        radius="sm"
       >
+        <div className="flex justify-center">
         <PiSidebarSimple />
+        </div>
+        
       </Button>
     </div>
   );
