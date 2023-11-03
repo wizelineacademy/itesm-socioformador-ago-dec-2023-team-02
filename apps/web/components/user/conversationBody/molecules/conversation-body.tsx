@@ -277,14 +277,12 @@ export default function ConversationBody(): JSX.Element {
           {error.message}
         </div>
       ) : (
-        <div className="gradient-shadow-light dark:gradient-shadow-dark">
         <PromptTextInput
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           idConversation={idConversation}
           input={input}
         />
-        </div>
       )}
     </div>
   );

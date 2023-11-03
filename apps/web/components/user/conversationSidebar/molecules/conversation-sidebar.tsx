@@ -90,7 +90,7 @@ export default function ConversationSideBar({
   };
   // Rendering the sidebar with its contained components and data
   return (
-    <div className="flex flex-row items-start space-x-3 relative pt-0 bg-black">
+    <div suppressHydrationWarning className="flex flex-row items-start space-x-0 relative pt-0 bg-black dark:bg-white dark:bg-opacity-5">
       {/* Sidebar section */}
       <div
         className={`transition-all duration-200 linear h-screen bg-transparent flex flex-col justify-start items-center space-y-5 overflow-hidden border-yellow-50 ${
@@ -124,7 +124,7 @@ export default function ConversationSideBar({
         {/* Tag filter section */}
         {/* Multiple selection dropdown for tags */}
 
-        <div>
+        <div className="scrollbar-hide">
           <div className="w-full h-full bg-black rounded-lg overflow-hidden">
             <MultipleSelectionDropdown
               dropdownItems={tagsToListItems(tags)}

@@ -38,7 +38,7 @@ export default function ConversationHeader(props: any) {
 
       {/* Context Button on md and above screen sizes */}
       <NavbarItem className="ml-auto hidden md:inline">
-        <Button color="danger" className="flex items-center" onPress={onOpen}>
+        <Button radius="sm" color="danger" className="flex items-center" onPress={onOpen}>
           <BiBrain />
           <span className="hidden md:inline">Context</span>
         </Button>
