@@ -52,7 +52,6 @@ export default function MessageItemImage({
             radius="md"
             src={senderImage}
             width={35}
-
           />
         </div>
 

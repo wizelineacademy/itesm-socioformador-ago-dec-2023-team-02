@@ -19,12 +19,20 @@ export interface ConversationCreateData {
     useGlobalParameters: boolean; // New parameter to decide whether to use global parameters
 }
 
+interface Parameters {
+    userContext?: string;
+    responseContext?: string;
+    temperature?: number;
+    size?: string;
+}
+
 /**
  * Represents the updated information for a conversation.
  */
 export interface ConversationUpdateData {
     tags?: Tag[]; // Array of tags associated with the conversation.
     title?: string; //The updated title of the conversation.
+    parameters?: Parameters
   }
 
 // -- Validation -- 
