@@ -1,0 +1,19 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  k6_load_test:
+    name: k6 Load Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run k6 local test
+        uses: grafana/k6-action@v0.3.0
+        with:
+          filename: ./apps/web/tests/k6/test.js
+          flags: --vus 50 --duration 10s
