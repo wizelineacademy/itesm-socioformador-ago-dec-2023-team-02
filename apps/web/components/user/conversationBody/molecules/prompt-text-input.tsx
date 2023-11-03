@@ -50,7 +50,7 @@ export default function PromptTextInput({
 }) {
   return (
     <div className="flex justify-center w-full z-30 bg-black">
-      <div className="lg:w-3/6 md:w-4/6 w-11/12 fixed bottom-0 pb-4 py-0 z-40">
+      <div className="lg:w-3/6 md:w-4/6 w-11/12 fixed bottom-0 pb-4 py-0 z-30">
         <div className="flex flex-col justify-center items-center max-w-[750px] md:w-11/12 mx-auto p-2">
           <div className="flex justify-between items-center w-full mt-2 mb-1">
             {/* Tokens Placeholder */}
