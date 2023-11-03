@@ -16,6 +16,7 @@ import {
 import { tagsToListItems } from "../operations/sidebar-tag-operations";
 import { ConversationList } from "./conversation-list";
 import { AiOutlinePlus } from "react-icons/ai";
+import UserCard from "./user-card";
 
 interface ConversationSideBarProps {
   sidebarConversations: SidebarConversation[];
@@ -102,7 +103,7 @@ export default function ConversationSideBar({
         {/* New Conversation button */}
         <Button
           color="danger"
-          className="w-full mt-5 "
+          className="w-full mt-3"
           onPress={handleNewConversationPress}
           radius="sm"
         >
@@ -114,7 +115,7 @@ export default function ConversationSideBar({
 
               {/* Sidebar toggle button */}
       <Button
-        className={`${showingSidebar ? "block" : "inline"} mt-5 dark`}
+        className={`${showingSidebar ? "block" : "inline"} mt-3 dark`}
         isIconOnly
         onPress={handleSidebarVisibilityPress}
         radius="sm"
@@ -166,11 +167,15 @@ export default function ConversationSideBar({
           )}
           dispatch={dispatch}
         />
+
+        {/* User Information Component */}
+        <UserCard name={"Jane Doe"} description={""} avatarUrl={"https://i.pravatar.cc/150?u=a04258114e29026702d"} />
+
       </div>
 
       {/* Sidebar toggle button */}
       <Button
-        className={`${showingSidebar ? "hidden" : "block"} mt-5 w-2 absolute -right-14 z-50 -top-2`}
+        className={`${showingSidebar ? "hidden" : "block"}  w-2 absolute -right-14 z-50 top-3`}
         isIconOnly
         onPress={handleSidebarVisibilityPress}
         radius="sm"
