@@ -1,4 +1,4 @@
-name: Release
+name: Load Test with k6
 
 on:
   workflow_dispatch:
