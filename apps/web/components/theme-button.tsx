@@ -13,15 +13,20 @@ export default function ThemeButton(): JSX.Element | null {
 
   const [mounted, setMounted] = useState(false); // variable to check if the component is mounted
 
-  useEffect(() => {setMounted(true)}, []); // set the mounted variable to true when the component is mounted
+  useEffect(() => {
+    setMounted(true);
+  }, []); // set the mounted variable to true when the component is mounted
 
-  if(!mounted) return null; // if the component is not mounted, return null
+  if (!mounted) return null; // if the component is not mounted, return null
 
   return (
     <button
-      onClick={() => {setTheme(resolvedTheme === "dark" ? "light" : "dark")}}
+      onClick={() => {
+        setTheme(resolvedTheme === "dark" ? "light" : "dark");
+      }}
+      type="button"
     >
       {resolvedTheme === "dark" ? "Light" : "Dark"}
     </button>
   );
-};
+}

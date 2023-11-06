@@ -35,24 +35,25 @@ export default function UserCard({
   name,
   description,
   avatarUrl,
-}: UserCardProps) {
+}: UserCardProps): JSX.Element {
   return (
     <div className="w-full">
       {/* Button to encapsulate the UserCard and CreditsBadge components. */}
       <button className="flex items-center justify-between w-full pb-4 outline-none" onClick={()=>{console.log("Click")}}>
+
         {/* Card component to display the user's details. */}
         <Card
-          radius="none"
           className="relative bottom-0 h-auto bg-transparent dark"
+          radius="none"
         >
           {/* User component displays user's name, description, and avatar. */}
           <User
-            className="shadow-none"
-            name={name}
-            description={description}
             avatarProps={{
               src: avatarUrl,
             }}
+            className="shadow-none"
+            description={description}
+            name={name}
           />
         </Card>
 

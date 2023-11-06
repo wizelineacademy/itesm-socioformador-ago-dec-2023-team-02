@@ -14,8 +14,8 @@ import { convertToGptMessage } from "@/lib/helper/gpt/convert-message-type";
 import { saveMessage } from "@/lib/helper/data-handles";
 import ConversationHeader from "@/components/user/conversationHeader/molecules/conversation-top-header";
 import MessageList from "@/components/user/conversationBody/molecules/message-list";
-import PromptTextInput from "./prompt-text-input";
 import type { ConversationUpdateData } from "@/types/conversation-types";
+import PromptTextInput from "./prompt-text-input";
 
 const userImage =
   "https://ui-avatars.com/api/?background=007CFF&color=fff&name=David";
@@ -247,6 +247,7 @@ export default function ConversationBody(): JSX.Element {
   useEffect(() => {
     void getData();
     setIsMounted(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted, userContext, responseContext, temperature]);
 
   const options: ExtendedUseChatOptions = {
@@ -292,8 +293,8 @@ export default function ConversationBody(): JSX.Element {
     <div>
       {/* Conversation Header Component */}
       <ConversationHeader
-        saveParameters={saveParameters}
         responseContext={responseContext}
+        saveParameters={saveParameters}
         temperature={temperature}
         userContext={userContext}
         modelDescription={modelDescription}
