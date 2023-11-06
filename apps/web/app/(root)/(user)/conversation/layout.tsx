@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ConversationSideBar from "@/components/user/conversationSidebar/molecules/conversation-sidebar";
+import ConversationSidebar from "@/components/user/conversationSidebar/organisms/conversation-sidebar";
 import { getAllConversationsByUserId } from "@/lib/conversation";
 import { getAllSidebarTagsByUserID } from "@/lib/tag";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
@@ -21,7 +21,7 @@ export default async function ConversationRootLayout({
   
   return (
     <div className="flex flex-row">
-      <ConversationSideBar sidebarConversations={sidebarConversations} sidebarTags={sidebarTags}/>
+      <ConversationSidebar sidebarConversations={sidebarConversations} sidebarTags={sidebarTags}/>
       <section className="w-full">
           {children}
       </section>

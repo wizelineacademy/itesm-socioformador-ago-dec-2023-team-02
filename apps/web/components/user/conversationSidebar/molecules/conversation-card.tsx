@@ -8,16 +8,16 @@ import SingleSelectionDropdown from "@/components/shared/molecules/single-select
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import type { SidebarTag } from "@/types/sidebar-tag-types";
 import { ConversationActionType } from "../operations/sidebar-conversation-operations";
-import type {  ConversationAction } from "../operations/sidebar-conversation-operations";
+import type {  ConversationsAction } from "../operations/sidebar-conversation-operations";
 
 interface ConversationCardProps {
     conversation: SidebarConversation;
-    dispatch: (action: ConversationAction) => void; 
+    conversationsDispatch: (action: ConversationsAction) => void; 
     isSelected: boolean; 
     onClick: () => void; 
 }
 
-export function ConversationCard({conversation, dispatch, isSelected, onClick}: ConversationCardProps): JSX.Element {
+export function ConversationCard({conversation, conversationsDispatch, isSelected, onClick}: ConversationCardProps): JSX.Element {
     const [title, setTitle] = useState<string>(conversation.title)
     const [tags, setTags] = useState<SidebarTag[]>(conversation.tags)
     const [editingTitle, setEditingTitle] = useState<boolean>(false)
@@ -64,7 +64,7 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
           })
         .then((updatedConversation) => {
             setEditingTitle(false)
-            dispatch({type: ConversationActionType.EditTitle,
+            conversationsDispatch({type: ConversationActionType.EditTitle,
                 conversationId: conversation.id,
                 title: updatedConversation.title})
             toast.success("Conversation title updated.")
@@ -81,7 +81,7 @@ export function ConversationCard({conversation, dispatch, isSelected, onClick}: 
             if (!response.ok) {
               throw new Error("Network response was not ok")
             }
-            dispatch({type: ConversationActionType.Delete, conversationId: conversation.id})
+            conversationsDispatch({type: ConversationActionType.Delete, conversationId: conversation.id})
             toast.success("Conversation removed.")
         })
         .catch((_) => {

@@ -164,7 +164,7 @@ export async function deleteTag(idTag: number): Promise<PrismaResponse<Tag>> {
  * @param tagUpdateInput - The data input to update the tag with.
  * @returns A promise that resolves to a PrismaResponse object containing the status and data of the updated tag, or an error message if the update fails.
  */
-export async function updateTag(idTag: number, tagData: TagUpdateData): Promise<PrismaResponse<Tag>> {
+export async function updateTag(idTag: number, tagData: TagUpdateData): Promise<PrismaResponse<SidebarTag>> {
     // Validate ID
     if (idTag <= 0) {
         return { status: 400, message: 'Invalid tag ID' };
@@ -179,11 +179,16 @@ export async function updateTag(idTag: number, tagData: TagUpdateData): Promise<
     }
 
     try {
-        const tag: Tag = await prisma.tag.update({
+        const tag: SidebarTag = await prisma.tag.update({
             where: {
                 id: idTag
             },
-            data: normalizedTagData
+            data: normalizedTagData, 
+            select: {
+                id: true,
+                name: true,
+                color: true
+            }
         })
         return { status: 200, data: tag }
     } catch (error: any) {

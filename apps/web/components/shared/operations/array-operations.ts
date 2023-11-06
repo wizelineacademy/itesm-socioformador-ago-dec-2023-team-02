@@ -2,6 +2,7 @@
  * Various generic functions for operating on arrays without side-effects. 
  */
 
+
 /**
  * Places the given item at the end of the given array. 
  * @param items - An array to which a value will be appended. 
@@ -33,6 +34,10 @@ export function removeItem<T>(items: T[], itemToRemove: T): T[] {
  */
 export function removeItemWithId<T extends {id: number}>(items: T[], itemToRemove: T): T[] {
     return items.filter(({id}) => id !== itemToRemove.id)
+}
+
+export function editItemWithId<T extends {id: number}>(items: T[], editedItem: T): T[] {
+    return items.map((item) => item.id === editedItem.id ? editedItem : item)
 }
 
 /**
