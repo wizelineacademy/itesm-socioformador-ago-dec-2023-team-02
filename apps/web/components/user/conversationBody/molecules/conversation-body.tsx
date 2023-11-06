@@ -17,9 +17,6 @@ import MessageList from "@/components/user/conversationBody/molecules/message-li
 import PromptTextInput from "./prompt-text-input";
 import type { ConversationUpdateData } from "@/types/conversation-types";
 
-const providerImage =
-  "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"; // URL de la imagen del remitente
-
 const userImage =
   "https://ui-avatars.com/api/?background=007CFF&color=fff&name=David";
 
@@ -54,6 +51,28 @@ interface Parameters {
   temperature: number;
 }
 
+interface ModelDescription {
+  details: string;
+  generalDescription: string;
+  typeOfUse: string[];
+  examples: string[];
+  capabilities: string[];
+  limitations: string[];
+  pricePerToken: number;
+}
+
+interface ConversationData {
+  model: {
+    name: string;
+    description: string;
+    provider: {
+      image: string;
+    };
+  };
+  messages: WizepromptMessage[];
+  parameters: Parameters;
+}
+
 /**
  * Saves a message to the server.
  * @param message The message to be saved.
@@ -82,6 +101,9 @@ export default function ConversationBody(): JSX.Element {
   const [responseContext, setResponseContext] = useState<string>("");
   const [temperature, setTemperature] = useState<number>(0.5);
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [modelDescription, setModelDescription] = useState<ModelDescription>({} as ModelDescription)
+  const [modelName, setModelName] = useState<string>("");
+  const [providerImage, setProviderImage] = useState<string>("");
   const model = "gpt-4";
 
   const params = useParams();
@@ -108,7 +130,7 @@ export default function ConversationBody(): JSX.Element {
     }
 
     // Parsing the JSON response from the API.
-    const data: any = await response.json();
+    const data: ConversationData = await response.json();
 
     // Extracting the messages from the conversation object.
     const messages: WizepromptMessage[] = data.messages;
@@ -118,11 +140,22 @@ export default function ConversationBody(): JSX.Element {
     // Extracting the context parameters from the conversation object.
     const parameters: Parameters = data.parameters;
 
+    //get model description
+    const description: string = JSON.parse(data.model.description);
+    // Parsing the JSON string into a JavaScript object
+    const descriptionObject: ModelDescription = JSON.parse(description);
+
+    const name: string = data.model.name;
+    const providerImageUrl: string = data.model.provider.image;
+
     // Updating the component state with the processed messages data
+    setModelName(name);
     setUserContext(parameters.userContext);
     setResponseContext(parameters.responseContext);
     setTemperature(parameters.temperature);
     setMessageData(processedData);
+    setModelDescription(descriptionObject);
+    setProviderImage(providerImageUrl);
   }
   /*
     try {
@@ -257,6 +290,9 @@ export default function ConversationBody(): JSX.Element {
         responseContext={responseContext}
         temperature={temperature}
         userContext={userContext}
+        modelDescription={modelDescription}
+        modelName={modelName}
+        providerImage={providerImage}
       />
 
       {/* Container for MessageList with custom styles */}

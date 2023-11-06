@@ -9,11 +9,9 @@ import ThemeButton from "@/components/theme-button";
 import { BiBrain } from "react-icons/bi";
 import ModalParametersGPT from "./modal-gpt-parameters";
 
-const providerImage =
-  "https://avatars.githubusercontent.com/u/86160567?s=200&v=4";
 
 export default function ConversationHeader(props: any) {
-  const { userContext, responseContext, temperature, saveParameters } = props;
+  const { userContext, responseContext, temperature, saveParameters, modelDescription, modelName, providerImage } = props;
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   return (
@@ -22,16 +20,16 @@ export default function ConversationHeader(props: any) {
       maxWidth="full" // Prop to set the maximum width of the navbar to full.
       isBlurred={false} // Prop to disable blur effect.
       isBordered // Prop to add border to the navbar.
-      className=" items-center flex justify-between" // Applying Tailwind CSS classes for styling.
+      className="items-center flex justify-between" // Applying Tailwind CSS classes for styling.
     >
       {/* Model Card */}
-      <NavbarItem className="flex-grow flex justify-center">
-        <ModelCard modelName="GPT-4" providerImageUrl={providerImage} />
+      <NavbarItem className="flex-grow flex justify-center items-center gap-1">
+        <ModelCard modelName={modelName} providerImageUrl={providerImage} modelDescription={modelDescription} creditsAvailable={400}/>
       </NavbarItem>
 
       {/* Context Button on xs and small screen sizes*/}
       <NavbarItem className="ml-auto md:hidden">
-        <Button color="danger" isIconOnly onClick={onOpen}>
+        <Button radius="sm" color="danger" isIconOnly onClick={onOpen}>
           <BiBrain />
         </Button>
       </NavbarItem>
