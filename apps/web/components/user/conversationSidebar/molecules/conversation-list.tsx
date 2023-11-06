@@ -2,15 +2,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
-import type { ConversationAction } from "../operations/sidebar-conversation-operations";
+import type { ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
 import { ConversationCard } from "./conversation-card";
 
 interface ConversationListProps {
     conversations: SidebarConversation[];
-    dispatch: (action: ConversationAction) => void;
+    conversationsDispatch: (action: ConversationsAction) => void;
 }
 
-export function ConversationList({conversations, dispatch}: ConversationListProps): JSX.Element {
+export function ConversationList({conversations, conversationsDispatch}: ConversationListProps): JSX.Element {
     const [selectedConversation, setSelectedConversation] = useState<number | null>(conversations.length > 0 ? conversations[0].id : null)
     const router: AppRouterInstance = useRouter()
 
@@ -33,7 +33,7 @@ export function ConversationList({conversations, dispatch}: ConversationListProp
             {conversations.map(conversation => 
                 <ConversationCard
                     conversation={conversation}
-                    dispatch={dispatch}
+                    conversationsDispatch={conversationsDispatch}
                     isSelected={selectedConversation === conversation.id}
                     key={conversation.id}
                     onClick={()=>{handleConversationClick(conversation.id)}}

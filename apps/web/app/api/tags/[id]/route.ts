@@ -3,6 +3,7 @@ import type { Tag } from "@prisma/client"
 import { deleteTag, updateTag } from "@/lib/tag"
 import type { PrismaResponse } from "@/types/prisma-client-types"
 import { isTagUpdateData } from "@/types/tag-types"
+import type { SidebarTag } from "@/types/sidebar-tag-types"
 
 /**
  * DELETE request handler, deletes a specific tag. 
@@ -33,7 +34,7 @@ export async function PATCH(request: Request, {params: {id}}: {params: {id: numb
     const requestBody = await request.json()
 
     if (isTagUpdateData(requestBody)){ // Verify that the given input data object implements the TagUpdateData interface. 
-        const prismaResponse: PrismaResponse<Tag> = await updateTag(Number(id), requestBody)
+        const prismaResponse: PrismaResponse<SidebarTag> = await updateTag(Number(id), requestBody)
 
         if (prismaResponse.status === 200 && prismaResponse.data){
             return NextResponse.json(prismaResponse.data, {status: 200, statusText: 'OK'})
