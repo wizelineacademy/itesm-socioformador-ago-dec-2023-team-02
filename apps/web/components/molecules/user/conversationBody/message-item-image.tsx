@@ -6,7 +6,7 @@
  */
 "use client";
 import { Card, CardBody, Image } from "@nextui-org/react";
-import { Message } from 'ai';
+import type { Message } from "ai";
 import React from "react";
 
 /**
@@ -17,7 +17,7 @@ import React from "react";
 //   navigator.clipboard.writeText(content).then(() => {
 //       console.log('Texto copiado al portapapeles');
 //       toast('Message copied to clipboard.',{ duration: 1000})
-      
+
 //   }).catch(err => {
 //       console.error('Error al copiar el texto: ', err);
 //       toast('Error copying message to clipboard.',{ duration: 1000, style: { backgroundColor: "red"} })
@@ -28,8 +28,7 @@ import React from "react";
 export default function MessageItemImage({
   message,
   //Callback,
-  senderImage,
-  //creditsUsed,
+  senderImage, //creditsUsed,
 }: {
   message: Message; //este podría ser content y solo ser un string, de todos modos este string sería el que copiemos
   //Callback: any;
@@ -38,12 +37,11 @@ export default function MessageItemImage({
 }): JSX.Element {
   return (
     <Card
-      className={`${message.role === "user" ? "senderUser-bg" : "senderModel-bg"
-        } w-full justify-center border-none border-bottom rounded-none shadow-none py-3`}
+      className={`${
+        message.role === "user" ? "senderUser-bg" : "senderModel-bg"
+      } w-full justify-center border-none border-bottom rounded-none shadow-none py-3`}
     >
-
       <div className="justify-center grid md:grid-cols-[.1fr,.8fr,.1fr] xl:grid-cols-[.25fr,.5fr,.25fr] grid-cols-1 gap-4 p-4">
-
         {/* Left column: Sender's image */}
         <div className="flex items-start md:justify-end justify-start">
           <Image
@@ -58,10 +56,10 @@ export default function MessageItemImage({
         {/* Middle column: Message content */}
         <CardBody className="flex items-center max-w-[800px] w-full p-0">
           <Image
-            alt={"Generated image"}
+            alt="Generated image"
             height={300}
+            src={`data:image/png;base64,${message.content.replaceAll('"', "")}`}
             width={300}
-            src={`data:image/png;base64,${message.content.replaceAll('"', '')}`}
           />
         </CardBody>
       </div>

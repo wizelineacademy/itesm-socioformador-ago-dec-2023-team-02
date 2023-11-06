@@ -4,43 +4,48 @@
  */
 "use client";
 import { Button, Navbar, NavbarItem, useDisclosure } from "@nextui-org/react";
-import { ModelCard } from "./model-card";
+import { BiBrain } from "react-icons/bi";
 import ThemeButton from "@/components/theme-button";
-import { BiImage } from "react-icons/bi";
-import ModalParametersDalle from "./modal-dalle-parameters";
+import { ModelCard } from "./model-card";
+import ModalParametersGPT from "./modal-gpt-parameters";
 
 const providerImage =
   "https://avatars.githubusercontent.com/u/86160567?s=200&v=4";
 
-export default function ConversationHeader(props: any) {
-  const { size, saveParameters } = props;
+export default function ConversationHeader(props: any): JSX.Element {
+  const { userContext, responseContext, temperature, saveParameters } = props;
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   return (
     <Navbar
-      shouldHideOnScroll // Prop to hide the navbar on scroll.
-      maxWidth="full" // Prop to set the maximum width of the navbar to full.
+      className=" items-center flex justify-between" // Applying Tailwind CSS classes for styling.
       isBlurred={false} // Prop to disable blur effect.
       isBordered // Prop to add border to the navbar.
-      className="items-center flex justify-between" // Applying Tailwind CSS classes for styling.
+      maxWidth="full" // Prop to set the maximum width of the navbar to full.
+      shouldHideOnScroll // Prop to hide the navbar on scroll.
     >
       {/* Model Card */}
       <NavbarItem className="flex-grow flex justify-center">
-        <ModelCard modelName="DALL·E" providerImageUrl={providerImage} />
+        <ModelCard modelName="GPT-4" providerImageUrl={providerImage} />
       </NavbarItem>
 
       {/* Context Button on xs and small screen sizes*/}
       <NavbarItem className="ml-auto md:hidden">
         <Button color="danger" isIconOnly onClick={onOpen}>
-          <BiImage />
+          <BiBrain />
         </Button>
       </NavbarItem>
 
       {/* Context Button on md and above screen sizes */}
       <NavbarItem className="ml-auto hidden md:inline">
-        <Button color="danger" className="flex items-center" onPress={onOpen}>
-          <BiImage />
-          <span className="hidden md:inline">Size</span>
+        <Button
+          className="flex items-center"
+          color="danger"
+          onPress={onOpen}
+          radius="sm"
+        >
+          <BiBrain />
+          <span className="hidden md:inline">Context</span>
         </Button>
       </NavbarItem>
 
@@ -50,12 +55,14 @@ export default function ConversationHeader(props: any) {
       </NavbarItem>
 
       {/* Modal for entering context parameters */}
-      <ModalParametersDalle
-        saveParameters={saveParameters}
-        size={size}
+      <ModalParametersGPT
         isOpen={isOpen}
         onClose={onClose}
         onOpenChange={onOpenChange}
+        responseContext={responseContext}
+        saveParameters={saveParameters}
+        temperature={temperature}
+        userContext={userContext}
       />
     </Navbar>
   );

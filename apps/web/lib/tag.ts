@@ -6,6 +6,7 @@
 import type { Tag } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import {isValidTag, normalizeTagCreateData, normalizeTagUpdateData, type TagCreateData, type TagUpdateData } from "@/types/tag-types";
+import type { SidebarTag } from "@/types/sidebar-tag-types";
 import prisma from "./prisma";
 
 /**
@@ -42,6 +43,35 @@ export async function getAllTagsByUserID(idUser: number): Promise<PrismaResponse
         const tags: Tag[] = await prisma.tag.findMany({
             where: {
                 idUser
+            }
+        })
+
+        return { status: 200, data: tags }
+    } catch (error: any) {
+        return { status: 500, message: error.message }
+    }
+}
+
+/**
+ * Retrieves all tags belonging to the user that has the given user ID, excluding from the tag object the user's id. 
+ * @param idUser - The ID of the user whose tags are to retrieve (number).  
+ * @returns A Promise that resolves to an object that implements PrismaResponse<SidebarTag>, and that potentially contains an array (SidebarTag[]) that 
+ * holds all tags of the selected user. 
+ */
+export async function getAllSidebarTagsByUserID(idUser: number): Promise<PrismaResponse<SidebarTag[]>> {
+    try {
+        if (await prisma.user.findUnique({ where: { id: idUser } }) === null) {
+            return { status: 400, message: "Invalid user ID given." }
+        }
+
+        const tags: SidebarTag[] = await prisma.tag.findMany({
+            where: {
+                idUser
+            }, 
+            select: {
+                id: true,
+                name: true,
+                color: true
             }
         })
 
@@ -134,7 +164,7 @@ export async function deleteTag(idTag: number): Promise<PrismaResponse<Tag>> {
  * @param tagUpdateInput - The data input to update the tag with.
  * @returns A promise that resolves to a PrismaResponse object containing the status and data of the updated tag, or an error message if the update fails.
  */
-export async function updateTag(idTag: number, tagData: TagUpdateData): Promise<PrismaResponse<Tag>> {
+export async function updateTag(idTag: number, tagData: TagUpdateData): Promise<PrismaResponse<SidebarTag>> {
     // Validate ID
     if (idTag <= 0) {
         return { status: 400, message: 'Invalid tag ID' };
@@ -149,11 +179,16 @@ export async function updateTag(idTag: number, tagData: TagUpdateData): Promise<
     }
 
     try {
-        const tag: Tag = await prisma.tag.update({
+        const tag: SidebarTag = await prisma.tag.update({
             where: {
                 id: idTag
             },
-            data: normalizedTagData
+            data: normalizedTagData, 
+            select: {
+                id: true,
+                name: true,
+                color: true
+            }
         })
         return { status: 200, data: tag }
     } catch (error: any) {

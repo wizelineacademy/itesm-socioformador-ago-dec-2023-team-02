@@ -1,4 +1,4 @@
-import ConversationBody from "@/components/molecules/user/conversationBody/conversation-body";
+import ConversationBody from "@/components/user/conversationBody/molecules/conversation-body";
 /*
 import { getConversationById } from "@/lib/conversation";
 import { getAllMessages } from "@/lib/message";

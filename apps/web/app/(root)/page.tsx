@@ -1,8 +1,8 @@
 "use client";
-import ConversationBody from "@/components/molecules/user/conversationBody/conversation-body";
+import ConversationBody from "@/components/user/conversationBody/molecules/conversation-body";
 
 //Just for testing
-export default function Home() {
+export default function Home(): JSX.Element {
   return (
     <section className="w-full justify-center">
     
