@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type {
-  MouseEventHandler,
-  ChangeEvent,
-  KeyboardEventHandler,
+import type {MouseEventHandler, ChangeEvent, KeyboardEventHandler,
 } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { Avatar, Card, Button } from "@nextui-org/react";
@@ -11,22 +8,17 @@ import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import type { SidebarTag } from "@/types/sidebar-tag-types";
-import { ConversationActionType } from "../operations/sidebar-conversation-operations";
-import type { ConversationAction } from "../operations/sidebar-conversation-operations";
+import type { ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
+import { ConversationsActionType  } from "@/helpers/sidebar-conversation-helpers";
 
 interface ConversationCardProps {
   conversation: SidebarConversation;
-  dispatch: (action: ConversationAction) => void;
+  conversationsDispatch: (action: ConversationsAction) => void;
   isSelected: boolean;
   onClick: () => void;
 }
 
-export function ConversationCard({
-  conversation,
-  dispatch,
-  isSelected,
-  onClick,
-}: ConversationCardProps): JSX.Element {
+export function ConversationCard({conversation, conversationsDispatch, isSelected, onClick,}: ConversationCardProps): JSX.Element {
   const [title, setTitle] = useState<string>(conversation.title);
   const [tags, setTags] = useState<SidebarTag[]>(conversation.tags);
   const [editingTitle, setEditingTitle] = useState<boolean>(false);
@@ -53,12 +45,14 @@ export function ConversationCard({
       setTitle(conversation.title);
     }
   };
-  const handleTitleClick: MouseEventHandler<HTMLInputElement> = (e) => {
-    e.stopPropagation();
+
+  const handleTitleClick: MouseEventHandler<HTMLInputElement> = (e) => {e.stopPropagation();
   };
+
   const handleTitleChange: (e: ChangeEvent<HTMLInputElement>) => void = (e) => {
     setTitle(e.target.value);
   };
+
   const handleTitleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
       if (conversation.title !== title) {
@@ -84,8 +78,8 @@ export function ConversationCard({
       })
       .then((updatedConversation) => {
         setEditingTitle(false);
-        dispatch({
-          type: ConversationActionType.EditTitle,
+        conversationsDispatch({
+          type: ConversationsActionType.EditTitle,
           conversationId: conversation.id,
           title: updatedConversation.title,
         });
@@ -103,8 +97,8 @@ export function ConversationCard({
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        dispatch({
-          type: ConversationActionType.Delete,
+        conversationsDispatch({
+          type: ConversationsActionType.Delete,
           conversationId: conversation.id,
         });
         toast.success("Conversation removed.");
@@ -117,6 +111,7 @@ export function ConversationCard({
   const titleWhenNotEditing: JSX.Element = (
     <p className="text-xs text-white whitespace-nowrap overflow-scroll">{title}</p>
   );
+
   const titleWhenEditing: JSX.Element = (
     <input
       className="text-xs text-white rounded-sm pr-10"
@@ -129,58 +124,27 @@ export function ConversationCard({
   );
 
   const singleSelectionListItems: SingleSelectionDropdownItem[] = [
-    {
-      key: "editTitle",
-      name: "Edit Title",
-      action: () => {
-        setEditingTitle(true);
-      },
-    },
-    {
-      key: "editTags",
-      name: "Edit Tags",
-      action: () => {
-        setEditingTags(true);
-      },
-    },
-    {
-      key: "delete",
-      name: "Delete",
-      style: "text-danger",
-      action: () => {
-        removeThisConversation();
-      },
-    },
+    {key: "editTitle", name: "Edit Title", action: () => {setEditingTitle(true);}},
+    {key: "editTags", name: "Edit Tags", action: () => {setEditingTags(true);}},
+    {key: "delete", name: "Delete", style: "text-danger", action: () => {removeThisConversation();}},
   ];
 
   let cardBackgroundColor = "";
   if (isSelected) {
-    cardBackgroundColor =
-      "bg-white bg-opacity-20";
+    cardBackgroundColor = "bg-white bg-opacity-20";
   } else {
-    cardBackgroundColor = editingTitle
-      ? "bg-white bg-opacity-20"
-      : "bg-white bg-opacity-0 hover:bg-white hover:bg-opacity-10";
+    cardBackgroundColor = editingTitle ? "bg-white bg-opacity-20" : "bg-white bg-opacity-0 hover:bg-white hover:bg-opacity-10";
   }
 
   return (
-    <button
-      onClick={onClick}
-      ref={cardContainerRef}
-      type="button"
-      className="w-full group relative p-0"
-    >
+    <button className="w-full group relative p-0" onClick={onClick} ref={cardContainerRef} type="button">
       <Card
-        radius="none"
-        className={`max-w-[200px] py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
-      >
+      className={` py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
+      fullWidth
+      radius="none">
         <div className="flex justify-between items-center">
           <div className="flex gap-1 items-center">
-            <Avatar
-              className="h-6 w-6"
-              radius="sm"
-              src={conversation.model.provider.image}
-            />
+            <Avatar className="h-6 w-6" radius="sm" src={conversation.model.provider.image}/>
 
             <div className="flex items-center max-w-10 overflow-hidden">
               {editingTitle ? titleWhenEditing : titleWhenNotEditing}
@@ -188,15 +152,13 @@ export function ConversationCard({
           </div>
 
           {/* Button as overlay */}
-          {isSelected && (
-            <div className="absolute right-0 gradient-shadow-dark-conversation-card py-2 pl-1">
+          {isSelected ? <div className="absolute right-0 gradient-shadow-dark-conversation-card py-2 pl-1">
               <SingleSelectionDropdown dropdownItems={singleSelectionListItems} placement="right">
-                <Button isIconOnly size="sm" variant="solid" className="text-white bg-inherit">
+                <Button className="text-white bg-inherit" isIconOnly size="sm" variant="solid">
                   <AiOutlineEdit />
                 </Button>
               </SingleSelectionDropdown>
-            </div>
-          )}
+            </div> : null}
         </div>
       </Card>
     </button>
