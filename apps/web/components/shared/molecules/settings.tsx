@@ -15,6 +15,8 @@ import { TiKeyOutline } from "react-icons/ti";
 import { AiOutlineSetting } from "react-icons/ai";
 import TabButton from "../atoms/tab-button";
 import TabModal from "../atoms/tab-modal";
+import General from "./general";
+import Usage from "./usage";
 
 export default function Settings(): JSX.Element {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -93,13 +95,14 @@ export default function Settings(): JSX.Element {
                   </ul>
                 </div>
                 <TabModal keyword="general" tab={tab}>
-                  General
+                  {/* General */}
+                  <General/>
                 </TabModal>
                 <TabModal keyword="custom" tab={tab}>
                   Custom
                 </TabModal>
                 <TabModal keyword="usage" tab={tab}>
-                  Usage
+                  <Usage/>
                 </TabModal>
                 <TabModal keyword="api" tab={tab}>
                   API
