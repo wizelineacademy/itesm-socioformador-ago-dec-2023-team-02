@@ -3,6 +3,7 @@
 import { useReducer, useState } from "react";
 import { Button, Divider } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi";
+import { AiOutlinePlus } from "react-icons/ai";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import MultipleSelectionDropdown from "@/components/shared/molecules/multiple-selection-dropdown";
 import SearchBar from "@/components/shared/molecules/search-bar";
@@ -15,7 +16,6 @@ import {
 } from "../operations/sidebar-conversation-operations";
 import { tagsToListItems } from "../operations/sidebar-tag-operations";
 import { ConversationList } from "./conversation-list";
-import { AiOutlinePlus } from "react-icons/ai";
 
 interface ConversationSideBarProps {
   sidebarConversations: SidebarConversation[];
@@ -90,7 +90,10 @@ export default function ConversationSideBar({
   };
   // Rendering the sidebar with its contained components and data
   return (
-    <div suppressHydrationWarning className="flex flex-row items-start space-x-0 absolute z-50 md:z-auto md:relative pt-0 bg-black">
+    <div
+      className="flex flex-row items-start space-x-0 absolute z-50 md:z-auto md:relative pt-0 bg-black"
+      suppressHydrationWarning
+    >
       {/* Sidebar section */}
       <div
         className={`transition-all duration-200 linear h-screen bg-transparent flex flex-col justify-start items-center space-y-5 overflow-hidden border-yellow-50 ${
@@ -99,8 +102,8 @@ export default function ConversationSideBar({
       >
         {/* New Conversation button */}
         <Button
-          color="danger"
           className="w-full mt-5 lg:h-16"
+          color="danger"
           onPress={handleNewConversationPress}
           radius="sm"
         >
@@ -140,7 +143,7 @@ export default function ConversationSideBar({
           </div>
         </div>
 
-        <Divider className="dark my-0"/>
+        <Divider className="dark my-0" />
         {/* Conversation list section */}
         <ConversationList
           conversations={filterConversations(

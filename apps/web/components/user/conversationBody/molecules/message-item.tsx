@@ -12,33 +12,11 @@
 import type { Message } from "ai";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import { Button, Card, CardBody, Image } from "@nextui-org/react";
+import { Card, CardBody, Image } from "@nextui-org/react";
 import React from "react";
-import { BsClipboard } from "react-icons/bs";
-import { toast } from "sonner";
 import { MemoizedReactMarkdown } from "@/components/markdown";
 import { CodeBlock } from "@/components/ui/codeblock";
 import { ChatMessageActions } from "@/components/chat-message-actions";
-
-/**
- * Copies the given content to the clipboard.
- * @param content - The text to be copied to the clipboard.
- */
-function handleCopy(content: string) {
-  navigator.clipboard
-    .writeText(content)
-    .then(() => {
-      console.log("Texto copiado al portapapeles");
-      toast("Message copied to clipboard.", { duration: 1000 });
-    })
-    .catch((err) => {
-      console.error("Error al copiar el texto: ", err);
-      toast("Error copying message to clipboard.", {
-        duration: 1000,
-        style: { backgroundColor: "red" },
-      });
-    });
-}
 
 // Define the MessageItem component
 export default function MessageItem({
@@ -71,9 +49,6 @@ export default function MessageItem({
 
         {/* Middle column: Message content */}
         <CardBody className="flex items-center max-w-[800px] w-full p-0">
-          {/* <p className="w-full p-0 text-sm text-slate-600 dark:text-slate-200 wizeline-brand:text-slate-200">
-            {message.content}
-          </p> */}
           <MemoizedReactMarkdown
             className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
             components={{
@@ -124,21 +99,9 @@ export default function MessageItem({
             {message.content}
           </MemoizedReactMarkdown>
         </CardBody>
-        {/* <ChatMessageActions className="z-50" message={message} /> */}
 
         {/* Right column: Copy Message button */}
         <div className="flex items-start md:justify-start justify-end p-0 m-0">
-          {/* <Button
-            className="hover:bg-opacity-100 bg-inherit opacity-50 hover:opacity-100 p-0"
-            isIconOnly
-            onClick={() => {
-              handleCopy(message.content);
-            }}
-            size="sm"
-            variant="solid"
-          >
-            <BsClipboard />
-          </Button> */}
           <ChatMessageActions message={message} />
         </div>
       </div>

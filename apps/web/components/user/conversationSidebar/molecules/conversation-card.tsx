@@ -42,6 +42,7 @@ export function ConversationCard({
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOutsideClick: (e: MouseEvent) => void = (e) => {
@@ -115,7 +116,9 @@ export function ConversationCard({
   };
 
   const titleWhenNotEditing: JSX.Element = (
-    <p className="text-xs text-white whitespace-nowrap overflow-scroll">{title}</p>
+    <p className="text-xs text-white whitespace-nowrap overflow-scroll">
+      {title}
+    </p>
   );
   const titleWhenEditing: JSX.Element = (
     <input
@@ -155,8 +158,7 @@ export function ConversationCard({
 
   let cardBackgroundColor = "";
   if (isSelected) {
-    cardBackgroundColor =
-      "bg-white bg-opacity-20";
+    cardBackgroundColor = "bg-white bg-opacity-20";
   } else {
     cardBackgroundColor = editingTitle
       ? "bg-white bg-opacity-20"
@@ -165,14 +167,14 @@ export function ConversationCard({
 
   return (
     <button
+      className="w-full group relative p-0"
       onClick={onClick}
       ref={cardContainerRef}
       type="button"
-      className="w-full group relative p-0"
     >
       <Card
-        radius="none"
         className={`max-w-[200px] py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
+        radius="none"
       >
         <div className="flex justify-between items-center">
           <div className="flex gap-1 items-center">
@@ -188,15 +190,23 @@ export function ConversationCard({
           </div>
 
           {/* Button as overlay */}
-          {isSelected && (
+          {isSelected ? (
             <div className="absolute right-0 gradient-shadow-dark-conversation-card py-2 pl-1">
-              <SingleSelectionDropdown dropdownItems={singleSelectionListItems} placement="right">
-                <Button isIconOnly size="sm" variant="solid" className="text-white bg-inherit">
+              <SingleSelectionDropdown
+                dropdownItems={singleSelectionListItems}
+                placement="right"
+              >
+                <Button
+                  className="text-white bg-inherit"
+                  isIconOnly
+                  size="sm"
+                  variant="solid"
+                >
                   <AiOutlineEdit />
                 </Button>
               </SingleSelectionDropdown>
             </div>
-          )}
+          ) : null}
         </div>
       </Card>
     </button>
