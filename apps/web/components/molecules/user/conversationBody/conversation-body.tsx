@@ -80,7 +80,7 @@ async function handleSaveMessage(idConversation: number, model: string, sender: 
 
 export default function ConversationBody(): JSX.Element {
     const [messageData, setMessageData] = useState<Message[]>([])
-    const [size, setSize] = useState<string>("512x512")
+    const [size, setSize] = useState<string>("1024x1024")
     const [isMounted, setIsMounted] = useState<boolean>(false);
     const model = 'dalle';
 
@@ -95,9 +95,9 @@ export default function ConversationBody(): JSX.Element {
         const messages: WizepromptMessage[] = data.messages;
         const processedData: Message[] = messages.map(convertToGptMessage);
 
-        const parameters = data.parameters
+        const parameters: Parameters = data.parameters
 
-        setSize(parameters.size)
+        setSize(parameters.size || "1024x1024")
         setMessageData(processedData);
     };
 

@@ -67,7 +67,7 @@ export default function ModalParametersDalle(props: any) {
             </ModalHeader>
             <ModalBody>
               {/* Radio button interface to select the image size */}
-              <RadioGroup onChange={(e) => setUpdatedSize(e.target.value)} defaultValue={size}>
+              <RadioGroup onChange={(e) => {setUpdatedSize(e.target.value)}} defaultValue={size}>
                 <CustomRadio value="256x256">
                     256x256
                 </CustomRadio>
