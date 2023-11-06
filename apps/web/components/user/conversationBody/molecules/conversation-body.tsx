@@ -42,6 +42,11 @@ interface ExtendedUseChatOptions extends UseChatOptions {
      * The temperature of the conversation, represented as a number.
      */
     temperature: number;
+
+    /**
+     * The name of the model.
+     */
+    modelName: string;
   };
 }
 
@@ -245,13 +250,14 @@ export default function ConversationBody(): JSX.Element {
   }, [isMounted, userContext, responseContext, temperature]);
 
   const options: ExtendedUseChatOptions = {
-    api: `/api/ai/openai/${model}?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}`,
+    api: `/api/ai/openai/?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}&modelName=${modelName}`,
     initialMessages: messageData,
     messages: messageData,
     body: {
       userContext,
       responseContext,
       temperature,
+      modelName
     },
 
     // onFinish callback function that runs when the response stream is finished

@@ -7,7 +7,7 @@ export const modelsData: Model[] = [
     {
         id: 1,
         idProvider: 1,
-        name: 'ChatGPT-3.5-turbo',
+        name: 'gpt-3.5-turbo',
         active: true,
         modelType: 'TEXT',
         description: JSON.stringify({
@@ -42,7 +42,7 @@ export const modelsData: Model[] = [
     {
         id: 2,
         idProvider: 1,
-        name: 'GPT-3.5-turbo-16k',
+        name: 'gpt-3.5-turbo-16k',
         active: true,
         modelType: 'TEXT',
         description: JSON.stringify({
@@ -77,7 +77,7 @@ export const modelsData: Model[] = [
     {
         id: 3,
         idProvider: 1,
-        name: 'GPT-4',
+        name: 'gpt-4',
         active: true,
         modelType: 'TEXT',
         description: JSON.stringify({
