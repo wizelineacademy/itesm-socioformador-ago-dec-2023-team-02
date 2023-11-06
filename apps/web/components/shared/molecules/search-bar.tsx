@@ -20,6 +20,7 @@ export default function SearchBar({placeholder, onTextChange, takeFullWidth = tr
         placeholder={placeholder}
         radius="sm"
         startContent={<BiSearch/>}
+        size="sm"
         />
     ); 
 }
