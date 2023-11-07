@@ -39,6 +39,15 @@ export const ModelCard: React.FC<ModelCardProps> = ({
   // useDisclosure is a hook that helps in controlling the visibility of modal
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+  let avatarBackgroundColor = "";
+  if(modelName === "gpt-4") {
+    avatarBackgroundColor = "bg-purple-600 bg-opacity-80";
+  }else if(modelName === "dalle") {
+    avatarBackgroundColor = "bg-blue-600 bg-opacity-80";
+  }else {
+    avatarBackgroundColor = "bg-green-600 bg-opacity-80";
+  }
+
 
   return (
     // Fragment to group the button and modal without adding extra nodes to the DOM
@@ -53,7 +62,7 @@ export const ModelCard: React.FC<ModelCardProps> = ({
           avatarProps={{
             radius: "sm",
             size: "sm",
-            className: `p-1 ${modelName === "gpt-4" ? "bg-purple-600 bg-opacity-80" : modelName === "dalle" ? "bg-blue-600 bg-opacity-80" : "bg-green-600 bg-opacity-80"}`,
+            className: `p-1 ${avatarBackgroundColor}`,
             src: providerImageUrl,
           }}
         />

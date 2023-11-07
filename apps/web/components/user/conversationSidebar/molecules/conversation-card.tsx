@@ -138,11 +138,11 @@ export function ConversationCard({conversation, conversationsDispatch, isSelecte
 
   let avatarBackgroundColor = "";
   if(conversation.model.name === "gpt-4") {
-    avatarBackgroundColor = "bg-purple-600 bg-opacity-80";
+    avatarBackgroundColor = "bg-purple-400 bg-opacity-80";
   }else if(conversation.model.name === "dalle") {
-    avatarBackgroundColor = "bg-blue-600 bg-opacity-80";
+    avatarBackgroundColor = "bg-blue-400 bg-opacity-80";
   }else {
-    avatarBackgroundColor = "bg-green-600 bg-opacity-80";
+    avatarBackgroundColor = "bg-green-400 bg-opacity-80";
   }
   
 
