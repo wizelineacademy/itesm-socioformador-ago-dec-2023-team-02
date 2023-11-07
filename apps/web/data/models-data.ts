@@ -111,7 +111,7 @@ export const modelsData: Model[] = [
     {
         id: 4,
         idProvider: 1,
-        name: 'DALLE',
+        name: 'dalle',
         active: true,
         modelType: 'IMAGE',
         description: JSON.stringify({

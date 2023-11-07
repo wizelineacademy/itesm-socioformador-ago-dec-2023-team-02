@@ -12,7 +12,7 @@ import ModalParametersDalle from "./modal-dalle-parameters";
 
 
 export default function ConversationHeader(props: any): JSX.Element {
-  const { userContext, responseContext, temperature, saveParameters, modelDescription, modelName, providerImage } = props;
+  const { userContext, responseContext, temperature, size, saveParameters, modelDescription, modelName, providerImage } = props;
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   return (
