@@ -109,7 +109,6 @@ export default function ConversationBody(): JSX.Element {
   const [modelDescription, setModelDescription] = useState<ModelDescription>({} as ModelDescription)
   const [modelName, setModelName] = useState<string>("");
   const [providerImage, setProviderImage] = useState<string>("");
-  const model = "gpt-4";
 
   const params = useParams();
   const idConversation = Number(params.id);
@@ -267,7 +266,7 @@ export default function ConversationBody(): JSX.Element {
     onFinish(message) {
       void handleSaveMessage(
         idConversation,
-        model,
+        modelName,
         Sender.MODEL,
         message.content
       );
