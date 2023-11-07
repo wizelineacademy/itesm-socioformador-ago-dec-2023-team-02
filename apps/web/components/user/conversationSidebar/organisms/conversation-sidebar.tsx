@@ -3,7 +3,7 @@
 import { useReducer, useState } from "react";
 import { Badge, Button, Divider } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi";
-import { AiFillTag, AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineTag, AiOutlinePlus } from "react-icons/ai";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SearchBar from "@/components/shared/molecules/search-bar";
 import type { SidebarTag } from "@/types/sidebar-tag-types";
@@ -100,7 +100,7 @@ export default function ConversationSidebar({sidebarConversations, sidebarTags}:
         </div>
 
         {/* Search and tag filter section */}
-        <div className="flex flex-row items-center space-x-2">
+        <div className="w-full flex items-center gap-1 justify-between dark">
           {/* Search bar component */}
           <SearchBar
           onTextChange={handleSearchTextChange}
@@ -110,8 +110,8 @@ export default function ConversationSidebar({sidebarConversations, sidebarTags}:
 
           {/* Tag filter section */}
           <Badge content={selectedTags.size} isInvisible={selectedTags.size === 0}>
-              <Button isIconOnly onPress={handleTagButtonPress}>
-                <AiFillTag/>
+              <Button isIconOnly onPress={handleTagButtonPress} radius="sm">
+                <AiOutlineTag/>
             </Button>
           </Badge>
         </div>
