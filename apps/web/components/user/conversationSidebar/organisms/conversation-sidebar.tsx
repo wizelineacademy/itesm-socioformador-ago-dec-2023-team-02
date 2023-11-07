@@ -4,34 +4,32 @@ import { useReducer, useState } from "react";
 import { Badge, Button, Divider } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi";
 import { AiOutlineTag, AiOutlinePlus } from "react-icons/ai";
+import type { Tag } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SearchBar from "@/components/shared/molecules/search-bar";
-import type { SidebarTag } from "@/types/sidebar-tag-types";
 import {
 ConversationsActionType,
   conversationsReducer,
   filterConversations,
   sortConversationsByDate
 } from "@/helpers/sidebar-conversation-helpers";
-import { sortTagsByName } from "@/helpers/sidebar-tag-helpers";
+import { sortTagsByName } from "@/helpers/tag-helpers";
 import { ConversationList } from "../molecules/conversation-list";
 import UserCard from "../molecules/user-card";
 import TagMenuModal from "../molecules/tag-menu-modal";
 
 interface ConversationSidebarProps {
-  sidebarConversations: SidebarConversation[];
-  sidebarTags: SidebarTag[];
+  userConversations: SidebarConversation[];
+  userTags: Tag[];
 }
 
-export default function ConversationSidebar({sidebarConversations, sidebarTags}: ConversationSidebarProps): JSX.Element {
-  const [conversations, conversationsDispatch] = useReducer(conversationsReducer, sortConversationsByDate(sidebarConversations))
-  const [tags, setTags] = useState<SidebarTag[]>(sortTagsByName(sidebarTags))
+export default function ConversationSidebar({userConversations, userTags}: ConversationSidebarProps): JSX.Element {
+  const [conversations, conversationsDispatch] = useReducer(conversationsReducer, sortConversationsByDate(userConversations))
+  const [tags, setTags] = useState<Tag[]>(sortTagsByName(userTags))
   const [selectedTags, setSelectedTags] = useState<Set<number>>(new Set<number>())
   const [searchText, setSearchText] = useState<string>("");
   const [showingSidebar, setShowingSidebar] = useState<boolean>(true)
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false)
-
-  console.log(setTags);
 
   // Handler function for updating the search text
   const handleSearchTextChange: (value: string) => void = (value) => {setSearchText(value)};
@@ -72,7 +70,7 @@ export default function ConversationSidebar({sidebarConversations, sidebarTags}:
 
   const handleTagButtonPress: (e: any) => void = (_) => {setTagMenuModalIsOpen(!tagMenuModalIsOpen)}
 
-  const handleTagMenuModalClose: (newTags: SidebarTag[], newSelectedTags: Set<number>) => void = (newTags, newSelectedTags) => {
+  const handleTagMenuModalClose: (newTags: Tag[], newSelectedTags: Set<number>) => void = (newTags, newSelectedTags) => {
     setTagMenuModalIsOpen(false)
     setTags(newTags)
     setSelectedTags(newSelectedTags)
@@ -119,7 +117,7 @@ export default function ConversationSidebar({sidebarConversations, sidebarTags}:
         <Divider className="dark my-0"/>
 
         {/* Conversation list section */}
-        <ConversationList conversations={filterConversations(conversations, searchText, selectedTags)} conversationsDispatch={conversationsDispatch}/>
+        <ConversationList conversationsDispatch={conversationsDispatch} userConversations={filterConversations(conversations, searchText, selectedTags)} userTags={tags}/>
 
         {/* User Information Component */}
         <UserCard avatarUrl="https://i.pravatar.cc/150?u=a04258114e29026702d" description="" name="Jane Doe" />

@@ -3,8 +3,8 @@
  * deletion, editing, creation, and filtering.
  */
 
+import type { Tag } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
-import type { SidebarTag } from "@/types/sidebar-tag-types";
 import { containsAllElements } from "./array-helpers";
 import { cleanString, findMatchRatio } from "./string-helpers";
 
@@ -25,7 +25,7 @@ export interface ConversationsAction {
     type: ConversationsActionType;
     conversationId: number;
     title?: string;
-    tags?: SidebarTag[];
+    tags?: Tag[];
     conversation?: SidebarConversation; 
 }
 
@@ -107,4 +107,8 @@ export function filterConversations(conversations: SidebarConversation[], search
  */
 export function sortConversationsByDate(conversations: SidebarConversation[]): SidebarConversation[] {
     return [...conversations].sort((convA, convB) => convB.createdAt.getTime() - convA.createdAt.getTime());
+}
+
+export function buildTagSet(conversation: SidebarConversation): Set<number> {
+    return new Set<number>(conversation.tags.map(tag => tag.id))
 }

@@ -1,7 +1,7 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { SidebarTag } from "@/types/sidebar-tag-types";
+import type { Tag } from "@prisma/client";
 import type { PopoverPlacement } from "@/types/component-types";
 import { isValidTagColor, isValidTagName } from "@/types/tag-types";
 import { TagEditor } from "./tag-editor";
@@ -12,8 +12,8 @@ interface TagEditorPopoverProps {
     initialTagName: string | null;
     initialTagColor: string | null;
     placement: PopoverPlacement;
-    onTagDeletion: (deletedTag: SidebarTag) => void;
-    onPopoverClose: (editedTag: SidebarTag) => void;
+    onTagDeletion: (deletedTag: Tag) => void;
+    onPopoverClose: (editedTag: Tag) => void;
 }
 
 export default function TagEditorPopover({children, tagId, initialTagName, initialTagColor, placement, onTagDeletion, onPopoverClose}: TagEditorPopoverProps): JSX.Element {
@@ -43,7 +43,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
             return response.json()
           })
         .then((deletedTag) => {
-            onTagDeletion(deletedTag as SidebarTag)
+            onTagDeletion(deletedTag as Tag)
             toast.success("Tag deleted.")
           })
         .catch((_) => {
@@ -80,7 +80,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
             return response.json()
           })
         .then((updatedTag) => {
-            onPopoverClose(updatedTag as SidebarTag)
+            onPopoverClose(updatedTag as Tag)
             toast.success("Tag edited.")
           })
         .catch((_) => {
@@ -103,7 +103,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
             return response.json()
         })
         .then((createdTag) => {
-            onPopoverClose(createdTag as SidebarTag)
+            onPopoverClose(createdTag as Tag)
             toast.success("Tag created.")
         })
         .catch((_) => {
