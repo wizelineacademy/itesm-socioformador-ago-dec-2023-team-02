@@ -50,6 +50,8 @@ export default function MessageItem({
         {/* Left column: Sender's image */}
         <div className="flex items-start md:justify-end justify-start">
           <Image
+          className="p-1"
+          sizes="sm"
             alt="Sender Image"
             height={40}
             radius="md"
