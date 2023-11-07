@@ -7,7 +7,7 @@
  */
 // Importing necessary libraries and components
 "use client";
-import React, { useState } from "react";
+import React, { type ChangeEvent, useState } from "react";
 import {
   Button,
   Modal,
@@ -56,12 +56,12 @@ export default function ModalParametersDalle(props: any): JSX.Element {
       onOpenChange={onOpenChange} // Handler for changes to the open state
       placement="center" // Placement of the modal (centered)
       radius="sm" // Border radius of the modal (small)
-      size="lg" // Size of the modal (large)
+      size="sm" // Size of the modal (small)
     >
       <ModalContent>
-        {(onClose) => (
+        {(onClose: any) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 items-center">
+            <ModalHeader className="flex flex-col gap-1 items-start">
               {/* Title of the modal */}
               Image Generation Size
             </ModalHeader>
@@ -69,7 +69,7 @@ export default function ModalParametersDalle(props: any): JSX.Element {
               {/* Radio button interface to select the image size */}
               <RadioGroup
                 defaultValue={size}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setUpdatedSize(e.target.value);
                 }}
               >
@@ -78,8 +78,8 @@ export default function ModalParametersDalle(props: any): JSX.Element {
                 <CustomRadio value="1024x1024">1024x1024</CustomRadio>
               </RadioGroup>
             </ModalBody>
-            <ModalFooter className="flex flex-col md:flex-row justify-between">
-              <div className="flex flex-col-reverse md:flex-row">
+            <ModalFooter className="flex-row-reverse justify-between">
+              <div className="flex">
                 {/* Cancel and Save buttons */}
                 <Button
                   className="mb-2 md:mb-0 md:mr-2"

@@ -42,7 +42,8 @@ export async function POST(request: Request): Promise<NextResponse> {
 
         // Extracts the image string from the response data.
         const img: string | undefined = data.data[0].b64_json
-        return NextResponse.json(img)
+        const imgMarkdown = `![Generated image](data:image/png;base64,${img})`
+        return NextResponse.json(imgMarkdown)
 
     } catch (error: any) {
         // If an error occurs, log it to the console and send a message to the user

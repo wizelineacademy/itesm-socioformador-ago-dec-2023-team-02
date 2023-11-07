@@ -4,16 +4,17 @@
  */
 "use client";
 import { Button, Navbar, NavbarItem, useDisclosure } from "@nextui-org/react";
-import { BiBrain } from "react-icons/bi";
+import { BiBrain, BiImage } from "react-icons/bi";
 import ThemeButton from "@/components/theme-button";
 import { ModelCard } from "./model-card";
-import ModalParametersGPT from "./modal-gpt-parameters";
+// import ModalParametersGPT from "./modal-gpt-parameters";
+import ModalParametersDalle from "./modal-dalle-parameters";
 
 const providerImage =
   "https://avatars.githubusercontent.com/u/86160567?s=200&v=4";
 
 export default function ConversationHeader(props: any): JSX.Element {
-  const { userContext, responseContext, temperature, saveParameters } = props;
+  const { userContext, responseContext, temperature, size, saveParameters } = props;
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   return (
@@ -44,8 +45,8 @@ export default function ConversationHeader(props: any): JSX.Element {
           onPress={onOpen}
           radius="sm"
         >
-          <BiBrain />
-          <span className="hidden md:inline">Context</span>
+          <BiImage />
+          <span className="hidden md:inline">Size</span>
         </Button>
       </NavbarItem>
 
@@ -55,12 +56,22 @@ export default function ConversationHeader(props: any): JSX.Element {
       </NavbarItem>
 
       {/* Modal for entering context parameters */}
-      <ModalParametersGPT
+      {/* <ModalParametersGPT
         isOpen={isOpen}
         onClose={onClose}
         onOpenChange={onOpenChange}
         responseContext={responseContext}
         saveParameters={saveParameters}
+        temperature={temperature}
+        userContext={userContext}
+      /> */}
+      <ModalParametersDalle
+        isOpen={isOpen}
+        onClose={onClose}
+        onOpenChange={onOpenChange}
+        responseContext={responseContext}
+        saveParameters={saveParameters}
+        size={size}
         temperature={temperature}
         userContext={userContext}
       />
