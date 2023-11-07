@@ -235,6 +235,7 @@ export default function ConversationBody(): JSX.Element {
       setTemperature(result.temperature);
       */
       setIsMounted(false);
+      //console.log(response)
 
       toast.success("Parameters saved");
     } catch (error) {
@@ -321,6 +322,7 @@ export default function ConversationBody(): JSX.Element {
         </div>
       ) : (
         <PromptTextInput
+          model={modelName}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           idConversation={idConversation}

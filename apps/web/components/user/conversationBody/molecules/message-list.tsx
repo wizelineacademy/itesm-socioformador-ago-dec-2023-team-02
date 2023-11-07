@@ -41,7 +41,7 @@ export default function MessageList({
     <div className="pb-32">
       {/* Messages display */}
       {messages.map((message, index) => (
-        <>
+        <div key={index}>
           <MessageItem
             key={index}
             message={message}
@@ -49,7 +49,7 @@ export default function MessageList({
             //creditsUsed={message.creditsUsed}
           />
           <Divider className="my-0" />
-        </>
+        </div>
       ))}
       <div ref={messagesEndRef} />
       {/* Scroll to bottom button */}
