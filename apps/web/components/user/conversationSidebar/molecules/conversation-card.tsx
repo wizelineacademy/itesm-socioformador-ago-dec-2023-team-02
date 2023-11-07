@@ -4,30 +4,30 @@ import type {MouseEventHandler, ChangeEvent, KeyboardEventHandler,
 import { AiOutlineEdit } from "react-icons/ai";
 import { Avatar, Card, Button } from "@nextui-org/react";
 import { toast } from "sonner";
+import type { Tag } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
-import type { SidebarTag } from "@/types/sidebar-tag-types";
 import type { ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
-import { ConversationsActionType  } from "@/helpers/sidebar-conversation-helpers";
+import { ConversationsActionType, buildTagSet  } from "@/helpers/sidebar-conversation-helpers";
+import { SetToArray } from "@/helpers/set-helpers";
+import { mapTagIdsToTags } from "@/helpers/tag-helpers";
+import TagMenuModal from "./tag-menu-modal";
 
 interface ConversationCardProps {
+  userTags: Tag[];
   conversation: SidebarConversation;
   conversationsDispatch: (action: ConversationsAction) => void;
   isSelected: boolean;
   onClick: () => void;
 }
 
-export function ConversationCard({conversation, conversationsDispatch, isSelected, onClick,}: ConversationCardProps): JSX.Element {
+export function ConversationCard({userTags, conversation, conversationsDispatch, isSelected, onClick,}: ConversationCardProps): JSX.Element {
   const [title, setTitle] = useState<string>(conversation.title);
-  const [tags, setTags] = useState<SidebarTag[]>(conversation.tags);
+  const [conversationTags, setConversationTags] = useState<Set<number>>(buildTagSet(conversation));
   const [editingTitle, setEditingTitle] = useState<boolean>(false);
-  const [editingTags, setEditingTags] = useState<boolean>(false);
+  const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
   const cardContainerRef = useRef<HTMLButtonElement | null>(null);
-
-  console.log(tags);
-  console.log(setTags);
-  console.log(editingTags);
 
   useEffect(() => {
     document.addEventListener("click", handleOutsideClick);
@@ -63,6 +63,13 @@ export function ConversationCard({conversation, conversationsDispatch, isSelecte
       }
     }
   };
+
+  const handleTagMenuModalClose: (newTags: Tag[], newSelectedTags: Set<number>) => void = (_, newSelectedTags) => {
+    if (newSelectedTags.size !== conversationTags.size){
+      saveTagSelection(newSelectedTags)
+    }
+    setTagMenuModalIsOpen(false)
+  }
 
   const saveConversationTitle: () => void = () => {
     const fetchOptions: RequestInit = {
@@ -109,6 +116,33 @@ export function ConversationCard({conversation, conversationsDispatch, isSelecte
       });
   };
 
+  const saveTagSelection: (newSelectedTags: Set<number>) => void = (newSelectedTags) => {
+    const fetchOptions: RequestInit = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tags: mapTagIdsToTags(SetToArray(newSelectedTags), userTags)}),
+    };
+    fetch(`/api/conversations/${conversation.id}`, fetchOptions)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((updatedConversation) => {
+        setConversationTags(newSelectedTags)
+        conversationsDispatch({
+          type: ConversationsActionType.EditTags,
+          conversationId: conversation.id,
+          tags: updatedConversation.tags as Tag[],
+        });
+        toast.success("Conversation tags updated.");
+      })
+      .catch((_) => {
+        toast.error("The conversation's tags couldn't be updated.");
+      });
+  }
+
   const titleWhenNotEditing: JSX.Element = (
     <p className="text-xs text-white whitespace-nowrap overflow-scroll">
       {title}
@@ -128,7 +162,7 @@ export function ConversationCard({conversation, conversationsDispatch, isSelecte
 
   const singleSelectionListItems: SingleSelectionDropdownItem[] = [
     {key: "editTitle", name: "Edit Title", action: () => {setEditingTitle(true);}},
-    {key: "editTags", name: "Edit Tags", action: () => {setEditingTags(true);}},
+    {key: "editTags", name: "Edit Tags", action: () => {setTagMenuModalIsOpen(true);}},
     {key: "delete", name: "Delete", style: "text-danger", action: () => {removeThisConversation();}},
   ];
 
@@ -179,6 +213,15 @@ export function ConversationCard({conversation, conversationsDispatch, isSelecte
           ) : null}
         </div>
       </Card>
+
+      <TagMenuModal
+        allowEditing={false}
+        initialSelectedTags={conversationTags}
+        initialTags={userTags}
+        isOpen={tagMenuModalIsOpen}
+        modalTitle="Conversation tags"
+        onModalClose={handleTagMenuModalClose}
+      />
     </button>
   );
 }

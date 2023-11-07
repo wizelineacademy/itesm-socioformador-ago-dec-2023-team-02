@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { Button } from "@nextui-org/react";
+import { Button, Chip } from "@nextui-org/react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdCancel } from "react-icons/md"
-import type { SidebarTag } from "@/types/sidebar-tag-types";
+import type { Tag } from "@prisma/client";
 import SearchBar from "@/components/shared/molecules/search-bar";
-import { filterTags } from "@/helpers/sidebar-tag-helpers";
+import { filterTags } from "@/helpers/tag-helpers";
 import { addItemToSet, removeItemFromSet} from "@/helpers/set-helpers";
-import { addItem, editItemWithId } from "@/helpers/array-helpers";
+import { addItem, editItemWithId, removeItemWithId } from "@/helpers/array-helpers";
 import TagDisplay from "../atoms/tag-display";
 import TagEditorPopover from "./tag-editor-popover";
 
 interface TagMenuProps {
-    tags: SidebarTag[]; 
+    tags: Tag[]; 
     selectedTags: Set<number>;
-    onTagsChange: (newTags: SidebarTag[]) => void;
+    onTagsChange: (newTags: Tag[]) => void;
     onSelectedTagsChange: (newSelectedTags: Set<number>) => void;
     allowEditing: boolean; 
 }
@@ -25,23 +25,33 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
     const handleSearchTextChange: (text: string) => void = (text) => {setSearchText(text)}
     const handleEditButtonPress: (e: any) => void = (_) => {setIsEditingTags(!isEditingTags)}
 
-    const handleTagPress: (pressedTag: SidebarTag) => void = (pressedTag) => {
+    const handleTagPress: (pressedTag: Tag) => void = (pressedTag) => {
         const tagIsSelected: boolean = selectedTags.has(pressedTag.id)
         onSelectedTagsChange(tagIsSelected ? removeItemFromSet<number>(pressedTag.id, selectedTags) : addItemToSet<number>(pressedTag.id, selectedTags))
     }
 
-    const handleEditingPopoverClose: (editedTag: SidebarTag) => void = (editedTag) => {
-        onTagsChange(editItemWithId<SidebarTag>(tags, editedTag))
+    const handleTagDeletion: (deletedTag: Tag) => void = (deleteTag) => {
+        onTagsChange(removeItemWithId<Tag>(deleteTag, tags))
+        onSelectedTagsChange(removeItemFromSet<number>(deleteTag.id, selectedTags))
     }
 
-    const handleCreatingPopoverClose: (editedTag: SidebarTag) => void = (editedTag) => {
-        onTagsChange(addItem<SidebarTag>(tags, editedTag))
+    const handleEditingPopoverClose: (editedTag: Tag) => void = (editedTag) => {
+        onTagsChange(editItemWithId<Tag>(editedTag, tags))
+    }
+
+    const handleCreatingPopoverClose: (editedTag: Tag) => void = (editedTag) => {
+        onTagsChange(addItem<Tag>(editedTag, tags))
     }
 
     const editButtonIcon: JSX.Element = isEditingTags ? <MdCancel/> : <AiOutlineEdit/>
 
+    const newTagChip: JSX.Element = (
+        <Chip className="m-1" variant="bordered">
+            New tag +
+        </Chip>)
+
     return (
-        <div className="inline-block flex flex-col justify-start items-start p-2 space-y-4">
+        <div className="flex flex-col justify-start items-start p-2 space-y-4 w-full">
             <div className="flex flex-row space-x-2 items-center">
                 <SearchBar onTextChange={handleSearchTextChange} placeholder="Search tags" takeFullWidth/>
 
@@ -51,9 +61,9 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
             <div className="flex flex-row flex-wrap">
                 {filterTags(tags, searchText).map((tag) => (                    
                     isEditingTags ? 
-                    <TagEditorPopover initialTagColor={tag.color} initialTagName={tag.name} key={tag.id} onPopoverClose={handleEditingPopoverClose} placement="top" tagId={tag.id}>
+                    <TagEditorPopover initialTagColor={tag.color} initialTagName={tag.name} key={tag.id} onPopoverClose={handleEditingPopoverClose} onTagDeletion={handleTagDeletion} placement="top" tagId={tag.id}>
                         <button type="button">
-                            <TagDisplay isBeingEdited  isSelected tagColor={tag.color} tagName={tag.name}/>
+                            <TagDisplay isBeingEdited isSelected tagColor={tag.color} tagName={tag.name}/>
                         </button>
                     </TagEditorPopover>
                     :
@@ -61,9 +71,9 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
                 ))}
 
                 {isEditingTags ?  
-                <TagEditorPopover initialTagColor={null} initialTagName={null} onPopoverClose={handleCreatingPopoverClose} placement="top" tagId={null}>
+                <TagEditorPopover initialTagColor={null} initialTagName={null} onPopoverClose={handleCreatingPopoverClose} onTagDeletion={handleTagDeletion} placement="top" tagId={null}>
                     <button type="button">
-                        <TagDisplay isBeingEdited={false} isSelected tagColor="#8c8b87" tagName="New tag +"/>
+                        {newTagChip}
                     </button>
                 </TagEditorPopover>
                 :

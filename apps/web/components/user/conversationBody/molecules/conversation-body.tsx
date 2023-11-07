@@ -17,9 +17,6 @@ import MessageList from "@/components/user/conversationBody/molecules/message-li
 import type { ConversationUpdateData } from "@/types/conversation-types";
 import PromptTextInput from "./prompt-text-input";
 
-const providerImage =
-  "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"; // URL de la imagen del remitente
-
 const userImage =
   "https://ui-avatars.com/api/?background=007CFF&color=fff&name=David";
 
@@ -49,6 +46,11 @@ interface ExtendedUseChatOptions extends UseChatOptions {
          * Image size
          */
     size: string;
+
+    /**
+     * The name of the model.
+     */
+    modelName: string;
   };
 }
 
@@ -57,6 +59,28 @@ interface Parameters {
   responseContext: string;
   temperature: number;
   size: string;
+}
+
+interface ModelDescription {
+  details: string;
+  generalDescription: string;
+  typeOfUse: string[];
+  examples: string[];
+  capabilities: string[];
+  limitations: string[];
+  pricePerToken: number;
+}
+
+interface ConversationData {
+  model: {
+    name: string;
+    description: string;
+    provider: {
+      image: string;
+    };
+  };
+  messages: WizepromptMessage[];
+  parameters: Parameters;
 }
 
 /**
@@ -89,7 +113,10 @@ export default function ConversationBody(): JSX.Element {
   const [temperature, setTemperature] = useState<number>(0.5);
   const [size, setSize] = useState<string>("1024x1024")
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const model = "dalle";
+  const [modelDescription, setModelDescription] = useState<ModelDescription>({} as ModelDescription)
+  const [modelName, setModelName] = useState<string>("");
+  const [providerImage, setProviderImage] = useState<string>("");
+  const model = "gpt-4";
 
   const params = useParams();
   const idConversation = Number(params.id);
@@ -115,7 +142,7 @@ export default function ConversationBody(): JSX.Element {
     }
 
     // Parsing the JSON response from the API.
-    const data: any = await response.json();
+    const data: ConversationData = await response.json();
 
     // Extracting the messages from the conversation object.
     const messages: WizepromptMessage[] = data.messages;
@@ -125,12 +152,23 @@ export default function ConversationBody(): JSX.Element {
     // Extracting the context parameters from the conversation object.
     const parameters: Parameters = data.parameters;
 
+    //get model description
+    const description: string = JSON.parse(data.model.description);
+    // Parsing the JSON string into a JavaScript object
+    const descriptionObject: ModelDescription = JSON.parse(description);
+
+    const name: string = data.model.name;
+    const providerImageUrl: string = data.model.provider.image;
+
     // Updating the component state with the processed messages data
+    setModelName(name);
     setUserContext(parameters.userContext);
     setResponseContext(parameters.responseContext);
     setTemperature(parameters.temperature);
     setSize(parameters.size);
     setMessageData(processedData);
+    setModelDescription(descriptionObject);
+    setProviderImage(providerImageUrl);
   }
   /*
     try {
@@ -222,7 +260,7 @@ export default function ConversationBody(): JSX.Element {
   }, [isMounted, userContext, responseContext, temperature, size]);
 
   const options: ExtendedUseChatOptions = {
-    api: `/api/ai/openai/${model}?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}&size=${size}`,
+    api: `/api/ai/openai/?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}&modelName=${modelName}`,
     initialMessages: messageData,
     messages: messageData,
     body: {
@@ -230,6 +268,7 @@ export default function ConversationBody(): JSX.Element {
       responseContext,
       temperature,
       size,
+      modelName
     },
 
     // onFinish callback function that runs when the response stream is finished
@@ -272,6 +311,9 @@ export default function ConversationBody(): JSX.Element {
         size={size}
         temperature={temperature}
         userContext={userContext}
+        modelDescription={modelDescription}
+        modelName={modelName}
+        providerImage={providerImage}
       />
 
       {/* Container for MessageList with custom styles */}
