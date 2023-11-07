@@ -17,7 +17,7 @@ export default function TabButton({
     <li>
       <Button
         className={`hidden md:block w-auto md:w-[150px] hover:bg-dark400 ${
-          tab === keyword ? "bg-dark400" : "bg-transparent"
+          tab === keyword ? "bg-dark400 text-gray-50" : "bg-transparent"
         }`}
         onClick={() => {
           setTab(keyword);
@@ -27,7 +27,7 @@ export default function TabButton({
       </Button>
       <Button
         className={`md:hidden flex flex-col justify-center gap-0 h-[45px] !w-[45px] min-w-[20px] p-[0 24px] hover:bg-dark400 ${
-          tab === keyword ? "bg-dark400" : "bg-transparent"
+          tab === keyword ? "bg-dark400 text-gray-50" : "bg-transparent"
         }`}
         onClick={() => {
           setTab(keyword);

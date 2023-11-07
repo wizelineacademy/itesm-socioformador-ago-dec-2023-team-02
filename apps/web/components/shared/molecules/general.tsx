@@ -14,12 +14,14 @@ import {
 } from "@nextui-org/react"
 import ThemeButton from "@/components/theme-button";
 import RequestCredits from "./request-credits";
+import {MdOutlineLightMode} from "react-icons/md"
 
 const ClearAll = () => {
     return (
-        <Button> Clear </Button>
+        <Button className="bg-red-500 text-gray-50"> Clear </Button>
     )
 }
+
 
 
 export default function General() {
@@ -74,7 +76,14 @@ export default function General() {
             {/* Theme Options */}
             <Card> <CardBody>
                 <div className="grid grid-cols-2 gap-4 ">
-                    <p className= "inline-block align-bottom"> Theme </p>  
+                    <div className="grid grid-cols-4 gap-0">
+                        <p className= "inline-block align-text-top"> Theme </p> 
+                        <MdOutlineLightMode
+                                className="inline-block align-bottom"
+                                size={20}
+                        /> 
+                    </div>
+                    
                     <ThemeButton />  </div> 
                     </CardBody></Card>
             
