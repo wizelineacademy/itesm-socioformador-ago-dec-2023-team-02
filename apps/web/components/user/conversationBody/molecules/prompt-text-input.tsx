@@ -47,7 +47,7 @@ export default function PromptTextInput({
   input: string;
   handleInputChange: any;
   handleSubmit: any;
-}) {
+}): JSX.Element {
   return (
     <div className="flex justify-center w-full z-30 bg-black">
       <div className="lg:w-3/6 md:w-4/6 w-11/12 fixed bottom-0 pb-4 py-0 z-30">
@@ -73,17 +73,13 @@ export default function PromptTextInput({
             />
             {/* Send button */}
             <Button
-              disabled={!input}
-              isIconOnly
-              size="lg"
-              type="submit"
-              variant="flat"
               className={`${
                 !input
                   ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10"
                   : "bg-danger"
               } text-white  rounded-r-xl`}
-              // Saves user's message when the send button is clicked
+              disabled={!input}
+              isIconOnly
               onClick={() => {
                 void handleSaveMessage(
                   idConversation,
@@ -92,6 +88,10 @@ export default function PromptTextInput({
                   input
                 );
               }}
+              size="lg"
+              type="submit"
+              // Saves user's message when the send button is clicked
+              variant="flat"
             >
               <IoMdSend className="text-lg" />
             </Button>
