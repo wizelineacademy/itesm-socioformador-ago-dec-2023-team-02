@@ -44,13 +44,12 @@ export default function TagMenuModal({modalTitle, initialTags, initialSelectedTa
             </ModalBody>
             <ModalFooter>
                 <Button color="danger" onPress={onClose} variant="light">
-                Close
+                    Close
                 </Button>
             </ModalFooter>
             </>
         )}
         </ModalContent>
     </Modal>
-
     );
 }
