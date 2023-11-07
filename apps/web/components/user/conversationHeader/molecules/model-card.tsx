@@ -56,7 +56,7 @@ export const ModelCard: React.FC<ModelCardProps> = ({
       <button onClick={onOpen}>
         {/* User component from NextUI representing the model, with credits and image */}
         <User
-          className="xs:ml-20 md:ml-20"
+          className="xs:ml-10 md:ml-20"
           name={modelName.toUpperCase()}
           description={`${creditsAvailable} Tokens`}
           avatarProps={{

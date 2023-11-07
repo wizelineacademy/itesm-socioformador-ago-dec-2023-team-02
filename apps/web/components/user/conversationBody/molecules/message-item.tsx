@@ -52,7 +52,7 @@ export default function MessageItem({
         {/* Middle column: Message content */}
         <CardBody className="flex items-start max-w-[800px] w-full p-0">
           <MemoizedReactMarkdown
-            className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+            className="w-full prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
             components={{
               p({ children }: { children: React.ReactNode }) {
                 return <p className="mb-2 text-sm text-slate-800 dark:text-slate-200 last:mb-0">{children}</p>;
@@ -67,7 +67,7 @@ export default function MessageItem({
                 if (children.length) {
                   if (children[0] === "▍") {
                     return (
-                      <span className="text-sm text-slate-800 dark:text-slate-200 mt-1 cursor-default animate-pulse">
+                      <span className="w-full text-sm text-slate-800 dark:text-slate-200 mt-1 cursor-default animate-pulse">
                         ▍
                       </span>
                     );
