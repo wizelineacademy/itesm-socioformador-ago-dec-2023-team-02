@@ -2,18 +2,18 @@ import { useState } from "react";
 import { Button, Chip } from "@nextui-org/react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdCancel } from "react-icons/md"
-import type { SidebarTag } from "@/types/sidebar-tag-types";
+import type { Tag } from "@prisma/client";
 import SearchBar from "@/components/shared/molecules/search-bar";
-import { filterTags } from "@/helpers/sidebar-tag-helpers";
+import { filterTags } from "@/helpers/tag-helpers";
 import { addItemToSet, removeItemFromSet} from "@/helpers/set-helpers";
 import { addItem, editItemWithId, removeItemWithId } from "@/helpers/array-helpers";
 import TagDisplay from "../atoms/tag-display";
 import TagEditorPopover from "./tag-editor-popover";
 
 interface TagMenuProps {
-    tags: SidebarTag[]; 
+    tags: Tag[]; 
     selectedTags: Set<number>;
-    onTagsChange: (newTags: SidebarTag[]) => void;
+    onTagsChange: (newTags: Tag[]) => void;
     onSelectedTagsChange: (newSelectedTags: Set<number>) => void;
     allowEditing: boolean; 
 }
@@ -25,22 +25,22 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
     const handleSearchTextChange: (text: string) => void = (text) => {setSearchText(text)}
     const handleEditButtonPress: (e: any) => void = (_) => {setIsEditingTags(!isEditingTags)}
 
-    const handleTagPress: (pressedTag: SidebarTag) => void = (pressedTag) => {
+    const handleTagPress: (pressedTag: Tag) => void = (pressedTag) => {
         const tagIsSelected: boolean = selectedTags.has(pressedTag.id)
         onSelectedTagsChange(tagIsSelected ? removeItemFromSet<number>(pressedTag.id, selectedTags) : addItemToSet<number>(pressedTag.id, selectedTags))
     }
 
-    const handleTagDeletion: (deletedTag: SidebarTag) => void = (deleteTag) => {
-        onTagsChange(removeItemWithId<SidebarTag>(deleteTag, tags))
+    const handleTagDeletion: (deletedTag: Tag) => void = (deleteTag) => {
+        onTagsChange(removeItemWithId<Tag>(deleteTag, tags))
         onSelectedTagsChange(removeItemFromSet<number>(deleteTag.id, selectedTags))
     }
 
-    const handleEditingPopoverClose: (editedTag: SidebarTag) => void = (editedTag) => {
-        onTagsChange(editItemWithId<SidebarTag>(editedTag, tags))
+    const handleEditingPopoverClose: (editedTag: Tag) => void = (editedTag) => {
+        onTagsChange(editItemWithId<Tag>(editedTag, tags))
     }
 
-    const handleCreatingPopoverClose: (editedTag: SidebarTag) => void = (editedTag) => {
-        onTagsChange(addItem<SidebarTag>(editedTag, tags))
+    const handleCreatingPopoverClose: (editedTag: Tag) => void = (editedTag) => {
+        onTagsChange(addItem<Tag>(editedTag, tags))
     }
 
     const editButtonIcon: JSX.Element = isEditingTags ? <MdCancel/> : <AiOutlineEdit/>

@@ -11,3 +11,7 @@ export function removeItemFromSet<T>(itemToRemove: T, set: Set<T>): Set<T> {
     setCopy.delete(itemToRemove)
     return setCopy
 }
+
+export function SetToArray<T>(set: Set<T>): T[] {
+    return Array.from(set)
+}

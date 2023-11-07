@@ -1,22 +1,22 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { useState } from "react";
-import type { SidebarTag } from "@/types/sidebar-tag-types";
+import type { Tag } from "@prisma/client";
 import TagMenu from "./tag-menu";
 
 interface TagMenuModalProps {
     modalTitle: string;
-    initialTags: SidebarTag[];
+    initialTags: Tag[];
     initialSelectedTags: Set<number>;
     isOpen: boolean;
     allowEditing: boolean;
-    onModalClose: (newTags: SidebarTag[], newSelectedTags: Set<number>) => void;
+    onModalClose: (newTags: Tag[], newSelectedTags: Set<number>) => void;
 }
 
 export default function TagMenuModal({modalTitle, initialTags, initialSelectedTags, isOpen, allowEditing, onModalClose}: TagMenuModalProps): JSX.Element {
-    const [tags, setTags] = useState<SidebarTag[]>(initialTags)
+    const [tags, setTags] = useState<Tag[]>(initialTags)
     const [selectedTags, setSelectedTags] = useState<Set<number>>(initialSelectedTags)
 
-    const handleTagsChange: (newTags: SidebarTag[]) => void = (newTags) => {
+    const handleTagsChange: (newTags: Tag[]) => void = (newTags) => {
         setTags(newTags)
     }
 
