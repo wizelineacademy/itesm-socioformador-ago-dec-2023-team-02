@@ -44,7 +44,7 @@ export function isValidTagName(name: string): boolean {
 }
 
 export function isValidTagColor(color: string): boolean {
-    return /^#[0-9a-fA-F]{6}$/.test(color) // Color is represented with a hexadecimal number of 6 digits. 
+    return /^(?:#[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{3})?)$/.test(color) // Color is represented with a hexadecimal number of 3 or 6 digits. 
 }
 
 /**
