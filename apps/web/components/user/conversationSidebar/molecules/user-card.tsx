@@ -1,7 +1,6 @@
 // Importing required components and dependencies
-import { Card, User, Tooltip } from "@nextui-org/react";
-import CreditsBadge from "../../conversationBody/atoms/credits-badge";
-
+import { Card, User } from "@nextui-org/react";
+import { SlOptions } from "react-icons/sl";
 // Defining the props expected by the UserCard component
 interface UserCardProps {
   /**
@@ -38,13 +37,10 @@ export default function UserCard({
   avatarUrl,
 }: UserCardProps): JSX.Element {
   return (
-    // Tooltip provides additional information on hover (in this case, about remaining credits).
-    <Tooltip content="Remaining credits" placement="right">
+    <div className="w-full">
       {/* Button to encapsulate the UserCard and CreditsBadge components. */}
-      <button
-        className="flex items-center justify-between w-full pb-4 outline-none"
-        type="button"
-      >
+      <button className="flex items-center justify-between w-full pb-4 outline-none" onClick={()=>{console.log("Click")}}>
+
         {/* Card component to display the user's details. */}
         <Card
           className="relative bottom-0 h-auto bg-transparent dark"
@@ -61,9 +57,9 @@ export default function UserCard({
           />
         </Card>
 
-        {/* CreditsBadge displays the number of credits used by the user (static value of 100 for this example). */}
-        <CreditsBadge creditsUsed={100} />
+        {/* Options Icon */}
+        <SlOptions className="text-xs text-white" />
       </button>
-    </Tooltip>
+    </div>
   );
 }

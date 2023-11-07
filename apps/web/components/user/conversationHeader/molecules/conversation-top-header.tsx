@@ -9,11 +9,10 @@ import ThemeButton from "@/components/theme-button";
 import { ModelCard } from "./model-card";
 import ModalParametersGPT from "./modal-gpt-parameters";
 
-const providerImage =
-  "https://avatars.githubusercontent.com/u/86160567?s=200&v=4";
 
-export default function ConversationHeader(props: any): JSX.Element {
-  const { userContext, responseContext, temperature, saveParameters } = props;
+export default function ConversationHeader(props: any) {
+  const { userContext, responseContext, temperature, saveParameters, modelDescription, modelName, providerImage } = props;
+
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   return (
@@ -25,13 +24,13 @@ export default function ConversationHeader(props: any): JSX.Element {
       shouldHideOnScroll // Prop to hide the navbar on scroll.
     >
       {/* Model Card */}
-      <NavbarItem className="flex-grow flex justify-center">
-        <ModelCard modelName="GPT-4" providerImageUrl={providerImage} />
+      <NavbarItem className="flex-grow flex justify-center items-center gap-1">
+        <ModelCard modelName={modelName} providerImageUrl={providerImage} modelDescription={modelDescription} creditsAvailable={400}/>
       </NavbarItem>
 
       {/* Context Button on xs and small screen sizes*/}
       <NavbarItem className="ml-auto md:hidden">
-        <Button color="danger" isIconOnly onClick={onOpen}>
+        <Button radius="sm" color="danger" isIconOnly onClick={onOpen}>
           <BiBrain />
         </Button>
       </NavbarItem>
