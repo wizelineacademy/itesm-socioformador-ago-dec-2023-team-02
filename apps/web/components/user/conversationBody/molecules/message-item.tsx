@@ -35,7 +35,7 @@ export default function MessageItem({
         message.role === "user" ? "senderUser-bg" : "senderModel-bg"
       } w-full justify-center border-none border-bottom rounded-none shadow-none py-3`}
     >
-      <div className="justify-center grid md:grid-cols-[auto,.7fr,auto] xl:grid-cols-[.25fr,.5fr,.25fr] grid-cols-1 gap-4 p-4">
+      <div className="justify-center grid md:grid-cols-[auto,.6fr,auto] xl:grid-cols-[.25fr,.5fr,.25fr] grid-cols-1 gap-4 p-4">
         {/* Left column: Sender's image */}
         <div className="flex items-start md:justify-end justify-start">
           <Image
@@ -50,12 +50,12 @@ export default function MessageItem({
         </div>
 
         {/* Middle column: Message content */}
-        <CardBody className="flex items-center max-w-[800px] w-full p-0">
+        <CardBody className="flex items-start max-w-[800px] w-full p-0">
           <MemoizedReactMarkdown
             className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
             components={{
               p({ children }: { children: React.ReactNode }) {
-                return <p className="mb-2 last:mb-0">{children}</p>;
+                return <p className="mb-2 text-sm text-slate-800 dark:text-slate-200 last:mb-0">{children}</p>;
               },
               code({
                 _node,
@@ -67,7 +67,7 @@ export default function MessageItem({
                 if (children.length) {
                   if (children[0] === "▍") {
                     return (
-                      <span className="mt-1 cursor-default animate-pulse">
+                      <span className="text-sm text-slate-800 dark:text-slate-200 mt-1 cursor-default animate-pulse">
                         ▍
                       </span>
                     );
@@ -91,6 +91,7 @@ export default function MessageItem({
                     key={Math.random()}
                     language={(match && match[1]) || ""}
                     value={String(children).replace(/\n$/, "")}
+                    className="text-xs text-slate-800 dark:text-slate-200 mt-1"
                     {...props}
                   />
                 );
