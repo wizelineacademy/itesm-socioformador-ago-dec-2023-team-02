@@ -173,6 +173,16 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
     cardBackgroundColor = editingTitle ? "bg-white bg-opacity-20" : "bg-white bg-opacity-0 hover:bg-white hover:bg-opacity-10";
   }
 
+  let avatarBackgroundColor = "";
+  if(conversation.model.name === "gpt-4") {
+    avatarBackgroundColor = "bg-purple-400 bg-opacity-80";
+  }else if(conversation.model.name === "dalle") {
+    avatarBackgroundColor = "bg-blue-400 bg-opacity-80";
+  }else {
+    avatarBackgroundColor = "bg-green-400 bg-opacity-80";
+  }
+  
+
   return (
     <button
       className="w-full group relative p-0"
@@ -186,7 +196,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
       >
         <div className="flex justify-between items-center">
           <div className="flex gap-1 items-center">
-            <Avatar className="h-6 w-6" radius="sm" src={conversation.model.provider.image}/>
+            <Avatar classNames={{base:`p-1 h-6 w-6  ${avatarBackgroundColor}`}} radius="sm" src={conversation.model.provider.image}/>
 
             <div className="flex items-center max-w-10 overflow-hidden">
               {editingTitle ? titleWhenEditing : titleWhenNotEditing}
