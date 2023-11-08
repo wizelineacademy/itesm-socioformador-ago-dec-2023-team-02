@@ -24,7 +24,6 @@ interface ConversationCardProps {
 
 export function ConversationCard({userTags, conversation, conversationsDispatch, isSelected, onClick,}: ConversationCardProps): JSX.Element {
   const [title, setTitle] = useState<string>(conversation.title);
-  const [unmodifiedTitle, setUnmodifiedTitle] = useState<string>(conversation.title)
   const [conversationTags, setConversationTags] = useState<Set<number>>(buildTagSet(conversation));
   const [editingTitle, setEditingTitle] = useState<boolean>(false);
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
@@ -35,12 +34,11 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-     
-  }, []);
+  });
 
   const handleOutsideClick: (e: MouseEvent) => void = (e) => {
     if (cardContainerRef.current && !cardContainerRef.current.contains(e.target as Node)){
-      setTitle(unmodifiedTitle);
+      setTitle(conversation.title);
       setEditingTitle(false);
     }
   };
@@ -56,13 +54,13 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   };
 
   const handleTitleCancelPress: () => void = () => {
-    setTitle(unmodifiedTitle)
+    setTitle(conversation.title)
     setEditingTitle(false)
   }
 
   const handleTitleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
-      if (conversation.title !== title) {
+      if (conversation.title !== title && isValidConversationTitle(title)) {
         saveConversationTitle();
       } else {
         setEditingTitle(false);
@@ -96,7 +94,6 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
           conversationId: conversation.id,
           title: updatedConversation.title,
         });
-        setUnmodifiedTitle(updatedConversation.title as string)
         setEditingTitle(false);
         toast.success("Conversation title updated.");
       })
@@ -151,9 +148,9 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   }
 
   const titleWhenNotEditing: JSX.Element = (
-    <p className="text-xs text-white whitespace-nowrap overflow-scroll">
-      {title}
-    </p>
+    <div className="overflow-scroll scrollbar-hide">
+        <p className="text-xs text-white whitespace-nowrap">{title}</p>
+    </div>
   );
 
   const titleWhenEditing: JSX.Element = (
