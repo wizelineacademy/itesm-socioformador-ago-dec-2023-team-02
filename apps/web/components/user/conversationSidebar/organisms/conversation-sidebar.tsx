@@ -76,7 +76,7 @@ export default function ConversationSidebar({userConversations, userTags}: Conve
     setSelectedTags(newSelectedTags)
   }
 
-  const conversationSidebarStyle = `relative transition-all duration-200 linear h-screen bg-transparent flex flex-col
+  const conversationSidebarStyle = `transition-all duration-200 linear h-screen bg-transparent flex flex-col
   justify-start items-center space-y-5 overflow-hidden border-yellow-50 ${showingSidebar ? "w-64 px-5" : "w-0"}`
 
   // Rendering the sidebar with its contained components and data
@@ -120,7 +120,7 @@ export default function ConversationSidebar({userConversations, userTags}: Conve
         <ConversationList conversationsDispatch={conversationsDispatch} userConversations={filterConversations(conversations, searchText, selectedTags)} userTags={tags}/>
 
         {/* User Information Component */}
-        <div className="absolute bottom-0 bg-black z-10 w-full px-7 border-t-[0.5px] border-white py-2 flex items-center justify-center">
+        <div className="flex flex-col items-center justify-between bg-black w-full px-4 pb-3">
           <UserCard avatarUrl="https://i.pravatar.cc/150?u=a04258114e29026702d" description="" name="Jane Doe"/>
         </div>
       </div>

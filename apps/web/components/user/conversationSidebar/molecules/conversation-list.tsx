@@ -23,14 +23,14 @@ export function ConversationList({userTags, userConversations, conversationsDisp
 
     if (userConversations.length === 0){
         return (
-            <div className="w-full border-t-1 border-neutral-800 flex flex-col justify-center items-center">
+            <div className="w-full h-full flex flex-col justify-center items-center">
                 <p className="text-neutral-300 p-4">No items to display</p>
             </div>
         ); 
     }
     
     return (
-        <div className="overflow-x-hidden overflow-y-auto w-full scrollbar-hide">
+        <div className="overflow-x-hidden overflow-y-auto w-full h-full scrollbar-hide">
             <div className="flex flex-col space-y-2 w-full scrollbar-hide">
             {userConversations.map(conversation => 
                 <ConversationCard
