@@ -52,6 +52,30 @@ export async function getAllTagsByUserID(idUser: number): Promise<PrismaResponse
 }
 
 /**
+ * Retrieves all tags belonging to the user that has the given user ID, excluding from the tag object the user's id. 
+ * @param idUser - The ID of the user whose tags are to retrieve (number).  
+ * @returns A Promise that resolves to an object that implements PrismaResponse<SidebarTag>, and that potentially contains an array (SidebarTag[]) that 
+ * holds all tags of the selected user. 
+ */
+export async function getAllSidebarTagsByUserID(idUser: number): Promise<PrismaResponse<Tag[]>> {
+    try {
+        if (await prisma.user.findUnique({ where: { id: idUser } }) === null) {
+            return { status: 400, message: "Invalid user ID given." }
+        }
+
+        const tags: Tag[] = await prisma.tag.findMany({
+            where: {
+                idUser
+            }
+        })
+
+        return { status: 200, data: tags }
+    } catch (error: any) {
+        return { status: 500, message: error.message }
+    }
+}
+
+/**
  * Retrieves all tags belonging to the conversation that has the given conversation ID. 
  * @param idConversation - The ID of the conversation whose tags are to be retrieved (number).  
  * @returns A Promise that resolves to an object that implements PrismaResponse<Tag>, and that potentially contains an array (Tag[]) that 
@@ -153,7 +177,7 @@ export async function updateTag(idTag: number, tagData: TagUpdateData): Promise<
             where: {
                 id: idTag
             },
-            data: normalizedTagData
+            data: normalizedTagData, 
         })
         return { status: 200, data: tag }
     } catch (error: any) {

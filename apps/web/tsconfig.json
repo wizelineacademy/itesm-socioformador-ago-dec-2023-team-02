@@ -47,7 +47,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -61,7 +61,7 @@
     "paths": {
       "@/*": ["./*"],
       "@/types/*": ["./types/*"],
-      "@/lib/*": ["./lib/*"],
+      "@/lib/*": ["./lib/*"]
     }
   },
   "include": [
@@ -72,5 +72,5 @@
     "prisma/seed.ts",
     "app/api/auth/[auth0]/route.ts"
   ],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }

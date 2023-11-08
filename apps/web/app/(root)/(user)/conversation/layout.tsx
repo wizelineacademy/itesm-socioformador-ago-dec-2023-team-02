@@ -1,23 +1,30 @@
-import "../../..globals.css";
 import type { Metadata } from "next";
-import LeftSidebar from "@/components/shared/left-sidebar";
+import type { Tag } from "@prisma/client";
+import ConversationSidebar from "@/components/user/conversationSidebar/organisms/conversation-sidebar";
+import { getAllConversationsByUserId } from "@/lib/conversation";
+import { getAllSidebarTagsByUserID } from "@/lib/tag";
+import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 
 export const metadata: Metadata = {
   title: "WizePrompt",
   description: "",
 };
 
-export default function RootLayout({
+export default async function ConversationRootLayout({
   children,
 }: {
   children: React.ReactNode;
-}): any {
+}): Promise<any> {
+  const userId = 1; 
+  const userConversations: SidebarConversation[] = ((await getAllConversationsByUserId(userId)).data || [])
+  const userTags: Tag[] = ((await getAllSidebarTagsByUserID(userId)).data || [])
+  
   return (
-    <main className="flex flex-row">
-      <LeftSidebar />
-      <section className="main-container">
-        <div className="w-full max-w-4xl">{children}</div>
+    <div className="flex flex-row">
+      <ConversationSidebar userConversations={userConversations} userTags={userTags}/>
+      <section className="w-full">
+          {children}
       </section>
-    </main>
+    </div>
   );
 }

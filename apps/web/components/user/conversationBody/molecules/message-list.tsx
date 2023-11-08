@@ -11,7 +11,7 @@ import React, { useEffect, useRef, useState } from "react";
 import type { Message } from "ai";
 import { Divider, Button } from "@nextui-org/react";
 import { AiOutlineArrowDown } from "react-icons/ai";
-import MessageItem from "@/components/molecules/user/conversationBody/message-item";
+import MessageItem from "@/components/user/conversationBody/molecules/message-item";
 
 export default function MessageList({
   messages,
@@ -34,13 +34,14 @@ export default function MessageList({
       scrollToBottom();
       setAutoScroll(false);
     }
-  }, [autoScroll]);
+    scrollToBottom(); //scroll to bottom when new message is added
+  }, [autoScroll, messages]);
 
   return (
-    <>
+    <div className="pb-32">
       {/* Messages display */}
       {messages.map((message, index) => (
-        <>
+        <div key={index}>
           <MessageItem
             key={index}
             message={message}
@@ -48,7 +49,7 @@ export default function MessageList({
             //creditsUsed={message.creditsUsed}
           />
           <Divider className="my-0" />
-        </>
+        </div>
       ))}
       <div ref={messagesEndRef} />
       {/* Scroll to bottom button */}
@@ -65,6 +66,6 @@ export default function MessageList({
           <AiOutlineArrowDown />
         </Button>
       </div>
-    </>
+    </div>
   );
 }

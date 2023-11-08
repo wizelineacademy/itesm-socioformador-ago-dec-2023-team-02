@@ -1,17 +1,13 @@
 "use client";
-import ConversationBody from "@/components/molecules/user/conversationBody/conversation-body";
 import Settings from "@/components/shared/molecules/settings";
-import ThemeButton from "@/components/theme-button";
+import ConversationBody from "@/components/user/conversationBody/molecules/conversation-body";
 
 //Just for testing
 export default function Home(): JSX.Element {
   return (
     <section className="w-full justify-center">
-      <ThemeButton />
+      <ConversationBody />
       <Settings />
-      <div className="w-full justify-center">
-        <ConversationBody />
-      </div>
     </section>
   );
 }
