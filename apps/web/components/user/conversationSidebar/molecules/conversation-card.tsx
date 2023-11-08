@@ -60,7 +60,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
 
   const handleTitleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
-      if (conversation.title !== title) {
+      if (conversation.title !== title && isValidConversationTitle(title)) {
         saveConversationTitle();
       } else {
         setEditingTitle(false);

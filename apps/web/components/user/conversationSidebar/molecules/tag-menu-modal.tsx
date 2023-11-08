@@ -1,5 +1,5 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Tag } from "@prisma/client";
 import TagMenu from "./tag-menu";
 
@@ -15,6 +15,10 @@ interface TagMenuModalProps {
 export default function TagMenuModal({modalTitle, initialTags, initialSelectedTags, isOpen, allowEditing, onModalClose}: TagMenuModalProps): JSX.Element {
     const [tags, setTags] = useState<Tag[]>(initialTags)
     const [selectedTags, setSelectedTags] = useState<Set<number>>(initialSelectedTags)
+
+    useEffect(() => {
+        setTags(initialTags)
+    }, [initialTags])
 
     const handleTagsChange: (newTags: Tag[]) => void = (newTags) => {
         setTags(newTags)
