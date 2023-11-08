@@ -39,7 +39,7 @@ export default function UserCard({
   return (
     <div className="w-full">
       {/* Button to encapsulate the UserCard and CreditsBadge components. */}
-      <button className="flex items-center justify-between w-full pb-4 outline-none" onClick={()=>{console.log("Click")}}>
+      <button className="flex items-center justify-between w-full outline-none" onClick={()=>{console.log("Click")}}>
 
         {/* Card component to display the user's details. */}
         <Card
