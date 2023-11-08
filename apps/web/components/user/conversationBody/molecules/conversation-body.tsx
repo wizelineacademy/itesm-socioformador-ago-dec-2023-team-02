@@ -14,11 +14,8 @@ import { convertToGptMessage } from "@/lib/helper/gpt/convert-message-type";
 import { saveMessage } from "@/lib/helper/data-handles";
 import ConversationHeader from "@/components/user/conversationHeader/molecules/conversation-top-header";
 import MessageList from "@/components/user/conversationBody/molecules/message-list";
-import PromptTextInput from "./prompt-text-input";
 import type { ConversationUpdateData } from "@/types/conversation-types";
-
-const providerImage =
-  "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"; // URL de la imagen del remitente
+import PromptTextInput from "./prompt-text-input";
 
 const userImage =
   "https://ui-avatars.com/api/?background=007CFF&color=fff&name=David";
@@ -45,6 +42,11 @@ interface ExtendedUseChatOptions extends UseChatOptions {
      * The temperature of the conversation, represented as a number.
      */
     temperature: number;
+
+    /**
+     * The name of the model.
+     */
+    modelName: string;
   };
 }
 
@@ -52,6 +54,28 @@ interface Parameters {
   userContext: string;
   responseContext: string;
   temperature: number;
+}
+
+interface ModelDescription {
+  details: string;
+  generalDescription: string;
+  typeOfUse: string[];
+  examples: string[];
+  capabilities: string[];
+  limitations: string[];
+  pricePerToken: number;
+}
+
+interface ConversationData {
+  model: {
+    name: string;
+    description: string;
+    provider: {
+      image: string;
+    };
+  };
+  messages: WizepromptMessage[];
+  parameters: Parameters;
 }
 
 /**
@@ -82,7 +106,9 @@ export default function ConversationBody(): JSX.Element {
   const [responseContext, setResponseContext] = useState<string>("");
   const [temperature, setTemperature] = useState<number>(0.5);
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const model = "gpt-4";
+  const [modelDescription, setModelDescription] = useState<ModelDescription>({} as ModelDescription)
+  const [modelName, setModelName] = useState<string>("");
+  const [providerImage, setProviderImage] = useState<string>("");
 
   const params = useParams();
   const idConversation = Number(params.id);
@@ -108,7 +134,7 @@ export default function ConversationBody(): JSX.Element {
     }
 
     // Parsing the JSON response from the API.
-    const data: any = await response.json();
+    const data: ConversationData = await response.json();
 
     // Extracting the messages from the conversation object.
     const messages: WizepromptMessage[] = data.messages;
@@ -118,11 +144,22 @@ export default function ConversationBody(): JSX.Element {
     // Extracting the context parameters from the conversation object.
     const parameters: Parameters = data.parameters;
 
+    //get model description
+    const description: string = JSON.parse(data.model.description);
+    // Parsing the JSON string into a JavaScript object
+    const descriptionObject: ModelDescription = JSON.parse(description);
+
+    const name: string = data.model.name;
+    const providerImageUrl: string = data.model.provider.image;
+
     // Updating the component state with the processed messages data
+    setModelName(name);
     setUserContext(parameters.userContext);
     setResponseContext(parameters.responseContext);
     setTemperature(parameters.temperature);
     setMessageData(processedData);
+    setModelDescription(descriptionObject);
+    setProviderImage(providerImageUrl);
   }
   /*
     try {
@@ -197,6 +234,7 @@ export default function ConversationBody(): JSX.Element {
       setTemperature(result.temperature);
       */
       setIsMounted(false);
+      //console.log(response)
 
       toast.success("Parameters saved");
     } catch (error) {
@@ -209,16 +247,18 @@ export default function ConversationBody(): JSX.Element {
   useEffect(() => {
     void getData();
     setIsMounted(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted, userContext, responseContext, temperature]);
 
   const options: ExtendedUseChatOptions = {
-    api: `/api/ai/openai/${model}?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}`,
+    api: `/api/ai/openai/?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}&modelName=${modelName}`,
     initialMessages: messageData,
     messages: messageData,
     body: {
       userContext,
       responseContext,
       temperature,
+      modelName
     },
 
     // onFinish callback function that runs when the response stream is finished
@@ -226,7 +266,7 @@ export default function ConversationBody(): JSX.Element {
     onFinish(message) {
       void handleSaveMessage(
         idConversation,
-        model,
+        modelName,
         Sender.MODEL,
         message.content
       );
@@ -253,10 +293,13 @@ export default function ConversationBody(): JSX.Element {
     <div>
       {/* Conversation Header Component */}
       <ConversationHeader
-        saveParameters={saveParameters}
         responseContext={responseContext}
+        saveParameters={saveParameters}
         temperature={temperature}
         userContext={userContext}
+        modelDescription={modelDescription}
+        modelName={modelName}
+        providerImage={providerImage}
       />
 
       {/* Container for MessageList with custom styles */}
@@ -278,6 +321,7 @@ export default function ConversationBody(): JSX.Element {
         </div>
       ) : (
         <PromptTextInput
+          model={modelName}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           idConversation={idConversation}

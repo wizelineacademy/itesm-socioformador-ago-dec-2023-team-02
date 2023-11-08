@@ -6,7 +6,6 @@
 import type { Tag } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import {isValidTag, normalizeTagCreateData, normalizeTagUpdateData, type TagCreateData, type TagUpdateData } from "@/types/tag-types";
-import type { SidebarTag } from "@/types/sidebar-tag-types";
 import prisma from "./prisma";
 
 /**
@@ -58,20 +57,15 @@ export async function getAllTagsByUserID(idUser: number): Promise<PrismaResponse
  * @returns A Promise that resolves to an object that implements PrismaResponse<SidebarTag>, and that potentially contains an array (SidebarTag[]) that 
  * holds all tags of the selected user. 
  */
-export async function getAllSidebarTagsByUserID(idUser: number): Promise<PrismaResponse<SidebarTag[]>> {
+export async function getAllSidebarTagsByUserID(idUser: number): Promise<PrismaResponse<Tag[]>> {
     try {
         if (await prisma.user.findUnique({ where: { id: idUser } }) === null) {
             return { status: 400, message: "Invalid user ID given." }
         }
 
-        const tags: SidebarTag[] = await prisma.tag.findMany({
+        const tags: Tag[] = await prisma.tag.findMany({
             where: {
                 idUser
-            }, 
-            select: {
-                id: true,
-                name: true,
-                color: true
             }
         })
 
@@ -183,7 +177,7 @@ export async function updateTag(idTag: number, tagData: TagUpdateData): Promise<
             where: {
                 id: idTag
             },
-            data: normalizedTagData
+            data: normalizedTagData, 
         })
         return { status: 200, data: tag }
     } catch (error: any) {

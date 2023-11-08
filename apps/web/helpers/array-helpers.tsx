@@ -2,13 +2,14 @@
  * Various generic functions for operating on arrays without side-effects. 
  */
 
+
 /**
  * Places the given item at the end of the given array. 
  * @param items - An array to which a value will be appended. 
  * @param itemToAdd - The item to place at the end of the given array. 
  * @returns An new array, containing in its last position itemToAdd. 
  */
-export function addItem<T>(items: T[], itemToAdd: T): T[] {
+export function addItem<T>(itemToAdd: T, items: T[]): T[] {
     return [...items, itemToAdd]
 }
 
@@ -19,7 +20,7 @@ export function addItem<T>(items: T[], itemToAdd: T): T[] {
  * @returns An new array, removed of itemToRemove. If itemToRemove isn't contained by items, returns a copy of
  * the items array. 
  */
-export function removeItem<T>(items: T[], itemToRemove: T): T[] {
+export function removeItem<T>(itemToRemove: T, items: T[]): T[] {
     return items.filter(item => item !== itemToRemove)
 }
 
@@ -31,8 +32,12 @@ export function removeItem<T>(items: T[], itemToRemove: T): T[] {
  * @returns An new array, removed of itemToRemove. If itemToRemove isn't contained by items, returns a copy of
  * the items array. 
  */
-export function removeItemWithId<T extends {id: number}>(items: T[], itemToRemove: T): T[] {
+export function removeItemWithId<T extends {id: number}>(itemToRemove: T, items: T[]): T[] {
     return items.filter(({id}) => id !== itemToRemove.id)
+}
+
+export function editItemWithId<T extends {id: number}>(editedItem: T, items: T[]): T[] {
+    return items.map((item) => item.id === editedItem.id ? editedItem : item)
 }
 
 /**

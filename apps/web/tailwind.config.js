@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 const { nextui } = require("@nextui-org/theme");
+const { fontFamily } = require("tailwindcss/defaultTheme");
 
 module.exports = {
   content: [
@@ -16,6 +17,7 @@ module.exports = {
     extend: {
       fontFamily: {
         default: ["var(--font-inter)"],
+        sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       colors: {
         "primary-500": "#14167E",
@@ -39,6 +41,7 @@ module.exports = {
   darkMode: "class",
   plugins: [
     require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
     nextui({
       themes: {
         "wizeline-brand": {
