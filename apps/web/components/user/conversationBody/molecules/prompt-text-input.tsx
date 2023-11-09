@@ -35,15 +35,17 @@ async function handleSaveMessage(
     toast.error("Error ocurred while saving message of user.");
   }
 }
-const model = "gpt-4";
+
 
 export default function PromptTextInput({
   idConversation,
+  model,
   input,
   handleInputChange,
   handleSubmit,
 }: {
   idConversation: number;
+  model: string;
   input: string;
   handleInputChange: any;
   handleSubmit: any;

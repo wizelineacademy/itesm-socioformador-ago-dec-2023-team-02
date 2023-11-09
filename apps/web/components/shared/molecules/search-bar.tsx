@@ -2,6 +2,7 @@ import { Input } from "@nextui-org/react";
 import { BiSearch } from "react-icons/bi";
 
 interface SearchBarProps {
+  text: string;
   placeholder: string;
   onTextChange: (text: string) => void;
   takeFullWidth: boolean;
@@ -9,6 +10,7 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({
+  text,
   placeholder,
   onTextChange,
   takeFullWidth = true,
@@ -26,8 +28,9 @@ export default function SearchBar({
       onValueChange={handleTextChange}
       placeholder={placeholder}
       radius="sm"
-      size="sm"
+      size="md"
       startContent={<BiSearch />}
+      value={text}
     />
   );
 }

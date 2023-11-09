@@ -115,7 +115,6 @@ export default function ConversationBody(): JSX.Element {
   const [modelDescription, setModelDescription] = useState<ModelDescription>({} as ModelDescription)
   const [modelName, setModelName] = useState<string>("");
   const [providerImage, setProviderImage] = useState<string>("");
-  // const model = "gpt-4";
 
   const params = useParams();
   const idConversation = Number(params.id);
@@ -243,6 +242,7 @@ export default function ConversationBody(): JSX.Element {
       setTemperature(result.temperature);
       */
       setIsMounted(false);
+      //console.log(response)
 
       toast.success("Parameters saved");
     } catch (error) {
@@ -332,6 +332,7 @@ export default function ConversationBody(): JSX.Element {
         </div>
       ) : (
         <PromptTextInput
+          model={modelName}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           idConversation={idConversation}

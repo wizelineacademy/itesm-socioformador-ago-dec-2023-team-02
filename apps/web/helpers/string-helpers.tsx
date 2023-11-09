@@ -43,3 +43,11 @@ export function lcsSize(str1: string, str2: string): number {
 
     return maxSize
 }
+
+export function trimLeadingSpaces(str: string): string {
+    return str.replace(/^\s+/, "")
+}
+
+export function imposeMaxLength(str: string, maxLength: number): string {
+    return str.length <= maxLength ? str : str.slice(0, maxLength)
+}

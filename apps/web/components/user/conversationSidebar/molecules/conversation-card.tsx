@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import type {MouseEventHandler, ChangeEvent, KeyboardEventHandler,
-} from "react";
+import type { KeyboardEventHandler, MouseEventHandler } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
-import { Avatar, Card, Button } from "@nextui-org/react";
+import { Avatar, Card, Button, Input } from "@nextui-org/react";
 import { toast } from "sonner";
 import type { Tag } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import type { ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
-import { ConversationsActionType, buildTagSet  } from "@/helpers/sidebar-conversation-helpers";
+import { ConversationsActionType, buildTagSet, isValidConversationTitle  } from "@/helpers/sidebar-conversation-helpers";
 import { SetToArray } from "@/helpers/set-helpers";
 import { mapTagIdsToTags } from "@/helpers/tag-helpers";
+import { imposeMaxLength, trimLeadingSpaces } from "@/helpers/string-helpers";
+import ConversationTitleControls from "../atoms/conversation-title-controls";
 import TagMenuModal from "./tag-menu-modal";
 
 interface ConversationCardProps {
@@ -28,35 +29,40 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   const [editingTitle, setEditingTitle] = useState<boolean>(false);
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
   const cardContainerRef = useRef<HTMLButtonElement | null>(null);
+  const titleMaxLength = 20
 
   useEffect(() => {
     document.addEventListener("click", handleOutsideClick);
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const handleOutsideClick: (e: MouseEvent) => void = (e) => {
-    if (
-      cardContainerRef.current &&
-      !cardContainerRef.current.contains(e.target as Node)
-    ) {
-      setEditingTitle(false);
+    if (cardContainerRef.current && !cardContainerRef.current.contains(e.target as Node)){
       setTitle(conversation.title);
+      setEditingTitle(false);
     }
   };
 
-  const handleTitleClick: MouseEventHandler<HTMLInputElement> = (e) => {e.stopPropagation();
+  const handleTitleClick: MouseEventHandler<HTMLInputElement> = (e) => {e.stopPropagation();};
+
+  const handleTitleChange: (value: string) => void = (value) => {
+    setTitle(imposeMaxLength(trimLeadingSpaces(value), titleMaxLength));
   };
 
-  const handleTitleChange: (e: ChangeEvent<HTMLInputElement>) => void = (e) => {
-    setTitle(e.target.value);
+  const handleTitleConfirmPress: () => void = () => {
+    saveConversationTitle();
   };
+
+  const handleTitleCancelPress: () => void = () => {
+    setTitle(conversation.title)
+    setEditingTitle(false)
+  }
 
   const handleTitleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
-      if (conversation.title !== title) {
+      if (conversation.title !== title && isValidConversationTitle(title)) {
         saveConversationTitle();
       } else {
         setEditingTitle(false);
@@ -85,12 +91,12 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
         return response.json();
       })
       .then((updatedConversation) => {
-        setEditingTitle(false);
         conversationsDispatch({
           type: ConversationsActionType.EditTitle,
           conversationId: conversation.id,
           title: updatedConversation.title,
         });
+        setEditingTitle(false);
         toast.success("Conversation title updated.");
       })
       .catch((_) => {
@@ -144,19 +150,21 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   }
 
   const titleWhenNotEditing: JSX.Element = (
-    <p className="text-xs text-white whitespace-nowrap overflow-scroll">
-      {title}
-    </p>
+    <div className="overflow-scroll scrollbar-hide">
+        <p className="text-xs text-white whitespace-nowrap">{title}</p>
+    </div>
   );
 
   const titleWhenEditing: JSX.Element = (
-    <input
-      className="text-xs text-white rounded-sm pr-10"
-      onChange={handleTitleChange}
+    <Input
+      classNames={{input: "text-xs text-white rounded-sm", inputWrapper: "h-unit-6 min-h-unit-0 px-1"}}
+      fullWidth
       onClick={handleTitleClick}
       onKeyDown={handleTitleKeydown}
-      type="text"
+      onValueChange={handleTitleChange}
+      size="sm"
       value={title}
+      variant="bordered"
     />
   );
 
@@ -173,39 +181,40 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
     cardBackgroundColor = editingTitle ? "bg-white bg-opacity-20" : "bg-white bg-opacity-0 hover:bg-white hover:bg-opacity-10";
   }
 
+  let avatarBackgroundColor = "";
+  if (conversation.model.name === "gpt-4") {
+    avatarBackgroundColor = "bg-purple-400 bg-opacity-80";
+  } else if(conversation.model.name === "dalle") {
+    avatarBackgroundColor = "bg-blue-400 bg-opacity-80";
+  } else {
+    avatarBackgroundColor = "bg-green-400 bg-opacity-80";
+  }
+
   return (
-    <button
-      className="w-full group relative p-0"
-      onClick={onClick}
-      ref={cardContainerRef}
-      type="button"
-    >
+    <button className="w-full group relative p-0" onClick={onClick} ref={cardContainerRef} type="button">
       <Card
-        className={`max-w-[200px] py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
+        className={`py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
+        fullWidth
         radius="none"
       >
-        <div className="flex justify-between items-center">
-          <div className="flex gap-1 items-center">
-            <Avatar className="h-6 w-6" radius="sm" src={conversation.model.provider.image}/>
+        <div className="flex flex-row gap-2 justify-start items-center px-1">
+          <Avatar classNames={{base:`p-1 min-w-unit-6 h-6 w-6 ${avatarBackgroundColor}`}} radius="sm" src={conversation.model.provider.image}/>
 
-            <div className="flex items-center max-w-10 overflow-hidden">
-              {editingTitle ? titleWhenEditing : titleWhenNotEditing}
-            </div>
-          </div>
+          {editingTitle ? titleWhenEditing : titleWhenNotEditing}
+
+          {editingTitle ?
+          <ConversationTitleControls
+            disableConfirmButton={title === conversation.title || !isValidConversationTitle(title)}
+            onCancelPress={handleTitleCancelPress}
+            onConfirmPress={handleTitleConfirmPress}
+          />
+          : null}
 
           {/* Button as overlay */}
-          {isSelected ? (
+          {isSelected && !editingTitle ? (
             <div className="absolute right-0 gradient-shadow-dark-conversation-card py-2 pl-1">
-              <SingleSelectionDropdown
-                dropdownItems={singleSelectionListItems}
-                placement="right"
-              >
-                <Button
-                  className="text-white bg-inherit"
-                  isIconOnly
-                  size="sm"
-                  variant="solid"
-                >
+              <SingleSelectionDropdown dropdownItems={singleSelectionListItems} placement="right">
+                <Button className="text-white bg-inherit" isIconOnly size="sm" variant="solid">
                   <AiOutlineEdit />
                 </Button>
               </SingleSelectionDropdown>

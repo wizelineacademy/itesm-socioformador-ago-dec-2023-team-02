@@ -39,6 +39,16 @@ export const ModelCard: React.FC<ModelCardProps> = ({
   // useDisclosure is a hook that helps in controlling the visibility of modal
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+  let avatarBackgroundColor = "";
+  if(modelName === "gpt-4") {
+    avatarBackgroundColor = "dark:bg-purple-400 dark:bg-opacity-80 bg-purple-600 bg-opacity-80";
+  }else if(modelName === "dalle") {
+    avatarBackgroundColor = "dark:bg-blue-400 dark:bg-opacity-80 bg-blue-600 bg-opacity-80";
+  }else {
+    avatarBackgroundColor = "dark:bg-green-400 dark:bg-opacity-80 bg-green-600 bg-opacity-80";
+  }
+
+
   return (
     // Fragment to group the button and modal without adding extra nodes to the DOM
     <>
@@ -46,12 +56,13 @@ export const ModelCard: React.FC<ModelCardProps> = ({
       <button onClick={onOpen}>
         {/* User component from NextUI representing the model, with credits and image */}
         <User
-          className="xs:ml-20 md:ml-20"
+          className="xs:ml-10 md:ml-20"
           name={modelName.toUpperCase()}
           description={`${creditsAvailable} Tokens`}
           avatarProps={{
             radius: "sm",
             size: "sm",
+            className: `p-1 ${avatarBackgroundColor}`,
             src: providerImageUrl,
           }}
         />

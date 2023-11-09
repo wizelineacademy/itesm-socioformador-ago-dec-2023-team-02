@@ -78,7 +78,7 @@ export function editConversationTitle(conversation: SidebarConversation, newTitl
  * @param newTags - An array containing the new tag objects the given conversation will be associated to. 
  * @returns A new, edited conversation, that has as array of tags newTags. 
  */
-export function editConversationTags(conversation: SidebarConversation, newTags: SidebarTag[]): SidebarConversation {
+export function editConversationTags(conversation: SidebarConversation, newTags: Tag[]): SidebarConversation {
     return {...conversation, tags: newTags}
 }
 
@@ -111,4 +111,8 @@ export function sortConversationsByDate(conversations: SidebarConversation[]): S
 
 export function buildTagSet(conversation: SidebarConversation): Set<number> {
     return new Set<number>(conversation.tags.map(tag => tag.id))
+}
+
+export function isValidConversationTitle(title: string): boolean {
+    return title.length > 0
 }

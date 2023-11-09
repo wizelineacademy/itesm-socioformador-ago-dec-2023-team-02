@@ -104,7 +104,8 @@ export default function ConversationSidebar({userConversations, userTags}: Conve
           onTextChange={handleSearchTextChange}
           overridingStyle="w-full text-sm shadow-none dark text-white"
           placeholder="Search Chat"
-          takeFullWidth={false}/>
+          takeFullWidth={false}
+          text={searchText}/>
 
           {/* Tag filter section */}
           <Badge content={selectedTags.size} isInvisible={selectedTags.size === 0}>
@@ -120,7 +121,9 @@ export default function ConversationSidebar({userConversations, userTags}: Conve
         <ConversationList conversationsDispatch={conversationsDispatch} userConversations={filterConversations(conversations, searchText, selectedTags)} userTags={tags}/>
 
         {/* User Information Component */}
-        <UserCard avatarUrl="https://i.pravatar.cc/150?u=a04258114e29026702d" description="" name="Jane Doe" />
+        <div className="flex flex-col items-center justify-between bg-black w-full px-4 pb-3">
+          <UserCard avatarUrl="https://i.pravatar.cc/150?u=a04258114e29026702d" description="" name="Jane Doe"/>
+        </div>
       </div>
 
       {/* Sidebar toggle button */}

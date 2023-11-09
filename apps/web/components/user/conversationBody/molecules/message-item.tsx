@@ -39,6 +39,8 @@ export default function MessageItem({
         {/* Left column: Sender's image */}
         <div className="flex items-start md:justify-end justify-start">
           <Image
+          className="p-1"
+          sizes="sm"
             alt="Sender Image"
             height={40}
             radius="md"
@@ -48,12 +50,12 @@ export default function MessageItem({
         </div>
 
         {/* Middle column: Message content */}
-        <CardBody className="flex items-center max-w-[800px] w-full p-0">
+        <CardBody className="flex items-start max-w-[800px] w-full p-0">
           <MemoizedReactMarkdown
-            className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+            className="w-full prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
             components={{
               p({ children }: { children: React.ReactNode }) {
-                return <p className="mb-2 last:mb-0">{children}</p>;
+                return <p className="mb-2 text-sm text-slate-800 dark:text-slate-200 last:mb-0">{children}</p>;
               },
               code({
                 _node,
@@ -65,7 +67,7 @@ export default function MessageItem({
                 if (children.length) {
                   if (children[0] === "▍") {
                     return (
-                      <span className="mt-1 cursor-default animate-pulse">
+                      <span className="w-full text-sm text-slate-800 dark:text-slate-200 mt-1 cursor-default animate-pulse">
                         ▍
                       </span>
                     );
@@ -89,6 +91,7 @@ export default function MessageItem({
                     key={Math.random()}
                     language={(match && match[1]) || ""}
                     value={String(children).replace(/\n$/, "")}
+                    className="text-xs text-slate-800 dark:text-slate-200 mt-1"
                     {...props}
                   />
                 );

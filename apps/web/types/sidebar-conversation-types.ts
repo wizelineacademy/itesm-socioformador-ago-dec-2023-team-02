@@ -1,4 +1,4 @@
-import type { SidebarTag } from "./sidebar-tag-types";
+import type { Tag } from "@prisma/client";
 
 // -- Types --
 /**
@@ -10,7 +10,7 @@ export interface SidebarConversation {
     title: string;
     createdAt: Date;
     active: boolean;
-    tags: SidebarTag[]
+    tags: Tag[]
     model: SidebarModel;
 }
 
