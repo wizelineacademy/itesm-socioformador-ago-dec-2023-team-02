@@ -8,10 +8,19 @@ import { BiBrain } from "react-icons/bi";
 import ThemeButton from "@/components/theme-button";
 import { ModelCard } from "./model-card";
 import ModalParametersGPT from "./modal-gpt-parameters";
-
+import ModelSelector from "../../conversationBody/molecules/model-selector";
 
 export default function ConversationHeader(props: any) {
-  const { userContext, responseContext, temperature, saveParameters, modelDescription, modelName, providerImage } = props;
+  const {
+    isNewConversation,
+    userContext,
+    responseContext,
+    temperature,
+    saveParameters,
+    modelDescription,
+    modelName,
+    providerImage,
+  } = props;
 
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
@@ -25,7 +34,20 @@ export default function ConversationHeader(props: any) {
     >
       {/* Model Card */}
       <NavbarItem className="flex-grow flex justify-center items-center gap-1">
-        <ModelCard modelName={modelName} providerImageUrl={providerImage} modelDescription={modelDescription} creditsAvailable={400}/>
+        {isNewConversation ? (
+          //Model Selector
+          <ModelSelector
+            onSelectModel={() => {console.log("click")}}
+          />
+        ) : (
+          //Model being used in the conversation
+          <ModelCard
+            modelName={modelName}
+            providerImageUrl={providerImage}
+            modelDescription={modelDescription}
+            creditsAvailable={400}
+          />
+        )}
       </NavbarItem>
 
       {/* Context Button on xs and small screen sizes*/}

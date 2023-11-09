@@ -109,6 +109,7 @@ export default function ConversationBody(): JSX.Element {
   const [modelDescription, setModelDescription] = useState<ModelDescription>({} as ModelDescription)
   const [modelName, setModelName] = useState<string>("");
   const [providerImage, setProviderImage] = useState<string>("");
+  const [isNewConversation, setIsNewConversation] = useState<boolean>(false);
 
   const params = useParams();
   const idConversation = Number(params.id);
@@ -151,6 +152,13 @@ export default function ConversationBody(): JSX.Element {
 
     const name: string = data.model.name;
     const providerImageUrl: string = data.model.provider.image;
+
+    //check if its a new conversation
+    if(processedData.length === 0){
+      setIsNewConversation(true);
+    }else {
+      setIsNewConversation(false);
+    }
 
     // Updating the component state with the processed messages data
     setModelName(name);
@@ -293,6 +301,7 @@ export default function ConversationBody(): JSX.Element {
     <div>
       {/* Conversation Header Component */}
       <ConversationHeader
+        isNewConversation={isNewConversation}
         responseContext={responseContext}
         saveParameters={saveParameters}
         temperature={temperature}
