@@ -53,7 +53,7 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
     return (
         <div className="flex flex-col justify-start items-start p-2 space-y-4 w-full">
             <div className="flex flex-row space-x-2 items-center">
-                <SearchBar onTextChange={handleSearchTextChange} placeholder="Search tags" takeFullWidth/>
+                <SearchBar onTextChange={handleSearchTextChange} placeholder="Search tags" takeFullWidth text={searchText}/>
 
                 {allowEditing ? <Button isIconOnly onPress={handleEditButtonPress}>{editButtonIcon}</Button> : null}
             </div>
