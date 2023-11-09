@@ -8,9 +8,10 @@ import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import type { ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
-import { ConversationsActionType, buildTagSet, isValidConversationTitle, normalizeConversationTitle  } from "@/helpers/sidebar-conversation-helpers";
+import { ConversationsActionType, buildTagSet, isValidConversationTitle  } from "@/helpers/sidebar-conversation-helpers";
 import { SetToArray } from "@/helpers/set-helpers";
 import { mapTagIdsToTags } from "@/helpers/tag-helpers";
+import { imposeMaxLength, trimLeadingSpaces } from "@/helpers/string-helpers";
 import ConversationTitleControls from "../atoms/conversation-title-controls";
 import TagMenuModal from "./tag-menu-modal";
 
@@ -28,6 +29,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   const [editingTitle, setEditingTitle] = useState<boolean>(false);
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
   const cardContainerRef = useRef<HTMLButtonElement | null>(null);
+  const titleMaxLength = 20
 
   useEffect(() => {
     document.addEventListener("click", handleOutsideClick);
@@ -46,7 +48,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   const handleTitleClick: MouseEventHandler<HTMLInputElement> = (e) => {e.stopPropagation();};
 
   const handleTitleChange: (value: string) => void = (value) => {
-    setTitle(normalizeConversationTitle(value, 17));
+    setTitle(imposeMaxLength(trimLeadingSpaces(value), titleMaxLength));
   };
 
   const handleTitleConfirmPress: () => void = () => {

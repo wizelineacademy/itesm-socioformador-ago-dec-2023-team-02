@@ -58,7 +58,7 @@ export function filterTags(tags: Tag[], searchText: string): Tag[] {
 }
 
 export function tagsAreEqual(tagA: Tag, tagB: Tag): boolean {
-    return tagA.id === tagB.id && tagA.name === tagB.name && tagA.color === tagB.color 
+    return tagA.id === tagB.id && tagA.name === tagB.name && tagA.color === tagB.color && tagA.idUser === tagB.idUser
 }
 
 export function mapTagIdsToTags(tagIds: number[], tags: Tag[]): Tag[] {

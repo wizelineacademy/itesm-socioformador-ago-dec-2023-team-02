@@ -116,7 +116,3 @@ export function buildTagSet(conversation: SidebarConversation): Set<number> {
 export function isValidConversationTitle(title: string): boolean {
     return title.length > 0
 }
-
-export function normalizeConversationTitle(title: string, maxLength: number): string {
-    return title.length > maxLength ? title.replace(/^\s+/, '').slice(0, maxLength) : title.replace(/^\s+/, '')
-}

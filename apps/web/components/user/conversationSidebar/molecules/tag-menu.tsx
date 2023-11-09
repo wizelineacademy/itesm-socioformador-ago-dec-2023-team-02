@@ -35,11 +35,11 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
         onSelectedTagsChange(removeItemFromSet<number>(deleteTag.id, selectedTags))
     }
 
-    const handleEditingPopoverClose: (editedTag: Tag) => void = (editedTag) => {
+    const handleTagEdition: (editedTag: Tag) => void = (editedTag) => {
         onTagsChange(editItemWithId<Tag>(editedTag, tags))
     }
 
-    const handleCreatingPopoverClose: (editedTag: Tag) => void = (editedTag) => {
+    const handleTagEditionNewTag: (editedTag: Tag) => void = (editedTag) => {
         onTagsChange(addItem<Tag>(editedTag, tags))
     }
 
@@ -61,7 +61,7 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
             <div className="flex flex-row flex-wrap">
                 {filterTags(tags, searchText).map((tag) => (                    
                     isEditingTags ? 
-                    <TagEditorPopover initialTagColor={tag.color} initialTagName={tag.name} key={tag.id} onPopoverClose={handleEditingPopoverClose} onTagDeletion={handleTagDeletion} placement="top" tagId={tag.id}>
+                    <TagEditorPopover initialTagColor={tag.color} initialTagName={tag.name} key={tag.id} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEdition} placement="top" tagId={tag.id}>
                         <button type="button">
                             <TagDisplay isBeingEdited isSelected tagColor={tag.color} tagName={tag.name}/>
                         </button>
@@ -71,7 +71,7 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
                 ))}
 
                 {isEditingTags ?  
-                <TagEditorPopover initialTagColor={null} initialTagName={null} onPopoverClose={handleCreatingPopoverClose} onTagDeletion={handleTagDeletion} placement="top" tagId={null}>
+                <TagEditorPopover initialTagColor={null} initialTagName={null} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEditionNewTag} placement="top" tagId={null}>
                     <button type="button">
                         {newTagChip}
                     </button>
