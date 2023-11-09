@@ -15,7 +15,8 @@ export async function saveMessage(
   idConversation: number,
   model: string,
   sender: Sender,
-  input: string
+  input: string,
+  size: string
 ): Promise<void> {
   // Calculate the number of tokens in the message content.
   const tokens: number = calculateTokens(input);
@@ -26,7 +27,7 @@ export async function saveMessage(
     content: input,
     sender,
     // Determine the credits used based on the sender (User or Model).
-    creditsUsed: calculateCredits(tokens, model, sender === Sender.USER),
+    creditsUsed: calculateCredits(tokens, model, sender === Sender.USER, size),
   };
 
   // Make a POST request to save the message data to the server.
