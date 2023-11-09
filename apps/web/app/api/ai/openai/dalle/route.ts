@@ -2,6 +2,7 @@
 import type { ResponseTypes } from "openai-edge"
 import { Configuration, OpenAIApi } from "openai-edge";
 import { NextResponse } from "next/server";
+import { uploadToLightsail } from "@/lib/helper/storage/upload-image";
 
 export const runtime = 'edge';
 
@@ -42,9 +43,16 @@ export async function POST(request: Request): Promise<NextResponse> {
 
         // Extracts the image string from the response data.
         const img: string | undefined = data.data[0].b64_json
-        const imgMarkdown = `![Generated image](data:image/png;base64,${img})`
-        return NextResponse.json(imgMarkdown)
 
+        // Checks that the base64 image is not undefined and uploads the image to the lightsail bucket
+        // Returns the image url in markdown format
+        // Otherwise returns an error message
+        if (img) {
+            const imageUrl: string = await uploadToLightsail(img)
+            return new NextResponse(`![Generated image](${imageUrl})`, {status: 200})
+        } else {
+            return new NextResponse(`Error: No image was generated`, { status: 500 });
+        }
     } catch (error: any) {
         // If an error occurs, log it to the console and send a message to the user
         // console.error(error);
