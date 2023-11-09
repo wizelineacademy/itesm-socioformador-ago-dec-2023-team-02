@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Select, SelectItem, User } from "@nextui-org/react";
+import { Select, SelectItem, User, select } from "@nextui-org/react";
 import { Provider } from "@prisma/client";
 
 interface ModelInterface {
@@ -15,10 +15,11 @@ interface ModelInterface {
 }
 
 interface ModelSelectorProps {
+  setSelectedModel: (id: number) => void; // Callback function when a model is selected
   onSelectModel: (model: string) => void; // Callback function when a model is selected
 }
 
-const ModelSelector: React.FC<ModelSelectorProps> = ({ onSelectModel }) => {
+const ModelSelector: React.FC<ModelSelectorProps> = ({setSelectedModel, onSelectModel }) => {
   // Local state to keep track of the selected model
   //const [selectedModel, setSelectedModel] = useState(models[0] || '');
   const [models, setModels] = useState<ModelInterface[]>([]);
@@ -35,11 +36,10 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onSelectModel }) => {
   }, []);
 
   // Handle the change event of the select element
-  //   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //     const newModel = event.target.value;
-  //     setSelectedModel(newModel);
-  //     onSelectModel(newModel); // Invoke the callback function
-  //   };
+    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newModel = event.target.value;
+      setSelectedModel(Number(newModel));
+    };
 
   return (
     <div className="w-full max-w-xs mx-auto">
@@ -49,6 +49,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onSelectModel }) => {
         label="Select a Model"
         placeholder="Select a Model"
         className="xs:ml-10 md:ml-20"
+        onChange={handleChange}
       >
         {(model) => <SelectItem key={model.id} textValue={model.name.toUpperCase()}><ModelSelectionCard model={model}/></SelectItem>}
       </Select>

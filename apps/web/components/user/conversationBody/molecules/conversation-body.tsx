@@ -110,6 +110,7 @@ export default function ConversationBody(): JSX.Element {
   const [modelName, setModelName] = useState<string>("");
   const [providerImage, setProviderImage] = useState<string>("");
   const [isNewConversation, setIsNewConversation] = useState<boolean>(false);
+  const [selectedModel, setSelectedModel] = useState<number>(0);
 
   const params = useParams();
   const idConversation = Number(params.id);
@@ -255,6 +256,7 @@ export default function ConversationBody(): JSX.Element {
   useEffect(() => {
     void getData();
     setIsMounted(true);
+    console.log(selectedModel);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted, userContext, responseContext, temperature]);
 
@@ -301,6 +303,7 @@ export default function ConversationBody(): JSX.Element {
     <div>
       {/* Conversation Header Component */}
       <ConversationHeader
+        setSelectedModel={setSelectedModel}
         isNewConversation={isNewConversation}
         responseContext={responseContext}
         saveParameters={saveParameters}

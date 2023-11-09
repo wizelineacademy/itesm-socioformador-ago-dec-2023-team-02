@@ -12,6 +12,7 @@ import ModelSelector from "../../conversationBody/molecules/model-selector";
 
 export default function ConversationHeader(props: any) {
   const {
+    setSelectedModel,
     isNewConversation,
     userContext,
     responseContext,
@@ -38,6 +39,7 @@ export default function ConversationHeader(props: any) {
           //Model Selector
           <ModelSelector
             onSelectModel={() => {console.log("click")}}
+            setSelectedModel={setSelectedModel}
           />
         ) : (
           //Model being used in the conversation
