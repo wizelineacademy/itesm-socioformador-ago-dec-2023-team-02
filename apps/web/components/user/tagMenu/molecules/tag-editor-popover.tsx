@@ -1,9 +1,12 @@
-import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
+import { Button, Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 import { toast } from "sonner";
 import { useState } from "react";
 import type { Tag } from "@prisma/client";
+import { MdCancel , MdSaveAlt} from "react-icons/md"
+import { AiFillDelete } from "react-icons/ai";
 import type { PopoverPlacement } from "@/types/component-types";
-import { isValidTagColor, isValidTagName } from "@/types/tag-types";
+import ButtonWithIcon from "@/components/shared/atoms/button-with-icon";
+import { imposeMaxLength, trimLeadingSpaces } from "@/helpers/string-helpers";
 import { TagEditor } from "./tag-editor";
 
 interface TagEditorPopoverProps {
@@ -13,12 +16,15 @@ interface TagEditorPopoverProps {
     initialTagColor: string | null;
     placement: PopoverPlacement;
     onTagDeletion: (deletedTag: Tag) => void;
-    onPopoverClose: (editedTag: Tag) => void;
+    onTagEdition: (editedTag: Tag) => void;
 }
 
-export default function TagEditorPopover({children, tagId, initialTagName, initialTagColor, placement, onTagDeletion, onPopoverClose}: TagEditorPopoverProps): JSX.Element {
+export default function TagEditorPopover({children, tagId, initialTagName, initialTagColor, placement, onTagDeletion, onTagEdition}: TagEditorPopoverProps): JSX.Element {
     const [tagName, setTagName] = useState<string>(initialTagName || "")
-    const [tagColor, setTagColor] = useState<string>(initialTagColor || "#0313fc")
+    const [tagColor, setTagColor] = useState<string>(initialTagColor || "#bf4042")
+    const [popoverIsOpen, setPopoverIsOpen] = useState<boolean>(false)
+    const tagNameMaxLength = 15 
+    const isNewTag: boolean = tagId === null
 
     const resetTagState: () => void = () => {
         setTagName(initialTagName || "")
@@ -26,7 +32,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
     }
 
     const handleTagNameChange: (editedTagName: string) => void = (editedTagName) => {
-        setTagName(editedTagName)
+        setTagName(imposeMaxLength(trimLeadingSpaces(editedTagName), tagNameMaxLength))
     }
 
     const handleTagColorChange: (editedTagColor: string) => void = (editedTagColor) => {
@@ -45,26 +51,26 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
         .then((deletedTag) => {
             onTagDeletion(deletedTag as Tag)
             toast.success("Tag deleted.")
+            setPopoverIsOpen(false)
           })
         .catch((_) => {
             toast.error("The deletion of the tag failed.")
-            resetTagState()
         });
     }
 
-    const handlePopoverClose: () => void = () => {
-        const tagHasChanged: boolean = tagName !== initialTagName || tagColor !== initialTagColor
-        const isValidTag: boolean = isValidTagName(tagName) && isValidTagColor(tagColor)
+    const handleCancelButtonPress: () => void = () => {setPopoverIsOpen(false)}
 
-        console.log(tagColor)
-
-        if (isValidTag && tagHasChanged){
-            if (tagId) {
-                editTag()
-            } else {
-                createTag()
-            }
+    const handleSaveButtonPress: () => void = () => {
+        if (isNewTag) {
+            createTag()
+        } else {
+            editTag()
         }
+    }
+
+    const handleOpenChange: (isOpen: boolean) => void = (isOpen) => {
+        setPopoverIsOpen(isOpen)
+        resetTagState()
     }
 
     const editTag: () => void = () => {
@@ -80,12 +86,12 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
             return response.json()
           })
         .then((updatedTag) => {
-            onPopoverClose(updatedTag as Tag)
+            onTagEdition(updatedTag as Tag)
             toast.success("Tag edited.")
+            setPopoverIsOpen(false)
           })
         .catch((_) => {
             toast.error("The editing of the tag failed.")
-            resetTagState()
         });
     }
 
@@ -103,22 +109,49 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
             return response.json()
         })
         .then((createdTag) => {
-            onPopoverClose(createdTag as Tag)
+            onTagEdition(createdTag as Tag)
             toast.success("Tag created.")
+            setPopoverIsOpen(false)
         })
         .catch((_) => {
             toast.error("The creation of the tag failed.")
             resetTagState()
         });
     } 
+
+    const tagHasChanged: boolean = initialTagName !== tagName || initialTagColor !== tagColor
+    const disableSaveButton: boolean = !tagHasChanged || tagName.length === 0
     
     return (
-        <Popover backdrop="opaque" onClose={handlePopoverClose} placement={placement} showArrow>
+        <Popover backdrop="opaque" isOpen={popoverIsOpen} onOpenChange={handleOpenChange} placement={placement} showArrow>
         <PopoverTrigger>
             {children}
         </PopoverTrigger>
         <PopoverContent>
-            <TagEditor isNew={tagId === null} onDeletePress={handleDeletePress} onTagColorChange={handleTagColorChange} onTagNameChange={handleTagNameChange} tagColor={tagColor} tagName={tagName}/>
+            <div className="flex flex-col items-center justify-center gap-5 p-4">
+                <div className="relative flex flex-row justify-start items-center w-full">
+                    <p className="text-lg text-black dark:text-white font-semibold">{!isNewTag ? "Edit tag" : "Create tag"}</p>
+
+                    {!isNewTag ? 
+                    <Button className="absolute right-0" color="danger" isIconOnly onPress={handleDeletePress} size="sm">
+                        <AiFillDelete/>
+                    </Button>
+                    : 
+                    null}
+                </div>
+
+                <TagEditor
+                    onTagColorChange={handleTagColorChange}
+                    onTagNameChange={handleTagNameChange}
+                    tagColor={tagColor}
+                    tagName={tagName}
+                />
+
+                <div className="flex flex-row w-full items-center justify-center gap-2">
+                    <ButtonWithIcon icon={<MdCancel color="white"/>} isDisabled={false} onPress={handleCancelButtonPress} style="bg-red-700" text="Cancel"/>
+                    <ButtonWithIcon icon={<MdSaveAlt color="white"/>} isDisabled={disableSaveButton} onPress={handleSaveButtonPress} style="bg-sky-700" text="Save"/>
+                </div>
+            </div>
         </PopoverContent>
     </Popover>
     );

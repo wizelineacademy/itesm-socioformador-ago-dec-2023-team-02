@@ -9,7 +9,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import type { Message } from "ai";
-import { Divider, Button } from "@nextui-org/react";
+import { Divider, Button, Spinner } from "@nextui-org/react";
 import { AiOutlineArrowDown } from "react-icons/ai";
 import MessageItem from "@/components/user/conversationBody/molecules/message-item";
 
@@ -17,10 +17,14 @@ export default function MessageList({
   messages,
   userImage,
   providerImage,
+  modelName,
+  isLoading,
 }: {
   messages: Message[];
   userImage: string;
   providerImage: string;
+  modelName: string;
+  isLoading: boolean;
 }): JSX.Element {
   const [autoScroll, setAutoScroll] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -45,13 +49,20 @@ export default function MessageList({
           <MessageItem
             key={index}
             message={message}
+            modelName={modelName}
             senderImage={message.role === "user" ? userImage : providerImage}
             //creditsUsed={message.creditsUsed}
           />
           <Divider className="my-0" />
         </div>
       ))}
-      <div ref={messagesEndRef} />
+      <div ref={messagesEndRef}>
+        {isLoading ? 
+          <Spinner className="flex items-center mt-2" color="danger" label="Generating response"/>
+        :
+          <div/>
+        }
+      </div>
       {/* Scroll to bottom button */}
       <div className="fixed z-20 bottom-28 right-5">
         <Button

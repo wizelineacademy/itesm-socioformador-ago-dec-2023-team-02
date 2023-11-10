@@ -8,11 +8,12 @@ import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import type { ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
-import { ConversationsActionType, buildTagSet, isValidConversationTitle, normalizeConversationTitle  } from "@/helpers/sidebar-conversation-helpers";
-import { SetToArray } from "@/helpers/set-helpers";
+import { ConversationsActionType, buildTagSet, isValidConversationTitle  } from "@/helpers/sidebar-conversation-helpers";
+import { setToArray, setsAreEqual } from "@/helpers/set-helpers";
 import { mapTagIdsToTags } from "@/helpers/tag-helpers";
+import { imposeMaxLength, trimLeadingSpaces } from "@/helpers/string-helpers";
 import ConversationTitleControls from "../atoms/conversation-title-controls";
-import TagMenuModal from "./tag-menu-modal";
+import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 
 interface ConversationCardProps {
   userTags: Tag[];
@@ -24,23 +25,22 @@ interface ConversationCardProps {
 
 export function ConversationCard({userTags, conversation, conversationsDispatch, isSelected, onClick,}: ConversationCardProps): JSX.Element {
   const [title, setTitle] = useState<string>(conversation.title);
-  const [unmodifiedTitle, setUnmodifiedTitle] = useState<string>(conversation.title)
   const [conversationTags, setConversationTags] = useState<Set<number>>(buildTagSet(conversation));
   const [editingTitle, setEditingTitle] = useState<boolean>(false);
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
   const cardContainerRef = useRef<HTMLButtonElement | null>(null);
+  const titleMaxLength = 20
 
   useEffect(() => {
     document.addEventListener("click", handleOutsideClick);
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-     
-  }, []);
+  });
 
   const handleOutsideClick: (e: MouseEvent) => void = (e) => {
     if (cardContainerRef.current && !cardContainerRef.current.contains(e.target as Node)){
-      setTitle(unmodifiedTitle);
+      setTitle(conversation.title);
       setEditingTitle(false);
     }
   };
@@ -48,7 +48,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   const handleTitleClick: MouseEventHandler<HTMLInputElement> = (e) => {e.stopPropagation();};
 
   const handleTitleChange: (value: string) => void = (value) => {
-    setTitle(normalizeConversationTitle(value, 17));
+    setTitle(imposeMaxLength(trimLeadingSpaces(value), titleMaxLength));
   };
 
   const handleTitleConfirmPress: () => void = () => {
@@ -56,13 +56,13 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   };
 
   const handleTitleCancelPress: () => void = () => {
-    setTitle(unmodifiedTitle)
+    setTitle(conversation.title)
     setEditingTitle(false)
   }
 
   const handleTitleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
-      if (conversation.title !== title) {
+      if (conversation.title !== title && isValidConversationTitle(title)) {
         saveConversationTitle();
       } else {
         setEditingTitle(false);
@@ -71,7 +71,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   };
 
   const handleTagMenuModalClose: (newTags: Tag[], newSelectedTags: Set<number>) => void = (_, newSelectedTags) => {
-    if (newSelectedTags.size !== conversationTags.size){
+    if (!setsAreEqual<number>(conversationTags, newSelectedTags)){
       saveTagSelection(newSelectedTags)
     }
     setTagMenuModalIsOpen(false)
@@ -96,7 +96,6 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
           conversationId: conversation.id,
           title: updatedConversation.title,
         });
-        setUnmodifiedTitle(updatedConversation.title as string)
         setEditingTitle(false);
         toast.success("Conversation title updated.");
       })
@@ -127,7 +126,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
     const fetchOptions: RequestInit = {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tags: mapTagIdsToTags(SetToArray(newSelectedTags), userTags)}),
+      body: JSON.stringify({ tags: mapTagIdsToTags(setToArray(newSelectedTags), userTags)}),
     };
     fetch(`/api/conversations/${conversation.id}`, fetchOptions)
       .then((response) => {
@@ -151,9 +150,9 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   }
 
   const titleWhenNotEditing: JSX.Element = (
-    <p className="text-xs text-white whitespace-nowrap overflow-scroll">
-      {title}
-    </p>
+    <div className="overflow-scroll scrollbar-hide">
+        <p className="text-xs text-white whitespace-nowrap">{title}</p>
+    </div>
   );
 
   const titleWhenEditing: JSX.Element = (
@@ -186,7 +185,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   if (conversation.model.name === "gpt-4") {
     avatarBackgroundColor = "bg-purple-400 bg-opacity-80";
   } else if(conversation.model.name === "dalle") {
-    avatarBackgroundColor = "bg-blue-400 bg-opacity-80";
+    avatarBackgroundColor = "bg-sky-400 bg-opacity-80";
   } else {
     avatarBackgroundColor = "bg-green-400 bg-opacity-80";
   }

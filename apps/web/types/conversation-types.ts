@@ -15,6 +15,13 @@ export interface ConversationCreateData {
     title: string;
 }
 
+interface Parameters {
+    userContext?: string;
+    responseContext?: string;
+    temperature?: number;
+    size?: string;
+}
+
 /**
  * Represents the parameters of a conversation.
  */

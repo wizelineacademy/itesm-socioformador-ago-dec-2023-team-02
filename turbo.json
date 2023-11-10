@@ -12,7 +12,11 @@
         "NEXT_PUBLIC_GPT_35_INPUT",
         "NEXT_PUBLIC_GPT_35_OUTPUT",
         "NEXT_PUBLIC_GPT_4_INPUT",
-        "NEXT_PUBLIC_GPT_4_OUTPUT"
+        "NEXT_PUBLIC_GPT_4_OUTPUT",
+        "NEXT_PUBLIC_DALLE_256",
+        "NEXT_PUBLIC_DALLE_512",
+        "NEXT_PUBLIC_DALLE_1024",
+        "S3_SECRET_KEY"
       ],
       "dotEnv": [".env.local", ".env"]
     },
@@ -20,7 +24,7 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "env": ["NODE_ENV"]
+      "env": ["NODE_ENV", "S3_SECRET_KEY"]
     }
   },
   "globalDotEnv": [".env.local", ".env"],

@@ -16,7 +16,7 @@ ConversationsActionType,
 import { sortTagsByName } from "@/helpers/tag-helpers";
 import { ConversationList } from "../molecules/conversation-list";
 import UserCard from "../molecules/user-card";
-import TagMenuModal from "../molecules/tag-menu-modal";
+import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 
 interface ConversationSidebarProps {
   userConversations: SidebarConversation[];
@@ -104,7 +104,8 @@ export default function ConversationSidebar({userConversations, userTags}: Conve
           onTextChange={handleSearchTextChange}
           overridingStyle="w-full text-sm shadow-none dark text-white"
           placeholder="Search Chat"
-          takeFullWidth={false}/>
+          takeFullWidth={false}
+          text={searchText}/>
 
           {/* Tag filter section */}
           <Badge content={selectedTags.size} isInvisible={selectedTags.size === 0}>
