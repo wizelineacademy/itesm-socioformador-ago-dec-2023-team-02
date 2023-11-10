@@ -163,7 +163,7 @@ export default function ConversationBody(): JSX.Element {
     setUserContext(parameters.userContext);
     setResponseContext(parameters.responseContext);
     setTemperature(parameters.temperature);
-    setSize(parameters.size);
+    setSize(parameters.size || "1024x1024");
     setMessageData(processedData);
     setModelDescription(descriptionObject);
     setProviderImage(providerImageUrl);
