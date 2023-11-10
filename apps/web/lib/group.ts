@@ -56,6 +56,9 @@ export async function getGroupById(idGroup: number): Promise<PrismaResponse<Grou
         // Validate if the group exists
         const group = await prisma.group.findUnique({
             where: { id: idGroup },
+            include: {
+                users: true, // Include users in the response
+            }
         });
         if (!group) {
             return { status: 404, message: 'Group not found' };
