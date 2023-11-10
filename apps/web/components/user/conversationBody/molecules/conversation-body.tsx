@@ -110,7 +110,7 @@ export default function ConversationBody(): JSX.Element {
   const [userContext, setUserContext] = useState<string>("");
   const [responseContext, setResponseContext] = useState<string>("");
   const [temperature, setTemperature] = useState<number>(0.5);
-  const [size, setSize] = useState<string>("1024x1024")
+  const [size, setSize] = useState<string>("512x512")
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [modelDescription, setModelDescription] = useState<ModelDescription>({} as ModelDescription)
   const [modelName, setModelName] = useState<string>("");
