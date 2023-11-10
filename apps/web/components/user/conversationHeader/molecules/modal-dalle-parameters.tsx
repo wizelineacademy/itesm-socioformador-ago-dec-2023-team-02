@@ -48,7 +48,7 @@ export default function ModalParametersDalle(props: any): JSX.Element {
     };
     saveParameters(updatedParameters);
   };
-  console.log(size);
+  
   // Returning the Modal component
   return (
     <Modal
