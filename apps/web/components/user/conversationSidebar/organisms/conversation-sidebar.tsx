@@ -16,7 +16,7 @@ ConversationsActionType,
 import { sortTagsByName } from "@/helpers/tag-helpers";
 import { ConversationList } from "../molecules/conversation-list";
 import UserCard from "../molecules/user-card";
-import TagMenuModal from "../molecules/tag-menu-modal";
+import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 
 interface ConversationSidebarProps {
   userConversations: SidebarConversation[];
