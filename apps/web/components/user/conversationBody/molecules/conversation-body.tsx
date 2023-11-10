@@ -163,7 +163,7 @@ export default function ConversationBody(): JSX.Element {
     setUserContext(parameters.userContext);
     setResponseContext(parameters.responseContext);
     setTemperature(parameters.temperature);
-    setSize(parameters.size);
+    setSize(parameters.size || "1024x1024");
     setMessageData(processedData);
     setModelDescription(descriptionObject);
     setProviderImage(providerImageUrl);
@@ -290,9 +290,9 @@ export default function ConversationBody(): JSX.Element {
     handleSubmit, // Form submission handler that automatically resets the input field and appends a user message.
     messages, // The current array of chat messages.
     error, // An error object returned by SWR, if any.
+    isLoading, // Boolean flag indicating whether a request is currently in progress.
     
     /*
-      isLoading, // Boolean flag indicating whether a request is currently in progress.
       stop, // Function that aborts the current request
       reload,//Function to reload the last AI chat response for the given chat history.
       append, //append(message: Message | CreateMessage, chatRequestOptions: { options: { headers, body } }) Function to append a message to the chat, triggering an API call for the AI response.
@@ -320,6 +320,7 @@ export default function ConversationBody(): JSX.Element {
           providerImage={providerImage}
           userImage={userImage}
           modelName={modelName}
+          isLoading={isLoading}
         />
       </div>
 
