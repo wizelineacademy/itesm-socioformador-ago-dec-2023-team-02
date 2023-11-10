@@ -98,20 +98,26 @@ export async function getConversationById(
       where: {
         id, // Conversation ID to filter
       },
-      // Include additional models (relations) in the result
       include: {
         user: true, // Include user details
-        model:          {include: {
-          provider: {
-            select: {
-              image: true, // Select only the image of the provider
+        model: {
+          include: {
+            provider: {
+              select: {
+                image: true, // Select only the image of the provider
+              }
             }
           }
-        }},
-        messages: true, // Include messages in the conversation
+        },
+        messages: {
+          orderBy: {
+            createdAt: 'asc', // Ordena los mensajes por fecha de creación, de más antiguo a más nuevo
+          }
+        },
         tags: true, // Include tags associated with the conversation
       },
     });
+    
   /*
     const conversation: Conversation | null =
       await prisma.conversation.findUnique({

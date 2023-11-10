@@ -43,7 +43,7 @@ export const ModelCard: React.FC<ModelCardProps> = ({
   if(modelName === "gpt-4") {
     avatarBackgroundColor = "dark:bg-purple-400 dark:bg-opacity-80 bg-purple-600 bg-opacity-80";
   }else if(modelName === "dalle") {
-    avatarBackgroundColor = "dark:bg-blue-400 dark:bg-opacity-80 bg-blue-600 bg-opacity-80";
+    avatarBackgroundColor = "dark:bg-sky-400 dark:bg-opacity-80 bg-sky-600 bg-opacity-80";
   }else {
     avatarBackgroundColor = "dark:bg-green-400 dark:bg-opacity-80 bg-green-600 bg-opacity-80";
   }

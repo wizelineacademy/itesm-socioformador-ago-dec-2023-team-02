@@ -185,7 +185,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   if (conversation.model.name === "gpt-4") {
     avatarBackgroundColor = "bg-purple-400 bg-opacity-80";
   } else if(conversation.model.name === "dalle") {
-    avatarBackgroundColor = "bg-blue-400 bg-opacity-80";
+    avatarBackgroundColor = "bg-sky-400 bg-opacity-80";
   } else {
     avatarBackgroundColor = "bg-green-400 bg-opacity-80";
   }
