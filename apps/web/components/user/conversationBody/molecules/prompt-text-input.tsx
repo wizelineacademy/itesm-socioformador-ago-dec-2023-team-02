@@ -99,7 +99,7 @@ export default function PromptTextInput({
             </Button>
           </form>
           {/* Footer */}
-          <div className=" w-full text-center">
+          <div className=" w-full text-center bg-white dark:bg-black pb-0">
             <p className="p-0 m-0 text-xs text-slate-400 dark:text-slate-400 wizeline-brand:text-slate-200 text-center">
               © 2023 Team SAM, developed by Wizeline.
             </p>
