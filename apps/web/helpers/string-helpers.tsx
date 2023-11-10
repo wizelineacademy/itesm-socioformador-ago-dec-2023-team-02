@@ -44,6 +44,11 @@ export function lcsSize(str1: string, str2: string): number {
     return maxSize
 }
 
+/**
+ * Removes from a string, if present, every whitespace found at its start. 
+ * @param str - A string whose leading whitespaces will be removed.
+ * @returns A new string, removed of its leading whitespaces.
+ */
 export function trimLeadingSpaces(str: string): string {
     return str.replace(/^\s+/, "")
 }
