@@ -319,6 +319,7 @@ export default function ConversationBody(): JSX.Element {
           messages={messages}
           providerImage={providerImage}
           userImage={userImage}
+          modelName={modelName}
         />
       </div>
 

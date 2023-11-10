@@ -72,13 +72,14 @@ function ModelSelectionCard(props: any) {
   const { model } = props;
   // Logs the model object for debugging.
   console.log(model);
+  
   // Sets avatar background color based on the model name.
   let avatarBackgroundColor = "";
-  if (model.name === "gpt-4") {
+  if(model.name === "gpt-4") {
     avatarBackgroundColor = "dark:bg-purple-400 dark:bg-opacity-80 bg-purple-600 bg-opacity-80";
-  } else if (model.name === "dalle") {
-    avatarBackgroundColor = "bg-blue-400 bg-opacity-80 bg-sky bg-opacity-80";
-  } else {
+  }else if(model.name === "dalle") {
+    avatarBackgroundColor = "dark:bg-sky-400 dark:bg-opacity-80 bg-sky-600 bg-opacity-80";
+  }else {
     avatarBackgroundColor = "dark:bg-green-400 dark:bg-opacity-80 bg-green-600 bg-opacity-80";
   }
 

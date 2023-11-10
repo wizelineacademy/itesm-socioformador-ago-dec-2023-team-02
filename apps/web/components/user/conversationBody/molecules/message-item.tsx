@@ -23,24 +23,37 @@ export default function MessageItem({
   message,
   //Callback,
   senderImage, //creditsUsed,
+  modelName,
 }: {
   message: Message; //este podría ser content y solo ser un string, de todos modos este string sería el que copiemos
   //Callback: any;
   senderImage: string;
+  modelName: string;
   //creditsUsed: number;
 }): JSX.Element {
+  let avatarBackgroundColor = "";
+  if (modelName === "gpt-4") {
+    avatarBackgroundColor = "bg-purple-400 bg-opacity-80";
+  } else if (modelName === "dalle") {
+    avatarBackgroundColor = "bg-sky-400 bg-opacity-80";
+  } else {
+    avatarBackgroundColor = "bg-green-400 bg-opacity-80";
+  }
+
   return (
     <Card
       className={`${
         message.role === "user" ? "senderUser-bg" : "senderModel-bg"
       } w-full justify-center border-none border-bottom rounded-none shadow-none py-3`}
     >
-      <div className="justify-center grid md:grid-cols-[auto,.7fr,auto] xl:grid-cols-[.25fr,.5fr,.25fr] grid-cols-1 gap-4 p-4">
+      <div className="justify-center grid md:grid-cols-[auto,.6fr,auto] xl:grid-cols-[auto,.5fr,auto] grid-cols-1 gap-4 p-4">
         {/* Left column: Sender's image */}
         <div className="flex items-start md:justify-end justify-start">
           <Image
-          className="p-1"
-          sizes="sm"
+            className={`${
+              message.role === "user" ? "" : `p-1 ${avatarBackgroundColor}`
+            }`}
+            sizes="sm"
             alt="Sender Image"
             height={40}
             radius="md"
@@ -55,7 +68,11 @@ export default function MessageItem({
             className="w-full prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
             components={{
               p({ children }: { children: React.ReactNode }) {
-                return <p className="mb-2 text-sm text-slate-800 dark:text-slate-200 last:mb-0">{children}</p>;
+                return (
+                  <p className="mb-2 text-sm text-slate-800 dark:text-slate-200 last:mb-0">
+                    {children}
+                  </p>
+                );
               },
               code({
                 _node,
