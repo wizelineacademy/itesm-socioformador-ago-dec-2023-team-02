@@ -20,6 +20,7 @@
     "@nextui-org/theme": "^2.1.9",
     "@prisma/client": "^5.2.0",
     "@radix-ui/react-slider": "^1.1.2",
+    "@radix-ui/react-slot": "^1.0.2",
     "@tailwindcss/typography": "^0.5.10",
     "@types/react-color": "^3.0.9",
     "@vercel/postgres": "^0.4.1",
@@ -50,7 +51,6 @@
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.1",
-    "typescript": "5.2.2",
     "ui": "workspace:*",
     "uuid": "^9.0.1"
   },
@@ -64,6 +64,6 @@
     "prisma": "^5.2.0",
     "tsconfig": "workspace:*",
     "turbo": "^1.10.13",
-    "typescript": "^5.2.2"
+    "typescript": "5.1.3"
   }
 }
