@@ -32,6 +32,16 @@ export function removeItemFromSet<T>(itemToRemove: T, set: Set<T>): Set<T> {
  * @param set - A JavaScript set to transform into an array.
  * @returns An array holding the items present in the given set. 
  */
-export function SetToArray<T>(set: Set<T>): T[] {
+export function setToArray<T>(set: Set<T>): T[] {
     return Array.from(set)
+}
+
+/**
+ * Determines whether two sets are equal. 
+ * @param setA - A set to compare to setB. 
+ * @param setB - A set to compare to setA. 
+ * @returns A boolean value that indicates if the two given sets have the same items.
+ */
+export function setsAreEqual<T>(setA: Set<T>, setB: Set<T>): boolean {
+   return setA.size === setB.size && Array.from(setA).every((setItem) => setB.has(setItem))
 }
