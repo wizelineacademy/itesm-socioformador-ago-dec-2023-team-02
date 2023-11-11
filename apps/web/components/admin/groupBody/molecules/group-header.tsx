@@ -1,7 +1,8 @@
 "use client";
 import React from 'react';
 import { Button } from '@nextui-org/react';
-import { AiOutlineSetting, AiOutlineUserAdd } from 'react-icons/ai';
+import { AiOutlineSetting } from 'react-icons/ai';
+import ThemeButton from '@/components/theme-button';
 
 // Define the prop types for the GroupHeader component using an interface
 interface GroupHeaderProps {
@@ -28,19 +29,16 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
       {/* Right side container for action buttons, aligning items to the end */}
       <div className="w-full sm:w-1/2 flex justify-end space-x-2">
         {/* Button to navigate to group settings */}
-        <Button auto icon={<AiOutlineSetting />} className="text-white bg-blue-500 hover:bg-blue-600">
+        <Button auto icon={<AiOutlineSetting />} className="text-white bg-red-500 hover:bg-red-600">
           Group Settings
-        </Button>
-        
-        {/* Button to add a new user to the group */}
-        <Button auto icon={<AiOutlineUserAdd />} className="text-white bg-green-500 hover:bg-green-600">
-          Add User
         </Button>
         
         {/* Button to modify the group's credits */}
         <Button auto className="text-white bg-red-500 hover:bg-red-600">
           Modify Credits
         </Button>
+
+        <ThemeButton />
       </div>
     </div>
   );
