@@ -24,7 +24,7 @@ export const GroupHeader: React.FC<GroupHeaderProps> = ({
         <h3 className="text-3xl font-bold">{groupName}</h3>
 
         {/* Placeholder for credits information below the group name */}
-        <p className="text-default-400  text-sm mt-1">{creditsAssigned} credits assigned</p>
+        <p className="text-default-600  text-sm mt-1">{creditsAssigned} credits assigned</p>
         {/* Added padding between group name and description */}
         {/* <div className='overflow-scroll h-10 my-2'>
           <p className="text-gray-600 text-sm">{groupDescription}</p>

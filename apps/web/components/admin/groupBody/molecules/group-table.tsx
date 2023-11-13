@@ -187,11 +187,11 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
 
         case "actions":
           return (
-            <div className="relative flex justify-end items-center gap-2">
+            <div className="relative flex justify-center items-center gap-2">
               <Dropdown placement="left">
                 <DropdownTrigger>
                   <Button isIconOnly size="sm" variant="light">
-                    <SlOptionsVertical className="text-default-300" />
+                    <SlOptionsVertical className="text-default-600" />
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
@@ -246,8 +246,9 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
+        <div className="flex justify-between gap-3 items-center">
+            <Input
+          size="sm"
             isClearable
             className="w-full sm:max-w-[44%]"
             placeholder="Search by name..."
@@ -262,6 +263,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
+                size="sm"
                   endContent={<BsChevronCompactDown className="text-small" />}
                   variant="light"
                 >
@@ -286,6 +288,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
+                size="sm"
                   endContent={<BsChevronCompactDown className="text-small" />}
                   variant="light"
                 >
@@ -307,7 +310,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="danger" endContent={<AiOutlinePlus />}>
+            <Button size="sm" color="danger" endContent={<AiOutlinePlus />}>
               Add New
             </Button>
           </div>
