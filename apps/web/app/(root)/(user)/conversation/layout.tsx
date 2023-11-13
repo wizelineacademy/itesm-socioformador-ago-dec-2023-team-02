@@ -26,7 +26,8 @@ export default async function ConversationRootLayout({
   let userId: number;
 
   if(user){
-    userId = (((await getUserbyAuthID(user.sid)).data?.id || 1));
+    const userAuthId: string = user.sid;
+    userId = (((await getUserbyAuthID(userAuthId)).data?.id || 1));
 
   }else{
     userId = 1;
