@@ -40,7 +40,7 @@ export default function NewConversationMenu(props: NewConversationMenuProps): JS
     }
 
     return (
-        <div className="flex flex-col items-center justify-start px-4 gap-5">
+        <div className="flex flex-col items-center justify-start gap-5">
             <div className="flex flex-col items-start gap-2 w-full">
                 <p>Name</p>
                 <Input className="h-15 w-80" isClearable onValueChange={handleConversationNameChange} placeholder="Chat name" value={props.conversationName}/>

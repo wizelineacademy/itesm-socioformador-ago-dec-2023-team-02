@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Button, Chip, Divider } from "@nextui-org/react";
-import { AiOutlineEdit } from "react-icons/ai";
-import { MdCancel , MdEdit } from "react-icons/md"
+import { Chip, Divider } from "@nextui-org/react";
+import { MdEdit } from "react-icons/md"
 import type { Tag } from "@prisma/client";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import SearchBar from "@/components/shared/molecules/search-bar";
@@ -14,17 +13,15 @@ import TagEditorPopover from "./tag-editor-popover";
 interface TagMenuProps {
     tags: Tag[]; 
     selectedTags: Set<number>;
+    isEditingTags: boolean; 
     onTagsChange: ((newTags: Tag[]) => void) | null;
     onSelectedTagsChange: (newSelectedTags: Set<number>) => void;
-    allowEditing: boolean; 
 }
 
-export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTagsChange, allowEditing}: TagMenuProps): JSX.Element {
-    const [isEditingTags, setIsEditingTags] = useState<boolean>(false)
+export default function TagMenu({tags, selectedTags, isEditingTags, onTagsChange, onSelectedTagsChange}: TagMenuProps): JSX.Element {
     const [searchText, setSearchText] = useState<string>("")
 
     const handleSearchTextChange: (text: string) => void = (text) => {setSearchText(text)}
-    const handleEditButtonPress: (e: any) => void = (_) => {setIsEditingTags(!isEditingTags)}
 
     const handleTagPress: (pressedTag: Tag) => void = (pressedTag) => {
         const tagIsSelected: boolean = selectedTags.has(pressedTag.id)
@@ -50,8 +47,6 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
         }
     }
 
-    const editButtonIcon: JSX.Element = isEditingTags ? <MdCancel/> : <AiOutlineEdit/>
-
     const newTagChip: JSX.Element = <Chip className="m-1" variant="bordered">New tag +</Chip>
     
     const noTagsLabel: JSX.Element = <div><p className="text-sm opacity-40">No tags to display</p></div>
@@ -59,11 +54,9 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
     const filteredTags: Tag[] = filterTags(tags, searchText)
 
     return (
-        <div className="flex flex-col justify-start items-start p-2 space-y-4 w-full">
+        <div className="flex flex-col justify-start items-start space-y-4 w-full">
             <div className="flex flex-row space-x-2 items-center w-full">
                 <SearchBar onTextChange={handleSearchTextChange} overridingStyle="w-3/5" placeholder="Search tags" text={searchText}/>
-
-                {allowEditing ? <Button isIconOnly onPress={handleEditButtonPress}>{editButtonIcon}</Button> : null}
             </div>
 
             <Divider/>

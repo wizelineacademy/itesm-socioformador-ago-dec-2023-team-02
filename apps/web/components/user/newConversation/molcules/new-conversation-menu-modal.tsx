@@ -23,6 +23,7 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
     const [conversationModelId, setConversationModelId] = useState<number | null>(null)
     const [conversationTags, setConversationTags] = useState<Set<number>>(new Set<number>())
     const titleMaxLength = 25 
+    const modalHorizontalPadding = "px-8"
 
     const resetState: () => void = () => {
         setConversationName("")
@@ -88,8 +89,10 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
             <ModalContent>
             {(onClose) => (
                 <>
-                    <ModalHeader className="flex flex-col gap-1">New chat</ModalHeader>
-                    <ModalBody>
+                    <ModalHeader className={`flex flex-col gap-1  mt-2 ${modalHorizontalPadding}`} >
+                        New chat
+                    </ModalHeader>
+                    <ModalBody className={`${modalHorizontalPadding}`}>
                         <NewConversationMenu
                             conversationModelId={conversationModelId}
                             conversationName={conversationName}
@@ -98,9 +101,10 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
                             onConversationModelIdChange={handleConversationModelIdChange}
                             onConversationNameChange={handleConversationNameChange}
                             onConversationTagsChange={handleConversationTagsChange}
-                            userTags={userTags}/>
+                            userTags={userTags}
+                        />
                     </ModalBody>
-                    <ModalFooter>
+                    <ModalFooter className={`${modalHorizontalPadding}`}>
                         <div className="flex flex-row items-center gap-2">
                             <Button color="danger" onPress={onClose} variant="light">
                                 Close
