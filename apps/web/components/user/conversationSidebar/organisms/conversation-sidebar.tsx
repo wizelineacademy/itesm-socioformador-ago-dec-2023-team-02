@@ -223,7 +223,7 @@ export default function ConversationSidebar({userConversations, userTags, models
         models={models}
         onConversationCreation={handleNewConversationCreation}
         onModalClose={handleNewConversationModalClosing}
-        userTags={userTags}
+        userTags={tags}
       />
 
       <TagMenuModal

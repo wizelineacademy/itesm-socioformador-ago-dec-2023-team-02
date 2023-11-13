@@ -52,41 +52,46 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
 
     const editButtonIcon: JSX.Element = isEditingTags ? <MdCancel/> : <AiOutlineEdit/>
 
-    const newTagChip: JSX.Element = (
-        <Chip className="m-1" variant="bordered">
-            New tag +
-        </Chip>)
+    const newTagChip: JSX.Element = <Chip className="m-1" variant="bordered">New tag +</Chip>
+    
+    const noTagsLabel: JSX.Element = <div><p className="text-sm opacity-40">No tags to display</p></div>
+
+    const filteredTags: Tag[] = filterTags(tags, searchText)
 
     return (
         <div className="flex flex-col justify-start items-start p-2 space-y-4 w-full">
             <div className="flex flex-row space-x-2 items-center w-full">
-                <SearchBar onTextChange={handleSearchTextChange} placeholder="Search tags" takeFullWidth text={searchText}/>
+                <SearchBar onTextChange={handleSearchTextChange} overridingStyle="w-3/5" placeholder="Search tags" text={searchText}/>
 
                 {allowEditing ? <Button isIconOnly onPress={handleEditButtonPress}>{editButtonIcon}</Button> : null}
             </div>
 
             <Divider/>
 
-            <div className="flex flex-row flex-wrap">
-                {filterTags(tags, searchText).map((tag) => (                    
-                    isEditingTags ? 
-                    <TagEditorPopover initialTagColor={tag.color} initialTagName={tag.name} key={tag.id} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEdition} placement="top" tagId={tag.id}>
+            <div className="min-h-[150px] max-h-[450px] overflow-y-auto">
+                <div className="flex flex-row flex-wrap">
+                    {filteredTags.map((tag) => (                    
+                        isEditingTags ? 
+                        <TagEditorPopover initialTagColor={tag.color} initialTagName={tag.name} key={tag.id} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEdition} placement="top" tagId={tag.id}>
+                            <button type="button">
+                                <TagDisplay badgeContent={<MdEdit/>} isActive tagColor={tag.color} tagName={tag.name}/>
+                            </button>
+                        </TagEditorPopover>
+                        :
+                        <TagDisplay badgeContent={<IoMdCheckmarkCircle/>} isActive={selectedTags.has(tag.id)} key={tag.id} onPress={()=>{handleTagPress(tag)}} tagColor={tag.color} tagName={tag.name} />
+                    ))}
+
+                    {filteredTags.length === 0 ? noTagsLabel : null}
+
+                    {isEditingTags ?  
+                    <TagEditorPopover initialTagColor={null} initialTagName={null} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEditionNewTag} placement="top" tagId={null}>
                         <button type="button">
-                            <TagDisplay badgeContent={<MdEdit/>} isActive tagColor={tag.color} tagName={tag.name}/>
+                            {newTagChip}
                         </button>
                     </TagEditorPopover>
                     :
-                    <TagDisplay badgeContent={<IoMdCheckmarkCircle/>} isActive={selectedTags.has(tag.id)} key={tag.id} onPress={()=>{handleTagPress(tag)}} tagColor={tag.color} tagName={tag.name} />
-                ))}
-
-                {isEditingTags ?  
-                <TagEditorPopover initialTagColor={null} initialTagName={null} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEditionNewTag} placement="top" tagId={null}>
-                    <button type="button">
-                        {newTagChip}
-                    </button>
-                </TagEditorPopover>
-                :
-                null}
+                    null}
+                </div>
             </div>
         </div>
     );
