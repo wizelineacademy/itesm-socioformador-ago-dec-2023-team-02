@@ -8,37 +8,40 @@ import ThemeButton from '@/components/theme-button';
 interface GroupHeaderProps {
   groupName: string;          // The name of the group
   groupDescription: string;   // A brief description of the group
+  creditsAssigned: number;    // The number of credits assigned to the group
 }
 
 // GroupHeader component definition with explicit return type JSX.Element
 export const GroupHeader: React.FC<GroupHeaderProps> = ({ 
   groupName, 
-  groupDescription 
+  groupDescription ,
+  creditsAssigned
 }): JSX.Element => {
   return (
-    // Outer container with flex layout, adjusting for screen size with responsive classes
-    <div className="flex flex-wrap items-center justify-between p-4">
-      {/* Left side container holding the group name and description */}
-      <div className="w-full sm:w-1/2">
-        {/* Tailwind classes used for styling the group name as a heading */}
+    <div className="flex flex-wrap items-start justify-between my-2">
+      {/* Adjust the order of items for XS screens */}
+      <div className="w-full sm:w-1/2 order-2 sm:order-1">
         <h3 className="text-3xl font-bold">{groupName}</h3>
-        {/* Paragraph for the group description */}
-        <p className="text-gray-600">{groupDescription}</p>
+
+        {/* Placeholder for credits information below the group name */}
+        <p className="text-default-400  text-sm mt-1">{creditsAssigned} credits assigned</p>
+        {/* Added padding between group name and description */}
+        {/* <div className='overflow-scroll h-10 my-2'>
+          <p className="text-gray-600 text-sm">{groupDescription}</p>
+        </div> */}
       </div>
-      
-      {/* Right side container for action buttons, aligning items to the end */}
-      <div className="w-full sm:w-1/2 flex justify-end space-x-2">
-        {/* Button to navigate to group settings */}
-        <Button auto icon={<AiOutlineSetting />} className="text-white bg-red-500 hover:bg-red-600">
-          Group Settings
-        </Button>
-        
-        {/* Button to modify the group's credits */}
-        <Button auto className="text-white bg-red-500 hover:bg-red-600">
+
+      {/* Adjust the order and padding of buttons container for XS screens */}
+      <div className="w-full sm:w-1/2 flex justify-end space-x-2 order-1 sm:order-2 pb-2 sm:pb-0">
+        <ThemeButton />
+
+        <Button auto variant='flat' size='sm'>
           Modify Credits
         </Button>
 
-        <ThemeButton />
+        <Button auto variant='flat' size='sm' endContent={<AiOutlineSetting />}>
+          Group Settings
+        </Button>
       </div>
     </div>
   );
