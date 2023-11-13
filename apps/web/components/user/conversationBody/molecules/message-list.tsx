@@ -17,11 +17,13 @@ export default function MessageList({
   messages,
   userImage,
   providerImage,
+  modelName,
   isLoading,
 }: {
   messages: Message[];
   userImage: string;
   providerImage: string;
+  modelName: string;
   isLoading: boolean;
 }): JSX.Element {
   const [autoScroll, setAutoScroll] = useState(true);
@@ -47,6 +49,7 @@ export default function MessageList({
           <MessageItem
             key={index}
             message={message}
+            modelName={modelName}
             senderImage={message.role === "user" ? userImage : providerImage}
             //creditsUsed={message.creditsUsed}
           />

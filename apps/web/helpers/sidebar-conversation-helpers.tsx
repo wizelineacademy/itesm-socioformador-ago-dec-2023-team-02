@@ -4,7 +4,8 @@
  */
 
 import type { Tag } from "@prisma/client";
-import type { SidebarConversation } from "@/types/sidebar-conversation-types";
+import type { SidebarConversation, SidebarConversationModel } from "@/types/sidebar-conversation-types";
+import type { SidebarModel } from "@/types/moder-with-provider-types";
 import { containsAllElements } from "./array-helpers";
 import { cleanString, findMatchRatio } from "./string-helpers";
 
@@ -63,10 +64,10 @@ export function conversationsReducer(state: SidebarConversation[], action: Conve
 }
 
 /**
- * Modifies the title of a conversation, without modifying the given conversation.  
+ * Modifies the title of a conversation.
  * @param conversation - A conversation whose title will be edited. 
  * @param newTitle - The new title the conversation will be edited with. 
- * @returns A new, edited conversation, that has as title newTitle. 
+ * @returns A new conversation, that has as title newTitle. 
  */
 export function editConversationTitle(conversation: SidebarConversation, newTitle: string): SidebarConversation {
     return {...conversation, title: newTitle}
@@ -76,10 +77,25 @@ export function editConversationTitle(conversation: SidebarConversation, newTitl
  * Modifies the array of tags associated to the given conversation. 
  * @param conversation - A conversation whose array of tags will be edited. 
  * @param newTags - An array containing the new tag objects the given conversation will be associated to. 
- * @returns A new, edited conversation, that has as array of tags newTags. 
+ * @returns A new conversation, that has as array of tags newTags. 
  */
 export function editConversationTags(conversation: SidebarConversation, newTags: Tag[]): SidebarConversation {
     return {...conversation, tags: newTags}
+}
+
+export function editConversationModel(conversation: SidebarConversation, newModel: SidebarConversationModel): SidebarConversation {
+    return {...conversation, model: newModel}
+}
+
+export function sidebarModelToSidebarConversationModel(sidebarModel: SidebarModel): SidebarConversationModel {
+    return {
+        id: sidebarModel.id,
+        name: sidebarModel.name,
+        provider: {
+            id: sidebarModel.provider.id,
+            image: sidebarModel.provider.image,
+        }
+    }
 }
 
 /**
@@ -109,10 +125,20 @@ export function sortConversationsByDate(conversations: SidebarConversation[]): S
     return [...conversations].sort((convA, convB) => convB.createdAt.getTime() - convA.createdAt.getTime());
 }
 
+/**
+ * Creates a set for the given conversation's array of tags, where each item is a tag's id. 
+ * @param conversation - A conversation, holding an array of tags.
+ * @returns A set that comprises the ids of the tags associated to the given conversation. 
+ */
 export function buildTagSet(conversation: SidebarConversation): Set<number> {
     return new Set<number>(conversation.tags.map(tag => tag.id))
 }
 
-export function isValidConversationTitle(title: string): boolean {
-    return title.length > 0
+/**
+ * Determines if a given string represents a valid conversation (chat) title. 
+ * @param title - The potential title of a converation with a model. 
+ * @returns A boolean that indicates whether the given title is valid.
+ */
+export function isValidConversationName(name: string): boolean {
+    return name.length > 0
 }

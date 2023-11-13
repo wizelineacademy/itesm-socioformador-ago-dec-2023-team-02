@@ -8,12 +8,12 @@ import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import type { ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
-import { ConversationsActionType, buildTagSet, isValidConversationTitle  } from "@/helpers/sidebar-conversation-helpers";
-import { SetToArray } from "@/helpers/set-helpers";
+import { ConversationsActionType, buildTagSet, isValidConversationName  } from "@/helpers/sidebar-conversation-helpers";
+import { setToArray, setsAreEqual } from "@/helpers/set-helpers";
 import { mapTagIdsToTags } from "@/helpers/tag-helpers";
 import { imposeMaxLength, trimLeadingSpaces } from "@/helpers/string-helpers";
 import ConversationTitleControls from "../atoms/conversation-title-controls";
-import TagMenuModal from "./tag-menu-modal";
+import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 
 interface ConversationCardProps {
   userTags: Tag[];
@@ -62,7 +62,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
 
   const handleTitleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
-      if (conversation.title !== title && isValidConversationTitle(title)) {
+      if (conversation.title !== title && isValidConversationName(title)) {
         saveConversationTitle();
       } else {
         setEditingTitle(false);
@@ -71,7 +71,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   };
 
   const handleTagMenuModalClose: (newTags: Tag[], newSelectedTags: Set<number>) => void = (_, newSelectedTags) => {
-    if (newSelectedTags.size !== conversationTags.size){
+    if (!setsAreEqual<number>(conversationTags, newSelectedTags)){
       saveTagSelection(newSelectedTags)
     }
     setTagMenuModalIsOpen(false)
@@ -126,7 +126,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
     const fetchOptions: RequestInit = {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tags: mapTagIdsToTags(SetToArray(newSelectedTags), userTags)}),
+      body: JSON.stringify({ tags: mapTagIdsToTags(setToArray(newSelectedTags), userTags)}),
     };
     fetch(`/api/conversations/${conversation.id}`, fetchOptions)
       .then((response) => {
@@ -169,7 +169,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   );
 
   const singleSelectionListItems: SingleSelectionDropdownItem[] = [
-    {key: "editTitle", name: "Edit Title", action: () => {setEditingTitle(true);}},
+    {key: "rename", name: "Rename", action: () => {setEditingTitle(true);}},
     {key: "editTags", name: "Edit Tags", action: () => {setTagMenuModalIsOpen(true);}},
     {key: "delete", name: "Delete", style: "text-danger", action: () => {removeThisConversation();}},
   ];
@@ -185,7 +185,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   if (conversation.model.name === "gpt-4") {
     avatarBackgroundColor = "bg-purple-400 bg-opacity-80";
   } else if(conversation.model.name === "dalle") {
-    avatarBackgroundColor = "bg-blue-400 bg-opacity-80";
+    avatarBackgroundColor = "bg-sky-400 bg-opacity-80";
   } else {
     avatarBackgroundColor = "bg-green-400 bg-opacity-80";
   }
@@ -204,7 +204,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
 
           {editingTitle ?
           <ConversationTitleControls
-            disableConfirmButton={title === conversation.title || !isValidConversationTitle(title)}
+            disableConfirmButton={title === conversation.title || !isValidConversationName(title)}
             onCancelPress={handleTitleCancelPress}
             onConfirmPress={handleTitleConfirmPress}
           />

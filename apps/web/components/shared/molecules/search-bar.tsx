@@ -28,7 +28,7 @@ export default function SearchBar({
       onValueChange={handleTextChange}
       placeholder={placeholder}
       radius="sm"
-      size="md"
+      size="sm"
       startContent={<BiSearch />}
       value={text}
     />
