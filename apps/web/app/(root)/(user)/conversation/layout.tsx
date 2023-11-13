@@ -6,18 +6,34 @@ import { getAllSidebarTagsByUserID } from "@/lib/tag";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import { getAllModelsWithProvider } from "@/lib/model";
 import type { ModelWithProvider } from "@/types/moder-with-provider-types";
+import { getSession } from "@auth0/nextjs-auth0";
+import { getUserbyAuthID } from "@/lib/user";
+
 
 export const metadata: Metadata = {
   title: "WizePrompt",
   description: "",
 };
 
+
 export default async function ConversationRootLayout({
   children,
 }: {
   children: React.ReactNode;
 }): Promise<any> {
-  const userId = 1; 
+
+  const { user } = (await getSession()) || {};
+  let userId: number;
+
+  if(user){
+    userId = (((await getUserbyAuthID(user.sid)).data?.id || 1));
+
+  }else{
+    userId = 1;
+  }
+
+
+
   const userConversations: SidebarConversation[] = ((await getAllConversationsByUserId(userId)).data || [])
   const userTags: Tag[] = ((await getAllSidebarTagsByUserID(userId)).data || [])
   const models: ModelWithProvider[] = ((await getAllModelsWithProvider()).data || [])

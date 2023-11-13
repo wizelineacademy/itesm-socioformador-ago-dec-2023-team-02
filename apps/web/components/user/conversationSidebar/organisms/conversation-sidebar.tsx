@@ -39,7 +39,8 @@ interface ConversationSidebarProps {
 
 export default function ConversationSidebar({userConversations, userTags, models}: ConversationSidebarProps): JSX.Element {
   const [conversations, conversationsDispatch] = useReducer(conversationsReducer, sortConversationsByDate(userConversations));
-  const [selectedConversation, setSelectedConversation] = useState<number | null>(conversations[0].id || null)
+  //const [selectedConversation, setSelectedConversation] = useState<number | null>(conversations[0].id || null)
+  const [selectedConversation, setSelectedConversation] = useState<number | null>(null)
   const [tags, setTags] = useState<Tag[]>(sortTagsByName(userTags));
   const [selectedTags, setSelectedTags] = useState<Set<number>>(new Set<number>());
   const [searchText, setSearchText] = useState<string>("");
