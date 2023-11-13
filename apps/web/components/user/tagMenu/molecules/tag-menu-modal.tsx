@@ -33,27 +33,27 @@ export default function TagMenuModal({modalTitle, initialTags, initialSelectedTa
     }
     
     return (
-        <Modal isOpen={isOpen} onClose={handleModalClose}>
-        <ModalContent>
-        {(onClose) => (
-            <>
-            <ModalHeader className="flex flex-col gap-1">{modalTitle}</ModalHeader>
-            <ModalBody>
-                <TagMenu
-                allowEditing={allowEditing} 
-                onSelectedTagsChange={handleSelectedTagsChange}
-                onTagsChange={handleTagsChange}
-                selectedTags={selectedTags}
-                tags={tags}/>
-            </ModalBody>
-            <ModalFooter>
-                <Button color="danger" onPress={onClose} variant="light">
-                    Close
-                </Button>
-            </ModalFooter>
-            </>
-        )}
-        </ModalContent>
-    </Modal>
+        <Modal hideCloseButton isOpen={isOpen} onClose={handleModalClose}>
+            <ModalContent>
+            {(onClose) => (
+                <>
+                    <ModalHeader className="flex flex-col gap-1">{modalTitle}</ModalHeader>
+                    <ModalBody>
+                        <TagMenu
+                        allowEditing={allowEditing} 
+                        onSelectedTagsChange={handleSelectedTagsChange}
+                        onTagsChange={handleTagsChange}
+                        selectedTags={selectedTags}
+                        tags={tags}/>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="danger" onPress={onClose} variant="light">
+                            Close
+                        </Button>
+                    </ModalFooter>
+                </>
+            )}
+            </ModalContent>
+        </Modal>
     );
 }

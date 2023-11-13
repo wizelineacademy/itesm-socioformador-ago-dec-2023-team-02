@@ -8,7 +8,7 @@ import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import type { ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
-import { ConversationsActionType, buildTagSet, isValidConversationTitle  } from "@/helpers/sidebar-conversation-helpers";
+import { ConversationsActionType, buildTagSet, isValidConversationName  } from "@/helpers/sidebar-conversation-helpers";
 import { setToArray, setsAreEqual } from "@/helpers/set-helpers";
 import { mapTagIdsToTags } from "@/helpers/tag-helpers";
 import { imposeMaxLength, trimLeadingSpaces } from "@/helpers/string-helpers";
@@ -62,7 +62,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
 
   const handleTitleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
-      if (conversation.title !== title && isValidConversationTitle(title)) {
+      if (conversation.title !== title && isValidConversationName(title)) {
         saveConversationTitle();
       } else {
         setEditingTitle(false);
@@ -169,7 +169,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   );
 
   const singleSelectionListItems: SingleSelectionDropdownItem[] = [
-    {key: "editTitle", name: "Edit Title", action: () => {setEditingTitle(true);}},
+    {key: "rename", name: "Rename", action: () => {setEditingTitle(true);}},
     {key: "editTags", name: "Edit Tags", action: () => {setTagMenuModalIsOpen(true);}},
     {key: "delete", name: "Delete", style: "text-danger", action: () => {removeThisConversation();}},
   ];
@@ -204,7 +204,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
 
           {editingTitle ?
           <ConversationTitleControls
-            disableConfirmButton={title === conversation.title || !isValidConversationTitle(title)}
+            disableConfirmButton={title === conversation.title || !isValidConversationName(title)}
             onCancelPress={handleTitleCancelPress}
             onConfirmPress={handleTitleConfirmPress}
           />

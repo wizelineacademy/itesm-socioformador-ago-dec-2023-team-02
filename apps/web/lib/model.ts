@@ -7,6 +7,7 @@ import { ModelType } from '@prisma/client';
 import type { Model } from "@prisma/client";
 import type { ModelCreateData, ModelUpdateData } from "@/types/model-types";
 import type { PrismaResponse } from "@/types/prisma-client-types";
+import type { ModelWithProvider } from '@/types/moder-with-provider-types';
 import prisma from "./prisma";
 
 /**
@@ -28,6 +29,42 @@ export async function getAllModels(): Promise<PrismaResponse<Model[]>> {
                     },
                 },
             },
+        });
+
+        // Check if any models were fetched
+        if (models.length === 0) {
+            return { status: 404, message: "No models found" };
+        }
+
+        // Return the fetched models
+        return { data: models, status: 200 };
+    } catch (error: any) {
+        // Handle any errors that occur during the fetch
+        return { status: 500, message: error.message };
+    }
+}
+
+/**
+ * Fetches all models from the database, including for each only what is described by the ModelWithProvider interface. 
+ * @returns A Promise that resolves to a PrismaResponse object containing the fetched models or an error message.
+ */
+export async function getAllModelsWithProvider(): Promise<PrismaResponse<ModelWithProvider[]>> {
+    try {
+        // Fetch all models from the database
+        const models: ModelWithProvider[] = await prisma.model.findMany({
+            select: {
+                id: true,
+                name: true,
+                active: true,
+                modelType: true,
+                provider: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                    }
+                }
+            }
         });
 
         // Check if any models were fetched

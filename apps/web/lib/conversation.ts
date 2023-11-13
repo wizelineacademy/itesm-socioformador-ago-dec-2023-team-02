@@ -156,7 +156,7 @@ export async function createConversation(
   input: ConversationCreateData
 ): Promise<PrismaResponse<SidebarConversation>> {
   try {
-    const { idUser, idModel, title } = input || {};
+    const { idUser, idModel, title, tags} = input || {};
     const userId = Number(idUser);
     const modelId = Number(idModel);
 
@@ -200,9 +200,14 @@ export async function createConversation(
     const newConversation: SidebarConversation =
       await prisma.conversation.create({
         data: {
-          ...input,
+          title,
+          idUser,
+          idModel,
           parameters: parameters ? parameters : "", // Set parameters if applicable
           active: true, // Set the 'active' field to true by default
+          tags: {
+            connect: tags.map((tag) => {return {id: tag.id}})
+          }
         },
         // Include additional models (relations) in the result
         select: {
@@ -212,6 +217,7 @@ export async function createConversation(
           tags: {
             select: {
               id: true,
+              idUser: true,
               name: true,
               color: true,
             },
@@ -219,9 +225,11 @@ export async function createConversation(
           active: true,
           model: {
             select: {
+              id: true,
               name: true,
               provider: {
                 select: {
+                  id: true,
                   image: true,
                 },
               },
