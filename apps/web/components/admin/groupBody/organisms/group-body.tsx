@@ -67,7 +67,7 @@ export default function GroupBody(): JSX.Element {
     return (
         <div className="p-5">
             {/* Group Header */}
-            <GroupHeader groupName={groupData.name} groupDescription={groupData.description} creditsAssigned={groupData.creditsAssigned}/>
+            <GroupHeader groupName={groupData.name} creditsAssigned={groupData.creditsAssigned}/>
             {/* Group Table */}
             <GroupTable users={groupData.users} />
 

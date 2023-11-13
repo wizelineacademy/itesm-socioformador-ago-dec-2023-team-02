@@ -7,14 +7,14 @@ import ThemeButton from '@/components/theme-button';
 // Define the prop types for the GroupHeader component using an interface
 interface GroupHeaderProps {
   groupName: string;          // The name of the group
-  groupDescription: string;   // A brief description of the group
+  // groupDescription: string;   // A brief description of the group
   creditsAssigned: number;    // The number of credits assigned to the group
 }
 
 // GroupHeader component definition with explicit return type JSX.Element
 export const GroupHeader: React.FC<GroupHeaderProps> = ({ 
   groupName, 
-  groupDescription ,
+  // groupDescription ,
   creditsAssigned
 }): JSX.Element => {
   return (
