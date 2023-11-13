@@ -9,19 +9,21 @@ interface TagListDisplayProps {
 }
 
 export default function TagListDisplay({emptyListLabel, tags, onTagPress}: TagListDisplayProps): JSX.Element {
-    if (tags.length === 0){
-        return (
-            <div>
-                <p className="text-sm opacity-40">{emptyListLabel}</p>
-            </div>
-        );
-    }
+    const noTagsLabel: JSX.Element = (
+        <div>
+            <p className="text-sm opacity-40">{emptyListLabel}</p>
+        </div>
+    )
     
     return (
-        <div className="w-full flex flex-row flex-wrap">
-            {tags.map((tag) => (
-                <TagDisplay badgeContent={<RxCross2/>} isActive  key={tag.id} onPress={()=>{onTagPress(tag.id)}} tagColor={tag.color} tagName={tag.name}/>
-            ))}
+        <div className="min-h-[80px] max-h-[200px] overflow-y-auto">
+            <div className="w-full flex flex-row flex-wrap">
+                {tags.map((tag) => (
+                    <TagDisplay badgeContent={<RxCross2/>} isActive  key={tag.id} onPress={()=>{onTagPress(tag.id)}} tagColor={tag.color} tagName={tag.name}/>
+                ))}
+
+                {tags.length === 0 ? noTagsLabel : null}
+            </div>
         </div>
     );
 }
