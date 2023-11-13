@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Chip } from "@nextui-org/react";
+import { Button, Chip, Divider } from "@nextui-org/react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdCancel , MdEdit } from "react-icons/md"
 import type { Tag } from "@prisma/client";
@@ -64,6 +64,8 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
 
                 {allowEditing ? <Button isIconOnly onPress={handleEditButtonPress}>{editButtonIcon}</Button> : null}
             </div>
+
+            <Divider/>
 
             <div className="flex flex-row flex-wrap">
                 {filterTags(tags, searchText).map((tag) => (                    
