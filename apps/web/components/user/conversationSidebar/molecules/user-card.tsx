@@ -39,8 +39,13 @@ export default function UserCard({
   return (
     <div className="w-full">
       {/* Button to encapsulate the UserCard and CreditsBadge components. */}
-      <button className="flex items-center justify-between w-full outline-none" onClick={()=>{console.log("Click")}}>
-
+      <div
+        className="flex items-center justify-between w-full outline-none"
+        // onClick={() => {
+        //   console.log("Click");
+        // }}
+        // type="button"
+      >
         {/* Card component to display the user's details. */}
         <Card
           className="relative bottom-0 h-auto bg-transparent dark"
@@ -59,7 +64,7 @@ export default function UserCard({
 
         {/* Options Icon */}
         <SlOptions className="text-xs text-white" />
-      </button>
+      </div>
     </div>
   );
 }

@@ -10,15 +10,13 @@ import { Sender, type Message as WizepromptMessage } from "@prisma/client";
 import type { UseChatOptions } from "ai";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { convertToGptMessage } from "@/lib/helper/gpt/convert-message-type";
 import { saveMessage } from "@/lib/helper/data-handles";
 import ConversationHeader from "@/components/user/conversationHeader/molecules/conversation-top-header";
 import MessageList from "@/components/user/conversationBody/molecules/message-list";
 import type { ConversationUpdateData } from "@/types/conversation-types";
 import PromptTextInput from "./prompt-text-input";
-
-const userImage =
-  "https://ui-avatars.com/api/?background=007CFF&color=fff&name=David";
 
 /**
  * Extended options for the useChat hook.
@@ -43,8 +41,8 @@ interface ExtendedUseChatOptions extends UseChatOptions {
      */
     temperature: number;
     /**
-         * Image size
-         */
+     * Image size
+     */
     size: string;
     /**
      * The name of the model.
@@ -112,10 +110,23 @@ export default function ConversationBody(): JSX.Element {
   const [temperature, setTemperature] = useState<number>(0.5);
   const [size, setSize] = useState<string>("512x512")
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [modelDescription, setModelDescription] = useState<ModelDescription>({} as ModelDescription)
+  const [modelDescription, setModelDescription] = useState<ModelDescription>(
+    {} as ModelDescription
+  );
   const [modelName, setModelName] = useState<string>("");
   const [providerImage, setProviderImage] = useState<string>("");
 
+  const { user } = useUser();
+
+  let userImage = "";
+
+  if (user?.picture) {
+    userImage = user?.picture;
+  } else {
+    userImage = `https://ui-avatars.com/api/?background=007CFF&color=fff&name=${user?.name?.split(
+      " "
+    )[0]}+${user?.name?.split(" ")[1]}`;
+  }
   const params = useParams();
   const idConversation = Number(params.id);
 
@@ -267,7 +278,7 @@ export default function ConversationBody(): JSX.Element {
       responseContext,
       temperature,
       size,
-      modelName
+      modelName,
     },
 
     // onFinish callback function that runs when the response stream is finished
@@ -334,11 +345,11 @@ export default function ConversationBody(): JSX.Element {
         </div>
       ) : (
         <PromptTextInput
-          model={modelName}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           idConversation={idConversation}
           input={input}
+          model={modelName}
         />
       )}
     </div>

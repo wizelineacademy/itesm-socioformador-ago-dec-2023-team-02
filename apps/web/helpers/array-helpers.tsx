@@ -61,3 +61,17 @@ export function containsAllElements<T>(array: T[], of: T[]): boolean {
     const arraySet: Set<T> = new Set<T>(array)
     return of.every(element => arraySet.has(element))
 }
+
+/**
+ * Determines whether two arrays contain the same items (the order in which the items appear isn't considered).
+ * @param arrayA - An array to compare to arrayB.
+ * @param arrayB - An array to compare to arrayA.
+ * @returns A boolean value that indicates if the two given arrays contain the same group of items.
+ */
+export function arraysContainSameElements<T>(arrayA: T[], arrayB: T[]): boolean {
+    if (arrayA.length !== arrayB.length){
+        return false 
+    }
+    const arrayASet: Set<T> = new Set<T>(arrayA)
+    return arrayB.every((arrayItem) => arrayASet.has(arrayItem))
+ }

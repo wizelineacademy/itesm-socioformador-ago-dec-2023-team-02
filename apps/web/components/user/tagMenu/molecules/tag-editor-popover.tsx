@@ -2,7 +2,7 @@ import { Button, Popover, PopoverContent, PopoverTrigger } from "@nextui-org/rea
 import { toast } from "sonner";
 import { useState } from "react";
 import type { Tag } from "@prisma/client";
-import { MdCancel , MdSaveAlt} from "react-icons/md"
+import {  MdOutlineCancel, MdSaveAlt} from "react-icons/md"
 import { AiFillDelete } from "react-icons/ai";
 import type { PopoverPlacement } from "@/types/component-types";
 import ButtonWithIcon from "@/components/shared/atoms/button-with-icon";
@@ -124,35 +124,35 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
     
     return (
         <Popover backdrop="opaque" isOpen={popoverIsOpen} onOpenChange={handleOpenChange} placement={placement} showArrow>
-        <PopoverTrigger>
-            {children}
-        </PopoverTrigger>
-        <PopoverContent>
-            <div className="flex flex-col items-center justify-center gap-5 p-4">
-                <div className="relative flex flex-row justify-start items-center w-full">
-                    <p className="text-lg text-black dark:text-white font-semibold">{!isNewTag ? "Edit tag" : "Create tag"}</p>
+            <PopoverTrigger>
+                {children}
+            </PopoverTrigger>
+            <PopoverContent>
+                <div className="flex flex-col items-center justify-center gap-5 p-4">
+                    <div className="relative flex flex-row justify-start items-center w-full">
+                        <p className="text-lg text-black dark:text-white font-semibold">{!isNewTag ? "Edit tag" : "Create tag"}</p>
 
-                    {!isNewTag ? 
-                    <Button className="absolute right-0" color="danger" isIconOnly onPress={handleDeletePress} size="sm">
-                        <AiFillDelete/>
-                    </Button>
-                    : 
-                    null}
+                        {!isNewTag ? 
+                        <Button className="absolute right-0" color="danger" isIconOnly onPress={handleDeletePress} size="sm">
+                            <AiFillDelete/>
+                        </Button>
+                        : 
+                        null}
+                    </div>
+
+                    <TagEditor
+                        onTagColorChange={handleTagColorChange}
+                        onTagNameChange={handleTagNameChange}
+                        tagColor={tagColor}
+                        tagName={tagName}
+                    />
+
+                    <div className="flex flex-row w-full items-center justify-center gap-2">
+                        <ButtonWithIcon icon={<MdOutlineCancel color="white"/>} isDisabled={false} onPress={handleCancelButtonPress} style="bg-red-700" text="Cancel"/>
+                        <ButtonWithIcon icon={<MdSaveAlt color="white"/>} isDisabled={disableSaveButton} onPress={handleSaveButtonPress} style="bg-sky-700" text="Save"/>
+                    </div>
                 </div>
-
-                <TagEditor
-                    onTagColorChange={handleTagColorChange}
-                    onTagNameChange={handleTagNameChange}
-                    tagColor={tagColor}
-                    tagName={tagName}
-                />
-
-                <div className="flex flex-row w-full items-center justify-center gap-2">
-                    <ButtonWithIcon icon={<MdCancel color="white"/>} isDisabled={false} onPress={handleCancelButtonPress} style="bg-red-700" text="Cancel"/>
-                    <ButtonWithIcon icon={<MdSaveAlt color="white"/>} isDisabled={disableSaveButton} onPress={handleSaveButtonPress} style="bg-sky-700" text="Save"/>
-                </div>
-            </div>
-        </PopoverContent>
-    </Popover>
+            </PopoverContent>
+        </Popover>
     );
 }
