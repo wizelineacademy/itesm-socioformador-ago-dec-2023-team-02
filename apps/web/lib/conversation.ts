@@ -3,13 +3,14 @@
  * @packageDocumentation
  */
 
-import type { Conversation, Prisma, Tag } from "@prisma/client";
+import type { Conversation, Message, Prisma, Tag } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import type { ConversationCreateData } from "@/types/conversation-types";
 import { areValidModelParameters } from "@/types/model-parameters-types";
 import type { ModelParameters } from "@/types/model-parameters-types";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import prisma from "./prisma";
+import { deleteImage } from "./helper/storage/delete-image";
 
 /**
  * Retrieves all conversations from the database that match the given user ID.
@@ -416,6 +417,15 @@ export async function deactivateAllConversationsByUserId(
   }
 }
 
+// Call the delete function for the s3 bucket
+async function deleteImagesHandler(messageToDelete: Message) {
+    // Delete the image from the s3 bucket if the message belongs to the model
+    if (messageToDelete.sender === "MODEL") {
+      await deleteImage(messageToDelete.content)
+    }
+  // })
+}
+
 /**
  * Deletes a conversation and all its associated messages from the database.
  * @param id - The ID of the conversation to delete.
@@ -430,6 +440,34 @@ export async function deleteConversationById(
       return { status: 400, message: "Invalid conversation ID" };
     }
 
+    // Retrieve the conversation's model
+    const model = await prisma.conversation.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        model: {
+          select: {
+            name: true
+          }
+        }
+      }
+    })
+    
+    // Check if the model the conversation is using is dalle to delete the images from the bucket
+    if (model?.model.name === "dalle"){
+      // Get all the messages to delete
+      const messagesToDelete = await prisma.message.findMany({
+        where: {
+          idConversation: id, // Filter messages by conversation ID
+        }
+      })
+      // Call the delete function for the s3 bucket and delete the message from the database
+      messagesToDelete.forEach((message: Message) => {
+        deleteImagesHandler(message).catch((error) => {console.log(error)})
+      })
+      
+    }
     // Delete all messages associated with the conversation
     await prisma.message.deleteMany({
       where: {
