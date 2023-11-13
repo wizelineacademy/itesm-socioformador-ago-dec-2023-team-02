@@ -17,7 +17,26 @@ export async function getUser(idUser: number): Promise<PrismaResponse<User>> {
             }
         })
 
-        return user === null ? {status: 404, message: "No tag was found"} : {status: 200, data: user}
+        return user === null ? {status: 404, message: "No user was found"} : {status: 200, data: user}
+    } catch (error: any) {
+        return {status: 500, message: error.message}
+    }
+}
+
+/**
+ * Retrieves the user that has the given user auth0 ID. 
+ * @param idUser - The ID of the user to retrieve (number). 
+ * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the fetched user (User). 
+ */
+export async function getUserbyAuthID(idUser: string): Promise<PrismaResponse<User>> {
+    try {
+        const user: User | null = await prisma.user.findUnique({
+            where: {
+                idAuth0: idUser
+            }
+        })
+
+        return user === null ? {status: 404, message: "No user was found"} : {status: 200, data: user}
     } catch (error: any) {
         return {status: 500, message: error.message}
     }
