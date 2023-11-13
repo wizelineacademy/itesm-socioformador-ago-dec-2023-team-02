@@ -137,7 +137,8 @@ export const modelsData: Model[] = [
             limitations: [
                 "Generated images may sometimes lack clarity or detail",
                 "May not always interpret textual descriptions accurately",
-                "Limited to the information and training received up to 2021"
+                "Limited to the information and training received up to 2021",
+                "Unable to generate images of real people, such as celebrities or well known figures"
             ],
             pricePerToken: 'Price is based on the image’s resolution; 0.016 USD for a resolution of 256x256 pixels, 0.018 USD for a resolution of 512x512 pixels and 0.02 USD for a resolution of 1024x1024 pixels.',
         }),
