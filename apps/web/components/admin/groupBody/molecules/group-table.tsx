@@ -174,13 +174,13 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
         case "jobPosition":
           return (
             <div className="flex flex-col">
-              <p className="text-bold text-small capitalize">{cellValue}</p>
+              <p className="text-bold text-sm capitalize">{cellValue}</p>
             </div>
           );
         case "creditsRemaining":
           return (
             <div className="flex flex-col">
-              <p className="text-bold text-small capitalize">{cellValue}</p>
+              <p className="text-bold text-sm capitalize">{cellValue}</p>
               {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
             </div>
           );
