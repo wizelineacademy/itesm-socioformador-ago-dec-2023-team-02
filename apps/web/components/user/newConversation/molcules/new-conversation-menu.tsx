@@ -1,5 +1,5 @@
 import type { Tag } from "@prisma/client";
-import { Input } from "@nextui-org/react";
+import { Divider, Input } from "@nextui-org/react";
 import { MdAddCircle } from "react-icons/md";
 import type { ModelWithProvider } from "@/types/moder-with-provider-types";
 import { imposeMaxLength, trimLeadingSpaces } from "@/helpers/string-helpers";
@@ -65,6 +65,8 @@ export default function NewConversationMenu(props: NewConversationMenuProps): JS
                         </button>
                     </TagMenuPopover>    
                 </div>
+
+                <Divider/>
 
                 <TagListDisplay emptyListLabel="No chosen tags" onTagPress={handleTagPress} tags={mapTagIdsToTags(setToArray(props.conversationTags), props.userTags)}/>
             </div>
