@@ -1,27 +1,27 @@
 // GroupTable.tsx
 import React from "react";
 import {
-    Table,
-    TableHeader,
-    TableColumn,
-    TableBody,
-    TableRow,
-    TableCell,
-    Input,
-    Button,
-    DropdownTrigger,
-    Dropdown,
-    DropdownMenu,
-    DropdownItem,
-    Chip,
-    User as UserIcon,
-    Pagination,
-    Selection,
-    ChipProps,
-    SortDescriptor
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Input,
+  Button,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Chip,
+  User as UserIcon,
+  Pagination,
+  Selection,
+  ChipProps,
+  SortDescriptor,
 } from "@nextui-org/react";
 import { User } from "@prisma/client";
-import { SlOptions } from "react-icons/sl";
+import { SlOptionsVertical } from "react-icons/sl";
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
 import { BsChevronCompactDown } from "react-icons/bs";
 import { Role } from "@prisma/client";
@@ -54,7 +54,13 @@ const roleColorMap: Record<string, ChipProps["color"]> = {
 };
 
 //initial visible columns
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "jobPosition", "creditsRemaining", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "name",
+  "role",
+  "jobPosition",
+  "creditsRemaining",
+  "actions",
+];
 
 //function to capitalize strings
 function capitalize(str: string) {
@@ -62,7 +68,7 @@ function capitalize(str: string) {
 }
 
 export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
-    type UserInfo = typeof users[0];
+  type UserInfo = (typeof users)[0];
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
@@ -126,11 +132,11 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
       //const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       let cmp;
-      if(first < second){
+      if (first < second) {
         cmp = -1;
-      }else if(first > second){
+      } else if (first > second) {
         cmp = 1;
-      }else{
+      } else {
         cmp = 0;
       }
 
@@ -139,61 +145,69 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
   }, [sortDescriptor, items]);
 
   // This function renders the table cell depending on the column key and user data
-  const renderCell = React.useCallback((user: UserInfo, columnKey: React.Key) => {
-    const cellValue = user[columnKey as keyof UserInfo];
+  const renderCell = React.useCallback(
+    (user: UserInfo, columnKey: React.Key) => {
+      const cellValue = user[columnKey as keyof UserInfo];
 
-    switch (columnKey) {
-      case "name":
-        return (
-          <UserIcon
-            avatarProps={{radius: "sm", src: user.image}}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.email}
-          </UserIcon>
-        );
+      switch (columnKey) {
+        case "name":
+          return (
+            <UserIcon
+              avatarProps={{ radius: "sm", src: user.image }}
+              description={user.email}
+              name={cellValue}
+            >
+              {user.email}
+            </UserIcon>
+          );
         case "role":
-            return (
-              <Chip className="capitalize" color={roleColorMap[user.role]} size="sm" variant="flat">
-                {cellValue}
-              </Chip>
-            );
-      case "jobPosition":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-          </div>
-        );
+          return (
+            <Chip
+              className="capitalize"
+              color={roleColorMap[user.role]}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue}
+            </Chip>
+          );
+        case "jobPosition":
+          return (
+            <div className="flex flex-col">
+              <p className="text-bold text-small capitalize">{cellValue}</p>
+            </div>
+          );
         case "creditsRemaining":
-            return (
-              <div className="flex flex-col">
-                <p className="text-bold text-small capitalize">{cellValue}</p>
-                {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
-              </div>
-            );
+          return (
+            <div className="flex flex-col">
+              <p className="text-bold text-small capitalize">{cellValue}</p>
+              {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
+            </div>
+          );
 
-      case "actions":
-        return (
-          <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <SlOptions className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+        case "actions":
+          return (
+            <div className="relative flex justify-end items-center gap-2">
+              <Dropdown placement="left">
+                <DropdownTrigger>
+                  <Button isIconOnly size="sm" variant="light">
+                    <SlOptionsVertical className="text-default-300" />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu>
+                  <DropdownItem>View</DropdownItem>
+                  <DropdownItem>Edit</DropdownItem>
+                  <DropdownItem>Delete</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    []
+  );
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -239,13 +253,18 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
             placeholder="Search by name..."
             startContent={<AiOutlineSearch />}
             value={filterValue}
-            onClear={() => {onClear()}}
+            onClear={() => {
+              onClear();
+            }}
             onValueChange={onSearchChange}
           />
           <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<BsChevronCompactDown className="text-small" />} variant="flat">
+                <Button
+                  endContent={<BsChevronCompactDown className="text-small" />}
+                  variant="light"
+                >
                   Role
                 </Button>
               </DropdownTrigger>
@@ -266,7 +285,10 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
             </Dropdown>
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<BsChevronCompactDown className="text-small" />} variant="flat">
+                <Button
+                  endContent={<BsChevronCompactDown className="text-small" />}
+                  variant="light"
+                >
                   Columns
                 </Button>
               </DropdownTrigger>
@@ -285,17 +307,19 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<AiOutlinePlus />}>
+            <Button color="danger" endContent={<AiOutlinePlus />}>
               Add New
             </Button>
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {users.length} users</span>
-          <label className="flex items-center text-default-400 text-small">
+          <span className="text-default-400 text-small">
+            Total {users.length} users
+          </span>
+          <label className="flex items-center text-small">
             Rows per page:
             <select
-              className="bg-transparent outline-none text-default-400 text-small"
+              className=" bg-transparent outline-none text-small mx-2"
               onChange={onRowsPerPageChange}
             >
               <option value="5">5</option>
@@ -328,23 +352,32 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
           isCompact
           showControls
           showShadow
-          color="primary"
+          color="danger"
           page={page}
           total={pages}
           onChange={setPage}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onPreviousPage}>
+          <Button
+            isDisabled={pages === 1}
+            size="sm"
+            variant="flat"
+            onPress={onPreviousPage}
+          >
             Previous
           </Button>
-          <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onNextPage}>
+          <Button
+            isDisabled={pages === 1}
+            size="sm"
+            variant="flat"
+            onPress={onNextPage}
+          >
             Next
           </Button>
         </div>
       </div>
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
-
 
   return (
     <Table
@@ -353,7 +386,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        wrapper: "max-h-[382px] shadow-none",        
+        wrapper: "max-h-[382px] shadow-none p-4",
       }}
       selectedKeys={selectedKeys}
       selectionMode="multiple"
@@ -377,10 +410,12 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
       <TableBody emptyContent={"No users found"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
-            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+            {(columnKey) => (
+              <TableCell>{renderCell(item, columnKey)}</TableCell>
+            )}
           </TableRow>
         )}
       </TableBody>
     </Table>
   );
-}
+};
