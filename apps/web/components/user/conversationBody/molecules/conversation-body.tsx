@@ -331,7 +331,6 @@ export default function ConversationBody(): JSX.Element {
           providerImage={providerImage}
           userImage={userImage}
           modelName={modelName}
-          isLoading={isLoading}
         />
       </div>
 
@@ -350,6 +349,7 @@ export default function ConversationBody(): JSX.Element {
           idConversation={idConversation}
           input={input}
           model={modelName}
+          isLoading={isLoading}
         />
       )}
     </div>
