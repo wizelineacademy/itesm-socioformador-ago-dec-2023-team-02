@@ -103,6 +103,30 @@ export async function deleteUser(idUser: number): Promise<PrismaResponse<User>> 
 }
 
 /**
+ * Deletes the user that has the given user ID. 
+ * @param idUser - The ID of the user to delete (number). 
+ * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the deleted user (User). 
+ */
+export async function deleteUserByAuthId(idAuth: string): Promise<PrismaResponse<User>> {
+    try {
+        const user: User = await prisma.user.delete({
+            where: {
+                idAuth0: idAuth
+            }
+        })
+
+        //Validate user exists
+        if(!user){
+            return { status: 400, message: "User not found" }
+        }
+
+        return { status: 200, data: user }
+    } catch (error: any) {
+        return { status: 500, message: error.message }
+    }
+}
+
+/**
  * Deletes all users whose ID is found in the given array of IDs. 
  * @param idsUsers - An array of user IDs (number[]).  
  * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains an object
@@ -187,6 +211,37 @@ export async function updateUser(idUser: number, userData: UserUpdateData): Prom
 }
 
 /**
+ * Updates an existing user. 
+ * @param idUser - The ID of the user to be updated (number). 
+ * @param updatedUser - A user object that will overwrite the information of the selected user (User). 
+ * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains the updated user (User). 
+ */
+export async function updateUserByAuthId(idAuth: string, userData: UserUpdateData): Promise<PrismaResponse<User>> {
+    // if (!isValidUser(userData)) {
+    //     return { status: 400, message: "Invalid user data given." }
+    // }
+
+    try {
+        //get user based on auth0 id
+        const user = await prisma.user.update({
+            where: {
+                idAuth0: idAuth
+            },
+            data: userData
+        })
+
+        //validate user exists
+        if(!user){
+            return { status: 400, message: "User not found" }
+        }
+
+        return { status: 200, data: user }
+    } catch (error: any) {
+        return { status: 500, message: error.message }
+    }
+}
+
+/**
  * Updates the global model parameters associated to the given user. 
  * @param id - The ID of the user whose global model parameters will be updated.
  * @param globalParameters - An object of type GlobalParameters that holds the parameter values with which
@@ -207,6 +262,36 @@ export async function updateUserGlobalParameters(idUser: number, globalParameter
                 globalParameters: globalParameters as any
             }
         })
+
+        return { status: 200, data: user }
+    } catch (error: any) {
+        return { status: 500, message: error.message }
+    }
+}
+
+/**
+ * Updates the global model parameters associated to the given user. 
+ * @param id - The ID of the user whose global model parameters will be updated.
+ * @param globalParameters - An object of type GlobalParameters that holds the parameter values with which
+ * to update the user's global parameters. 
+ * @returns Promise that resolves to an object that implements PrismaResponse<User>, and that potentially contains the updated User. 
+ */
+export async function updateUserGlobalParametersByAuthId(idAuth: string, globalParameters: GlobalParameters): Promise<PrismaResponse<User>> {
+
+    try {
+        const user: User = await prisma.user.update({
+            where: {
+                idAuth0: idAuth
+            },
+            data: {
+                globalParameters: globalParameters as any
+            }
+        })
+
+        //Validate user exists
+        if(!user){
+            return { status: 400, message: "User not found" };
+        }
 
         return { status: 200, data: user }
     } catch (error: any) {
