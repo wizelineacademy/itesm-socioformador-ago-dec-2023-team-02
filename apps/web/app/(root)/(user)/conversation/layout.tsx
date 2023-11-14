@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { Tag } from "@prisma/client";
+import type { Tag, User } from "@prisma/client";
 import ConversationSidebar from "@/components/user/conversationSidebar/organisms/conversation-sidebar";
 import { getAllConversationsByUserId } from "@/lib/conversation";
 import { getAllSidebarTagsByUserID } from "@/lib/tag";
@@ -8,13 +8,12 @@ import { getAllModelsWithProvider } from "@/lib/model";
 import type { ModelWithProvider } from "@/types/moder-with-provider-types";
 import { getSession } from "@auth0/nextjs-auth0";
 import { getUserbyAuthID } from "@/lib/user";
-
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "WizePrompt",
   description: "",
 };
-
 
 export default async function ConversationRootLayout({
   children,
@@ -23,17 +22,16 @@ export default async function ConversationRootLayout({
 }): Promise<any> {
 
   const { user } = (await getSession()) || {};
-  let userId: number;
 
-  if(user){
-    const userAuthId: string = user.sub;
-    userId = (((await getUserbyAuthID(userAuthId)).data?.id || 1));
-
-  }else{
-    userId = 1;
+  //If no user, redirect to login
+  if(!user){
+    redirect("/conversation/new")
   }
 
-
+  //get user from database
+  const userAuthID: string = user.sub;
+  const currUser: User = ((await getUserbyAuthID(userAuthID)).data || {} as User);
+  const userId: number = currUser.id;
 
   const userConversations: SidebarConversation[] = ((await getAllConversationsByUserId(userId)).data || [])
   const userTags: Tag[] = ((await getAllSidebarTagsByUserID(userId)).data || [])
