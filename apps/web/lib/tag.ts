@@ -323,7 +323,6 @@ export async function updateTag(
   }
 }
 
-
 /**
  * Updates a tag with the given ID and update data.
  * @param idTag - The ID of the tag to update.
@@ -331,16 +330,16 @@ export async function updateTag(
  * @returns A promise that resolves to a PrismaResponse object containing the status and data of the updated tag, or an error message if the update fails.
  */
 export async function updateTagByAuthId(
-    idAuth: string,
-    idTag: number,
-    tagData: TagUpdateData
-  ): Promise<PrismaResponse<Tag>> {
-    // Validate ID
-    if (idTag <= 0) {
-      return { status: 400, message: "Invalid tag ID" };
-    }
+  idAuth: string,
+  idTag: number,
+  tagData: TagUpdateData
+): Promise<PrismaResponse<Tag>> {
+  // Validate ID
+  if (idTag <= 0) {
+    return { status: 400, message: "Invalid tag ID" };
+  }
 
-      //get user based on id auth0
+  //get user based on id auth0
   const user = await prisma.user.findUnique({ where: { idAuth0: idAuth } });
 
   //Validate user exists
@@ -350,24 +349,24 @@ export async function updateTagByAuthId(
 
   //assign user id to tag
   tagData.idUser = user.id;
-  
-    // Trim name and color if provided
-    const normalizedTagData: TagUpdateData = normalizeTagUpdateData(tagData);
-  
-    // Validate name and color
-    if (!isValidTag(normalizedTagData)) {
-      return { status: 400, message: "Invalid name or color value given." };
-    }
-  
-    try {
-      const tag: Tag = await prisma.tag.update({
-        where: {
-          id: idTag,
-        },
-        data: normalizedTagData,
-      });
-      return { status: 200, data: tag };
-    } catch (error: any) {
-      return { status: 500, message: error.message };
-    }
+
+  // Trim name and color if provided
+  const normalizedTagData: TagUpdateData = normalizeTagUpdateData(tagData);
+
+  // Validate name and color
+  if (!isValidTag(normalizedTagData)) {
+    return { status: 400, message: "Invalid name or color value given." };
   }
+
+  try {
+    const tag: Tag = await prisma.tag.update({
+      where: {
+        id: idTag,
+      },
+      data: normalizedTagData,
+    });
+    return { status: 200, data: tag };
+  } catch (error: any) {
+    return { status: 500, message: error.message };
+  }
+}
