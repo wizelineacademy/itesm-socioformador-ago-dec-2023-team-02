@@ -12,6 +12,7 @@ import {
   Input,
   Textarea,
 } from "@nextui-org/react";
+import { TbCoins } from "react-icons/tb";
 import { toast } from "sonner";
 
 function Price(): JSX.Element {
@@ -45,7 +46,11 @@ export default function RequestCredits() {
 
   return (
     <>
-      <Button className="bg-emerald-500  text-gray-50" onPress={onOpen}>
+      <Button
+        className="bg-emerald-500  text-gray-50"
+        onPress={onOpen}
+        startContent={<TbCoins />}
+      >
         Request Credits
       </Button>
       <Modal

@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {
   Badge,
   Button,
@@ -22,6 +22,8 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import { TbEdit } from "react-icons/tb";
 import { BiLineChart } from "react-icons/bi";
 import { TiKeyOutline } from "react-icons/ti";
+import { useRouter } from "next/navigation";
+import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SearchBar from "@/components/shared/molecules/search-bar";
 import {
@@ -35,70 +37,91 @@ import TabButton from "@/components/shared/atoms/tab-button";
 import TabModal from "@/components/shared/atoms/tab-modal";
 import General from "@/components/shared/molecules/general";
 import Usage from "@/components/shared/molecules/usage";
+import type { ModelWithProvider } from "@/types/moder-with-provider-types";
 import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 import UserCard from "../molecules/user-card";
 import { ConversationList } from "../molecules/conversation-list";
+import NewConversationMenuModal from "../../newConversation/molcules/new-conversation-menu-modal";
 
 interface ConversationSidebarProps {
   userConversations: SidebarConversation[];
   userTags: Tag[];
+  models: ModelWithProvider[];
 }
 
 export default function ConversationSidebar({
   userConversations,
   userTags,
+  models,
 }: ConversationSidebarProps): JSX.Element {
   const [conversations, conversationsDispatch] = useReducer(
     conversationsReducer,
     sortConversationsByDate(userConversations)
   );
+  const [selectedConversation, setSelectedConversation] = useState<
+    number | null
+  >(conversations[0]?.id || null);
   const [tags, setTags] = useState<Tag[]>(sortTagsByName(userTags));
   const [selectedTags, setSelectedTags] = useState<Set<number>>(
     new Set<number>()
   );
   const [searchText, setSearchText] = useState<string>("");
   const [showingSidebar, setShowingSidebar] = useState<boolean>(true);
+  const [newConversationModalIsOpen, setNewConversationModalIsOpen] =
+    useState<boolean>(false);
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
+  const router: AppRouterInstance = useRouter();
 
   const { user } = useUser();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [tab, setTab] = useState("general");
 
+  const moveToConversation: (conversationId: number) => void = (
+    conversationId
+  ) => {
+    setSelectedConversation(conversationId);
+    router.push(`/conversation/${conversationId}`);
+  };
+
+  // Verificar que esto sea eficiente.
+  useEffect(() => {
+    const firstConversationId: number | null = conversations[0]?.id;
+    if (
+      selectedConversation &&
+      firstConversationId &&
+      !conversations.map(({ id }) => id).includes(selectedConversation)
+    ) {
+      setSelectedConversation(firstConversationId);
+      router.push(`/conversation/${firstConversationId}`);
+    }
+  }, [conversations, selectedConversation, router]);
+
   // Handler function for updating the search text
   const handleSearchTextChange: (value: string) => void = (value) => {
     setSearchText(value);
   };
 
-  // Handler function for creating a new conversation on button press
-  const handleNewConversationPress: (e: any) => void = (_) => {
-    const fetchOptions: RequestInit = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: "New Conversation",
-        idUser: 1,
-        idModel: 1,
-      }),
-    };
-    fetch(`/api/conversations`, fetchOptions)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((createdConversation) => {
-        conversationsDispatch({
-          type: ConversationsActionType.Create,
-          conversationId: createdConversation.id,
-          conversation: createdConversation,
-        });
-        console.log("Success");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const handleNewConversationCreation: (
+    newConversation: SidebarConversation
+  ) => void = (newConversation) => {
+    conversationsDispatch({
+      type: ConversationsActionType.Create,
+      conversationId: newConversation.id,
+      conversation: newConversation,
+    });
+    moveToConversation(newConversation.id);
+    setNewConversationModalIsOpen(false);
+  };
+
+  const handleConversationPress: (conversationId: number) => void = (
+    conversationId
+  ) => {
+    moveToConversation(conversationId);
+  };
+
+  const handleNewConversationPress: () => void = () => {
+    setNewConversationModalIsOpen(true);
   };
 
   // Handler function for toggling the visibility of the sidebar
@@ -110,7 +133,11 @@ export default function ConversationSidebar({
     setTagMenuModalIsOpen(!tagMenuModalIsOpen);
   };
 
-  const handleTagMenuModalClose: (
+  const handleNewConversationModalClosing: () => void = () => {
+    setNewConversationModalIsOpen(false);
+  };
+
+  const handleTagMenuModalClosing: (
     newTags: Tag[],
     newSelectedTags: Set<number>
   ) => void = (newTags, newSelectedTags) => {
@@ -187,6 +214,8 @@ export default function ConversationSidebar({
           {/* Conversation list section */}
           <ConversationList
             conversationsDispatch={conversationsDispatch}
+            onConversationPress={handleConversationPress}
+            selectedConversation={selectedConversation}
             userConversations={filterConversations(
               conversations,
               searchText,
@@ -209,11 +238,12 @@ export default function ConversationSidebar({
                             "+"
                           )}`
                     }
-                    description={
-                      user?.email
-                        ? `${user?.email?.slice(0, 18)}...`
-                        : "No email provided"
-                    }
+                    // description={
+                    //   user?.email
+                    //     ? `${user?.email?.slice(0, 18)}...`
+                    //     : "No email provided"
+                    // }
+                    description="1740 tokens"
                     name={
                       user?.name
                         ? `${
@@ -274,13 +304,21 @@ export default function ConversationSidebar({
           </div>
         </Button>
 
+        <NewConversationMenuModal
+          isOpen={newConversationModalIsOpen}
+          models={models}
+          onConversationCreation={handleNewConversationCreation}
+          onModalClose={handleNewConversationModalClosing}
+          userTags={tags}
+        />
+
         <TagMenuModal
           allowEditing
           initialSelectedTags={selectedTags}
           initialTags={tags}
           isOpen={tagMenuModalIsOpen}
           modalTitle="Tags"
-          onModalClose={handleTagMenuModalClose}
+          onModalClose={handleTagMenuModalClosing}
         />
       </div>
       <Modal

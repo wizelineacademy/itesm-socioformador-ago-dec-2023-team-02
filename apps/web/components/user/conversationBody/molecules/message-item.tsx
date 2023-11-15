@@ -50,13 +50,13 @@ export default function MessageItem({
         {/* Left column: Sender's image */}
         <div className="flex items-start md:justify-end justify-start">
           <Image
+            alt="Sender Image"
             className={`${
               message.role === "user" ? "" : `p-1 ${avatarBackgroundColor}`
             }`}
-            sizes="sm"
-            alt="Sender Image"
             height={40}
             radius="md"
+            sizes="sm"
             src={senderImage}
             width={35}
           />
@@ -105,10 +105,10 @@ export default function MessageItem({
 
                 return (
                   <CodeBlock
+                    className="text-xs text-slate-800 dark:text-slate-200 mt-1"
                     key={Math.random()}
                     language={(match && match[1]) || ""}
                     value={String(children).replace(/\n$/, "")}
-                    className="text-xs text-slate-800 dark:text-slate-200 mt-1"
                     {...props}
                   />
                 );

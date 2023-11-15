@@ -4,7 +4,8 @@
  */
 
 import type { Tag } from "@prisma/client";
-import type { SidebarConversation } from "@/types/sidebar-conversation-types";
+import type { SidebarConversation, SidebarConversationModel } from "@/types/sidebar-conversation-types";
+import type { SidebarModel } from "@/types/moder-with-provider-types";
 import { containsAllElements } from "./array-helpers";
 import { cleanString, findMatchRatio } from "./string-helpers";
 
@@ -82,6 +83,21 @@ export function editConversationTags(conversation: SidebarConversation, newTags:
     return {...conversation, tags: newTags}
 }
 
+export function editConversationModel(conversation: SidebarConversation, newModel: SidebarConversationModel): SidebarConversation {
+    return {...conversation, model: newModel}
+}
+
+export function sidebarModelToSidebarConversationModel(sidebarModel: SidebarModel): SidebarConversationModel {
+    return {
+        id: sidebarModel.id,
+        name: sidebarModel.name,
+        provider: {
+            id: sidebarModel.provider.id,
+            image: sidebarModel.provider.image,
+        }
+    }
+}
+
 /**
  * Filters an array of conversations, according to a search text that is matched against the conversations' titles, and an 
  * array of selected tags, matched against the array of tags associated to each conversation.  
@@ -123,6 +139,6 @@ export function buildTagSet(conversation: SidebarConversation): Set<number> {
  * @param title - The potential title of a converation with a model. 
  * @returns A boolean that indicates whether the given title is valid.
  */
-export function isValidConversationTitle(title: string): boolean {
-    return title.length > 0
+export function isValidConversationName(name: string): boolean {
+    return name.length > 0
 }
