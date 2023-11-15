@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import ConversationSideBar from "@/components/user/conversationSidebar/molecules/conversation-sidebar";
+import type { Tag } from "@prisma/client";
+import ConversationSidebar from "@/components/user/conversationSidebar/organisms/conversation-sidebar";
 import { getAllConversationsByUserId } from "@/lib/conversation";
 import { getAllSidebarTagsByUserID } from "@/lib/tag";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
-import type { SidebarTag } from "@/types/sidebar-tag-types";
+import { getAllModelsWithProvider } from "@/lib/model";
+import type { ModelWithProvider } from "@/types/moder-with-provider-types";
 
 export const metadata: Metadata = {
   title: "WizePrompt",
@@ -16,12 +18,13 @@ export default async function ConversationRootLayout({
   children: React.ReactNode;
 }): Promise<any> {
   const userId = 1; 
-  const sidebarConversations: SidebarConversation[] = ((await getAllConversationsByUserId(userId)).data || [])
-  const sidebarTags: SidebarTag[] = ((await getAllSidebarTagsByUserID(userId)).data || [])
+  const userConversations: SidebarConversation[] = ((await getAllConversationsByUserId(userId)).data || [])
+  const userTags: Tag[] = ((await getAllSidebarTagsByUserID(userId)).data || [])
+  const models: ModelWithProvider[] = ((await getAllModelsWithProvider()).data || [])
   
   return (
     <div className="flex flex-row">
-      <ConversationSideBar sidebarConversations={sidebarConversations} sidebarTags={sidebarTags}/>
+      <ConversationSidebar models={models} userConversations={userConversations} userTags={userTags}/>
       <section className="w-full">
           {children}
       </section>

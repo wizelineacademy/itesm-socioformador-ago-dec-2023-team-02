@@ -1,7 +1,7 @@
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
 
-type PopoverPlacement =
+export type PopoverPlacement =
   | "top"
   | "bottom"
   | "right"
@@ -20,8 +20,6 @@ interface SingleSelectionDropdownProps {
     dropdownItems: SingleSelectionDropdownItem[];
     placement: PopoverPlacement;
 }
-
-
 
 export default function SingleSelectionDropdown({children, dropdownItems, placement}: SingleSelectionDropdownProps): JSX.Element {    
     return (

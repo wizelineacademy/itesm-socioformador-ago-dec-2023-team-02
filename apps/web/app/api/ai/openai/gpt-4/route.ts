@@ -3,8 +3,7 @@ import { Configuration, OpenAIApi } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { NextResponse } from "next/server";
 
-export const runtime = 'edge';
-
+export const runtime = "edge";
 
 // Stores the API key of our OpenAI model
 const config = new Configuration({
@@ -23,10 +22,9 @@ export async function POST(
 ): Promise<StreamingTextResponse | NextResponse> {
   // Destructure the incoming request to get the messages array, model, and temperature
   const { messages, userContext, responseContext, temperature } =
-    await request.json(); 
+    await request.json();
 
   try {
-
     //temperature
     const temp = Number(temperature); //temperature of chat
     //construct Custom Instructions
@@ -47,10 +45,10 @@ export async function POST(
      * Get the message response from OpenAI using "createChatCompletion".
      */
     const response = await openai.createChatCompletion({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       stream: true, // Enable streaming
       temperature: temp, // Set temperature, default is 0.5 if not provided
-      messages: [{ "role": "system", "content": customInstructions }, ...messages],
+      messages: [{ role: "system", content: customInstructions }, ...messages],
     });
 
     // Creates a stream of data from OpenAI using the tool "OpenAIStream"

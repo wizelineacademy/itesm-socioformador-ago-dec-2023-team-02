@@ -1,73 +1,81 @@
 import { useEffect, useRef, useState } from "react";
-import type {
-  MouseEventHandler,
-  ChangeEvent,
-  KeyboardEventHandler,
-} from "react";
+import type { KeyboardEventHandler, MouseEventHandler } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
-import { Avatar, Card, Button } from "@nextui-org/react";
+import { Avatar, Card, Button, Input } from "@nextui-org/react";
 import { toast } from "sonner";
+import type { Tag } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
-import type { SidebarTag } from "@/types/sidebar-tag-types";
-import { ConversationActionType } from "../operations/sidebar-conversation-operations";
-import type { ConversationAction } from "../operations/sidebar-conversation-operations";
+import type { ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
+import { ConversationsActionType, buildTagSet, isValidConversationName  } from "@/helpers/sidebar-conversation-helpers";
+import { setToArray, setsAreEqual } from "@/helpers/set-helpers";
+import { mapTagIdsToTags } from "@/helpers/tag-helpers";
+import { imposeMaxLength, trimLeadingSpaces } from "@/helpers/string-helpers";
+import ConversationTitleControls from "../atoms/conversation-title-controls";
+import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 
 interface ConversationCardProps {
+  userTags: Tag[];
   conversation: SidebarConversation;
-  dispatch: (action: ConversationAction) => void;
+  conversationsDispatch: (action: ConversationsAction) => void;
   isSelected: boolean;
   onClick: () => void;
 }
 
-export function ConversationCard({
-  conversation,
-  dispatch,
-  isSelected,
-  onClick,
-}: ConversationCardProps): JSX.Element {
+export function ConversationCard({userTags, conversation, conversationsDispatch, isSelected, onClick,}: ConversationCardProps): JSX.Element {
   const [title, setTitle] = useState<string>(conversation.title);
-  const [tags, setTags] = useState<SidebarTag[]>(conversation.tags);
+  const [conversationTags, setConversationTags] = useState<Set<number>>(buildTagSet(conversation));
   const [editingTitle, setEditingTitle] = useState<boolean>(false);
-  const [editingTags, setEditingTags] = useState<boolean>(false);
+  const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
   const cardContainerRef = useRef<HTMLButtonElement | null>(null);
-
-  console.log(tags);
-  console.log(setTags);
-  console.log(editingTags);
+  const titleMaxLength = 20
 
   useEffect(() => {
     document.addEventListener("click", handleOutsideClick);
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-  }, []);
+  });
 
   const handleOutsideClick: (e: MouseEvent) => void = (e) => {
-    if (
-      cardContainerRef.current &&
-      !cardContainerRef.current.contains(e.target as Node)
-    ) {
-      setEditingTitle(false);
+    if (cardContainerRef.current && !cardContainerRef.current.contains(e.target as Node)){
       setTitle(conversation.title);
+      setEditingTitle(false);
     }
   };
-  const handleTitleClick: MouseEventHandler<HTMLInputElement> = (e) => {
-    e.stopPropagation();
+
+  const handleTitleClick: MouseEventHandler<HTMLInputElement> = (e) => {e.stopPropagation();};
+
+  const handleTitleChange: (value: string) => void = (value) => {
+    setTitle(imposeMaxLength(trimLeadingSpaces(value), titleMaxLength));
   };
-  const handleTitleChange: (e: ChangeEvent<HTMLInputElement>) => void = (e) => {
-    setTitle(e.target.value);
+
+  const handleTitleConfirmPress: () => void = () => {
+    saveConversationTitle();
   };
+
+  const handleTitleCancelPress: () => void = () => {
+    setTitle(conversation.title)
+    setEditingTitle(false)
+  }
+
   const handleTitleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
-      if (conversation.title !== title) {
+      if (conversation.title !== title && isValidConversationName(title)) {
         saveConversationTitle();
       } else {
         setEditingTitle(false);
       }
     }
   };
+
+  const handleTagMenuModalClose: (newTags: Tag[], newSelectedTags: Set<number>) => void = (_, newSelectedTags) => {
+    if (!setsAreEqual<number>(conversationTags, newSelectedTags)){
+      saveTagSelection(newSelectedTags)
+    }
+    setTagMenuModalIsOpen(false)
+  }
 
   const saveConversationTitle: () => void = () => {
     const fetchOptions: RequestInit = {
@@ -83,12 +91,12 @@ export function ConversationCard({
         return response.json();
       })
       .then((updatedConversation) => {
-        setEditingTitle(false);
-        dispatch({
-          type: ConversationActionType.EditTitle,
+        conversationsDispatch({
+          type: ConversationsActionType.EditTitle,
           conversationId: conversation.id,
           title: updatedConversation.title,
         });
+        setEditingTitle(false);
         toast.success("Conversation title updated.");
       })
       .catch((_) => {
@@ -103,8 +111,8 @@ export function ConversationCard({
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        dispatch({
-          type: ConversationActionType.Delete,
+        conversationsDispatch({
+          type: ConversationsActionType.Delete,
           conversationId: conversation.id,
         });
         toast.success("Conversation removed.");
@@ -114,91 +122,115 @@ export function ConversationCard({
       });
   };
 
+  const saveTagSelection: (newSelectedTags: Set<number>) => void = (newSelectedTags) => {
+    const fetchOptions: RequestInit = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tags: mapTagIdsToTags(setToArray(newSelectedTags), userTags)}),
+    };
+    fetch(`/api/conversations/${conversation.id}`, fetchOptions)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((updatedConversation) => {
+        setConversationTags(newSelectedTags)
+        conversationsDispatch({
+          type: ConversationsActionType.EditTags,
+          conversationId: conversation.id,
+          tags: updatedConversation.tags as Tag[],
+        });
+        toast.success("Conversation tags updated.");
+      })
+      .catch((_) => {
+        toast.error("The conversation's tags couldn't be updated.");
+      });
+  }
+
   const titleWhenNotEditing: JSX.Element = (
-    <p className="text-xs text-white whitespace-nowrap overflow-scroll">{title}</p>
+    <div className="overflow-scroll scrollbar-hide">
+        <p className="text-xs text-white whitespace-nowrap">{title}</p>
+    </div>
   );
+
   const titleWhenEditing: JSX.Element = (
-    <input
-      className="text-xs text-white rounded-sm pr-10"
-      onChange={handleTitleChange}
+    <Input
+      classNames={{input: "text-xs text-white rounded-sm", inputWrapper: "h-unit-6 min-h-unit-0 px-1"}}
+      fullWidth
       onClick={handleTitleClick}
       onKeyDown={handleTitleKeydown}
-      type="text"
+      onValueChange={handleTitleChange}
+      size="sm"
       value={title}
+      variant="bordered"
     />
   );
 
   const singleSelectionListItems: SingleSelectionDropdownItem[] = [
-    {
-      key: "editTitle",
-      name: "Edit Title",
-      action: () => {
-        setEditingTitle(true);
-      },
-    },
-    {
-      key: "editTags",
-      name: "Edit Tags",
-      action: () => {
-        setEditingTags(true);
-      },
-    },
-    {
-      key: "delete",
-      name: "Delete",
-      style: "text-danger",
-      action: () => {
-        removeThisConversation();
-      },
-    },
+    {key: "rename", name: "Rename", action: () => {setEditingTitle(true);}},
+    {key: "editTags", name: "Edit Tags", action: () => {setTagMenuModalIsOpen(true);}},
+    {key: "delete", name: "Delete", style: "text-danger", action: () => {removeThisConversation();}},
   ];
 
   let cardBackgroundColor = "";
   if (isSelected) {
-    cardBackgroundColor =
-      "bg-white bg-opacity-20";
+    cardBackgroundColor = "bg-white bg-opacity-20";
   } else {
-    cardBackgroundColor = editingTitle
-      ? "bg-white bg-opacity-20"
-      : "bg-white bg-opacity-0 hover:bg-white hover:bg-opacity-10";
+    cardBackgroundColor = editingTitle ? "bg-white bg-opacity-20" : "bg-white bg-opacity-0 hover:bg-white hover:bg-opacity-10";
+  }
+
+  let avatarBackgroundColor = "";
+  if (conversation.model.name === "gpt-4") {
+    avatarBackgroundColor = "bg-purple-400 bg-opacity-80";
+  } else if(conversation.model.name === "dalle") {
+    avatarBackgroundColor = "bg-sky-400 bg-opacity-80";
+  } else {
+    avatarBackgroundColor = "bg-green-400 bg-opacity-80";
   }
 
   return (
-    <button
-      onClick={onClick}
-      ref={cardContainerRef}
-      type="button"
-      className="w-full group relative p-0"
-    >
+    <button className="w-full group relative p-0" onClick={onClick} ref={cardContainerRef} type="button">
       <Card
+        className={`py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
+        fullWidth
         radius="none"
-        className={`max-w-[200px] py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
       >
-        <div className="flex justify-between items-center">
-          <div className="flex gap-1 items-center">
-            <Avatar
-              className="h-6 w-6"
-              radius="sm"
-              src={conversation.model.provider.image}
-            />
+        <div className="flex flex-row gap-2 justify-start items-center px-1">
+          <Avatar classNames={{base:`p-1 min-w-unit-6 h-6 w-6 ${avatarBackgroundColor}`}} radius="sm" src={conversation.model.provider.image}/>
 
-            <div className="flex items-center max-w-10 overflow-hidden">
-              {editingTitle ? titleWhenEditing : titleWhenNotEditing}
-            </div>
-          </div>
+          {editingTitle ? titleWhenEditing : titleWhenNotEditing}
+
+          {editingTitle ?
+          <ConversationTitleControls
+            disableConfirmButton={title === conversation.title || !isValidConversationName(title)}
+            onCancelPress={handleTitleCancelPress}
+            onConfirmPress={handleTitleConfirmPress}
+          />
+          : null}
 
           {/* Button as overlay */}
-          {isSelected && (
+          {isSelected && !editingTitle ? (
             <div className="absolute right-0 gradient-shadow-dark-conversation-card py-2 pl-1">
               <SingleSelectionDropdown dropdownItems={singleSelectionListItems} placement="right">
-                <Button isIconOnly size="sm" variant="solid" className="text-white bg-inherit">
+                <Button className="text-white bg-inherit" isIconOnly size="sm" variant="solid">
                   <AiOutlineEdit />
                 </Button>
               </SingleSelectionDropdown>
             </div>
-          )}
+          ) : null}
         </div>
       </Card>
+
+      <TagMenuModal
+        allowEditing={false}
+        initialSelectedTags={conversationTags}
+        initialTags={userTags}
+        isOpen={tagMenuModalIsOpen}
+        modalTitle="Conversation tags"
+        onModalClose={handleTagMenuModalClose}
+      />
     </button>
   );
 }

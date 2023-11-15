@@ -4,61 +4,112 @@
  */
 "use client";
 import { Button, Navbar, NavbarItem, useDisclosure } from "@nextui-org/react";
+import { BiBrain, BiImage } from "react-icons/bi";
 import { ModelCard } from "./model-card";
-import ThemeButton from "@/components/theme-button";
-import { BiBrain } from "react-icons/bi";
 import ModalParametersGPT from "./modal-gpt-parameters";
+import ModalParametersDalle from "./modal-dalle-parameters";
 
-const providerImage =
-  "https://avatars.githubusercontent.com/u/86160567?s=200&v=4";
-
-export default function ConversationHeader(props: any) {
-  const { userContext, responseContext, temperature, saveParameters } = props;
+export default function ConversationHeader(props: any): JSX.Element {
+  const {
+    userContext,
+    responseContext,
+    temperature,
+    size,
+    saveParameters,
+    modelDescription,
+    modelName,
+    providerImage,
+  } = props;
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   return (
     <Navbar
-      shouldHideOnScroll // Prop to hide the navbar on scroll.
-      maxWidth="full" // Prop to set the maximum width of the navbar to full.
+      className=" items-center flex justify-between" // Applying Tailwind CSS classes for styling.
       isBlurred={false} // Prop to disable blur effect.
       isBordered // Prop to add border to the navbar.
-      className=" items-center flex justify-between" // Applying Tailwind CSS classes for styling.
+      maxWidth="full" // Prop to set the maximum width of the navbar to full.
+      shouldHideOnScroll // Prop to hide the navbar on scroll.
     >
       {/* Model Card */}
-      <NavbarItem className="flex-grow flex justify-center">
-        <ModelCard modelName="GPT-4" providerImageUrl={providerImage} />
+      <NavbarItem className="flex-grow flex justify-center items-center gap-1">
+        <ModelCard
+          creditsAvailable={400}
+          modelDescription={modelDescription}
+          modelName={modelName}
+          providerImageUrl={providerImage}
+        />
       </NavbarItem>
 
-      {/* Context Button on xs and small screen sizes*/}
-      <NavbarItem className="ml-auto md:hidden">
-        <Button color="danger" isIconOnly onClick={onOpen}>
-          <BiBrain />
-        </Button>
-      </NavbarItem>
+      {modelName === "dalle" ? (
+        <>
+          {/*Context Button on xs and small screen sizes */}
+          <NavbarItem className="ml-auto md:hidden">
+            <Button color="danger" isIconOnly onClick={onOpen} radius="sm">
+              <BiImage />
+            </Button>
+          </NavbarItem>
 
-      {/* Context Button on md and above screen sizes */}
-      <NavbarItem className="ml-auto hidden md:inline">
-        <Button radius="sm" color="danger" className="flex items-center" onPress={onOpen}>
-          <BiBrain />
-          <span className="hidden md:inline">Context</span>
-        </Button>
-      </NavbarItem>
+          {/* Context Button on md and above screen sizes */}
+          <NavbarItem className="ml-auto hidden md:inline">
+            <Button
+              className="flex items-center"
+              color="danger"
+              onPress={onOpen}
+              radius="sm"
+            >
+              <BiImage />
+              <span className="hidden md:inline">Size</span>
+            </Button>
+          </NavbarItem>
+        </>
+      ) : (
+        <>
+          {/* Context Button on xs and small screen sizes */}
+          <NavbarItem className="ml-auto md:hidden">
+            <Button color="danger" isIconOnly onClick={onOpen} radius="sm">
+              <BiBrain />
+            </Button>
+          </NavbarItem>
 
-      {/* Light and dark theme switcher */}
-      <NavbarItem>
-        <ThemeButton />
-      </NavbarItem>
+          {/* Context Button on md and above screen sizes */}
+          <NavbarItem className="ml-auto hidden md:inline">
+            <Button
+              className="flex items-center"
+              color="danger"
+              onPress={onOpen}
+              radius="sm"
+            >
+              <BiBrain />
+              <span className="hidden md:inline">Context</span>
+            </Button>
+          </NavbarItem>
+        </>
+      )}
 
-      {/* Modal for entering context parameters */}
-      <ModalParametersGPT
-        saveParameters={saveParameters}
-        userContext={userContext}
-        responseContext={responseContext}
-        temperature={temperature}
-        isOpen={isOpen}
-        onClose={onClose}
-        onOpenChange={onOpenChange}
-      />
+      {modelName === "dalle" ? (
+        // Modal for image size parameter
+        <ModalParametersDalle
+          isOpen={isOpen}
+          onClose={onClose}
+          onOpenChange={onOpenChange}
+          responseContext={responseContext}
+          saveParameters={saveParameters}
+          size={size}
+          temperature={temperature}
+          userContext={userContext}
+        />
+      ) : (
+        // Modal for entering context parameters
+        <ModalParametersGPT
+          isOpen={isOpen}
+          onClose={onClose}
+          onOpenChange={onOpenChange}
+          responseContext={responseContext}
+          saveParameters={saveParameters}
+          temperature={temperature}
+          userContext={userContext}
+        />
+      )}
     </Navbar>
   );
 }

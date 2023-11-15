@@ -56,6 +56,9 @@ export async function getGroupById(idGroup: number): Promise<PrismaResponse<Grou
         // Validate if the group exists
         const group = await prisma.group.findUnique({
             where: { id: idGroup },
+            include: {
+                users: true, // Include users in the response
+            }
         });
         if (!group) {
             return { status: 404, message: 'Group not found' };
@@ -125,12 +128,12 @@ export async function createGroup(groupData: GroupCreateData): Promise<PrismaRes
         groupData.description = groupData.description.trim();
 
         // Basic field validation
-        if (!groupData.name || !groupData.description || !groupData.creditsAssigned || groupData.creditsAssigned < 0) {
-            return { status: 400, message: 'All fields are required and creditsAssigned must be a positive number' };
+        if (!groupData.name || groupData.description === undefined || groupData.creditsAssigned === undefined) {
+            return { status: 400, message: 'All fields are required and creditsAssigned must be a positive number or 0' };
         }
 
         // Create the group in the database
-        const group = await prisma.group.create({
+        const group: Group = await prisma.group.create({
             data: groupData,
         });
 

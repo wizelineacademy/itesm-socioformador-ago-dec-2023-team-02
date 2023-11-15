@@ -8,7 +8,7 @@
 
 "use client";
 import React from "react";
-import { Textarea, Button } from "@nextui-org/react";
+import { Textarea, Button, Spinner } from "@nextui-org/react";
 import { IoMdSend } from "react-icons/io";
 import { Sender } from "@prisma/client";
 import { toast } from "sonner";
@@ -35,19 +35,23 @@ async function handleSaveMessage(
     toast.error("Error ocurred while saving message of user.");
   }
 }
-const model = "gpt-4";
+
 
 export default function PromptTextInput({
   idConversation,
+  model,
   input,
   handleInputChange,
   handleSubmit,
+  isLoading,
 }: {
   idConversation: number;
+  model: string;
   input: string;
   handleInputChange: any;
   handleSubmit: any;
-}) {
+  isLoading: boolean;
+}): JSX.Element {
   return (
     <div className="flex justify-center w-full z-30 bg-black">
       <div className="lg:w-3/6 md:w-4/6 w-11/12 fixed bottom-0 pb-4 py-0 z-30">
@@ -71,33 +75,43 @@ export default function PromptTextInput({
               value={input}
               variant="faded"
             />
-            {/* Send button */}
-            <Button
-              disabled={!input}
-              isIconOnly
-              size="lg"
-              type="submit"
-              variant="flat"
-              className={`${
-                !input
-                  ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10"
-                  : "bg-danger"
-              } text-white  rounded-r-xl`}
-              // Saves user's message when the send button is clicked
-              onClick={() => {
-                void handleSaveMessage(
-                  idConversation,
-                  model,
-                  Sender.USER,
-                  input
-                );
-              }}
-            >
-              <IoMdSend className="text-lg" />
-            </Button>
+            {/* Check if a response is being generated to show a spinner or submit button*/}
+            {
+              isLoading 
+                ? 
+                <Spinner 
+                  className="flex items-center ml-1"
+                  color="danger"
+                />
+                :
+                <Button
+                  className={`${
+                    !input
+                      ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10"
+                      : "bg-danger"
+                  } text-white  rounded-r-xl`}
+                  disabled={!input}
+                  isIconOnly
+                  onClick={() => {
+                    void handleSaveMessage(
+                      idConversation,
+                      model,
+                      Sender.USER,
+                      input
+                    );
+                  }}
+                  size="lg"
+                  type="submit"
+                  // Saves user's message when the send button is clicked
+                  variant="flat"
+                >
+                  <IoMdSend className="text-lg" />
+                </Button>
+            }
+
           </form>
           {/* Footer */}
-          <div className=" w-full text-center">
+          <div className=" w-full text-center bg-white dark:bg-black pb-0">
             <p className="p-0 m-0 text-xs text-slate-400 dark:text-slate-400 wizeline-brand:text-slate-200 text-center">
               © 2023 Team SAM, developed by Wizeline.
             </p>

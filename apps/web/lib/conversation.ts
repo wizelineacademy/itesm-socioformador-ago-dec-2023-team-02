@@ -3,12 +3,14 @@
  * @packageDocumentation
  */
 
-import type { Conversation, Prisma, Tag } from "@prisma/client";
+import type { Conversation, Message, Prisma, Tag } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import type { ConversationCreateData } from "@/types/conversation-types";
-import { areValidModelParameters, type ModelParameters } from "@/types/model-parameters-types";
+import { areValidModelParameters } from "@/types/model-parameters-types";
+import type { ModelParameters } from "@/types/model-parameters-types";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import prisma from "./prisma";
+import { deleteImage } from "./helper/storage/delete-image";
 
 /**
  * Retrieves all conversations from the database that match the given user ID.
@@ -21,7 +23,7 @@ export async function getAllConversationsByUserId(
   try {
     // Validate idUser
     if (!idUser || idUser < 0) {
-      return { status: 400, message: 'Invalid user ID' };
+      return { status: 400, message: "Invalid user ID" };
     }
 
     // Check if the user exists in the database
@@ -30,43 +32,44 @@ export async function getAllConversationsByUserId(
     });
 
     if (!userExists) {
-      return { status: 404, message: 'User not found' };
+      return { status: 404, message: "User not found" };
     }
 
     // Search all conversations in the database that match the user ID
-    const conversations: SidebarConversation[] = await prisma.conversation.findMany({
-      where: {
-        idUser, // User id to filter conversations
-        active: true, // Only fetch active conversations
-      },
-      select: {
-        id: true, 
-        title: true,
-        createdAt: true,
-        tags: {
-          select: {
-            id: true, 
-            name: true,
-            color: true
-          }
+    const conversations: SidebarConversation[] =
+      await prisma.conversation.findMany({
+        where: {
+          idUser, // User id to filter conversations
+          active: true, // Only fetch active conversations
         },
-        active: true,
-        model: {
-          select: {
-            name: true,
-            provider: {
-              select: {
-                image: true
-              }
-            }
-          }
-        }
-      },
-    });
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          tags: {
+            select: {
+              id: true,
+              name: true,
+              color: true,
+            },
+          },
+          active: true,
+          model: {
+            select: {
+              name: true,
+              provider: {
+                select: {
+                  image: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
     // If there are no conversations, return a message indicating that there are none
     if (conversations.length === 0) {
-      return { status: 404, message: 'No conversations found for this user' };
+      return { status: 404, message: "No conversations found for this user" };
     }
 
     // Return found conversations
@@ -88,7 +91,7 @@ export async function getConversationById(
   try {
     // Validate id
     if (!id || id <= 0) {
-      return { status: 400, message: 'Invalid conversation ID' };
+      return { status: 400, message: "Invalid conversation ID" };
     }
 
     // Fetch the conversation from the database that matches the given ID
@@ -96,18 +99,45 @@ export async function getConversationById(
       where: {
         id, // Conversation ID to filter
       },
-      // Include additional models (relations) in the result
       include: {
         user: true, // Include user details
-        model: true, // Include model details
-        messages: true, // Include messages in the conversation
+        model: {
+          include: {
+            provider: {
+              select: {
+                image: true, // Select only the image of the provider
+              }
+            }
+          }
+        },
+        messages: {
+          orderBy: {
+            createdAt: 'asc', // Ordena los mensajes por fecha de creación, de más antiguo a más nuevo
+          }
+        },
         tags: true, // Include tags associated with the conversation
       },
     });
+    
+  /*
+    const conversation: Conversation | null =
+      await prisma.conversation.findUnique({
+        where: {
+          id, // Conversation ID to filter
+        },
+        // Include additional models (relations) in the result
+        include: {
+          user: true, // Include user details
+          model: true, // Include model details
+          messages: true, // Include messages in the conversation
+          tags: true, // Include tags associated with the conversation
+        },
+      });
+      */
 
     // If the conversation is not found, return a message indicating so
     if (!conversation) {
-      return { status: 404, message: 'Conversation not found' };
+      return { status: 404, message: "Conversation not found" };
     }
 
     // Return the found conversation along with all its details
@@ -127,16 +157,17 @@ export async function createConversation(
   input: ConversationCreateData
 ): Promise<PrismaResponse<SidebarConversation>> {
   try {
-
-    const { idUser, idModel, title } = input || {};
+    const { idUser, idModel, title, tags} = input || {};
     const userId = Number(idUser);
     const modelId = Number(idModel);
 
     // Validate input
     if (!idUser || !idModel || !title) {
-      return { status: 400, message: 'Invalid input for creating conversation' };
+      return {
+        status: 400,
+        message: "Invalid input for creating conversation",
+      };
     }
-
 
     // Validate that the user exists and fetch globalParameters if needed
     const user = await prisma.user.findUnique({
@@ -146,7 +177,7 @@ export async function createConversation(
     });
 
     if (!user) {
-      return { status: 404, message: 'User not found' };
+      return { status: 404, message: "User not found" };
     }
 
     // Validate that the model exists
@@ -157,45 +188,56 @@ export async function createConversation(
     });
 
     if (!model) {
-      return { status: 404, message: 'Model not found' };
+      return { status: 404, message: "Model not found" };
     }
 
     // Prepare parameters based on useGlobalParameters flag
     const userGlobalParameters: string = JSON.stringify(user.globalParameters);
-    const parameters: string = JSON.stringify(JSON.parse(userGlobalParameters)[model.name]);
+    const parameters: string = JSON.stringify(
+      JSON.parse(userGlobalParameters)[model.name]
+    );
 
     // Create a new conversation in the database
-    const newConversation: SidebarConversation = await prisma.conversation.create({
-      data: {
-        ...input,
-        parameters: parameters ? parameters : "", // Set parameters if applicable
-        active: true, // Set the 'active' field to true by default
-      },
-      // Include additional models (relations) in the result
-      select: {
-        id: true, 
-        title: true,
-        createdAt: true,
-        tags: {
-          select: {
-            id: true,
-            name: true,
-            color: true
+    const newConversation: SidebarConversation =
+      await prisma.conversation.create({
+        data: {
+          title,
+          idUser,
+          idModel,
+          parameters: parameters ? parameters : "", // Set parameters if applicable
+          active: true, // Set the 'active' field to true by default
+          tags: {
+            connect: tags.map((tag) => {return {id: tag.id}})
           }
         },
-        active: true,
-        model: {
-          select: {
-            name: true,
-            provider: {
-              select: {
-                image: true
-              }
-            }
-          }
-        }
-      },
-    });
+        // Include additional models (relations) in the result
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          tags: {
+            select: {
+              id: true,
+              idUser: true,
+              name: true,
+              color: true,
+            },
+          },
+          active: true,
+          model: {
+            select: {
+              id: true,
+              name: true,
+              provider: {
+                select: {
+                  id: true,
+                  image: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
     // Return the newly created conversation
     return { data: newConversation, status: 201 };
@@ -224,16 +266,17 @@ export interface UpdatedInfo {
  */
 export async function updateConversationById(
   id: number,
-  updatedInfo: UpdatedInfo): Promise<PrismaResponse<Conversation>> {
+  updatedInfo: UpdatedInfo
+): Promise<PrismaResponse<Conversation>> {
   try {
     // Validate id
     if (!id || id <= 0) {
-      return { status: 400, message: 'Invalid conversation ID' };
+      return { status: 400, message: "Invalid conversation ID" };
     }
 
     // Validate title if provided
-    if (updatedInfo.title && updatedInfo.title.trim() === '') {
-      return { status: 400, message: 'Title cannot be empty' };
+    if (updatedInfo.title && updatedInfo.title.trim() === "") {
+      return { status: 400, message: "Title cannot be empty" };
     }
 
     // Validate conversation exists in the database
@@ -242,9 +285,8 @@ export async function updateConversationById(
     });
 
     if (!existingConversation) {
-      return { status: 404, message: 'Conversation not found' };
+      return { status: 404, message: "Conversation not found" };
     }
-
 
     // Attempt to update the conversation in the database
     const conversation: Conversation | null = await prisma.conversation.update({
@@ -252,23 +294,23 @@ export async function updateConversationById(
       data: {
         tags: updatedInfo.tags ? { set: updatedInfo.tags } : undefined,
         title: updatedInfo.title || undefined,
-        parameters: updatedInfo.parameters as any // Add parameters to the update
+        parameters: updatedInfo.parameters as any, // Add parameters to the update
       },
       include: updatedInfo.includeRelatedEntities
         ? {
-          user: true,
-          model: true,
-          messages: true,
-          tags: true,
-        }
+            user: true,
+            model: true,
+            messages: true,
+            tags: true,
+          }
         : {
-          tags: true,
-        },
+            tags: true,
+          },
     });
 
     // Check if the conversation was found and updated
     if (!conversation) {
-      return { status: 404, message: 'Conversation not found' };
+      return { status: 404, message: "Conversation not found" };
     }
 
     // Return the updated conversation
@@ -280,28 +322,30 @@ export async function updateConversationById(
 }
 
 /**
- * Updates the model parameters associated to the given conversation and used in the generation of promts. 
+ * Updates the model parameters associated to the given conversation and used in the generation of promts.
  * @param id - The ID of the conversation whose parameters will be updated.
- * @param parameters - An object of type ModelParameters that holds the parameter values with which to update the conversation. 
- * @returns Promise that resolves to an object that implements PrismaResponse<Conversation>, and that potentially contains the updated Conversation. 
+ * @param parameters - An object of type ModelParameters that holds the parameter values with which to update the conversation.
+ * @returns Promise that resolves to an object that implements PrismaResponse<Conversation>, and that potentially contains the updated Conversation.
  */
-export async function updateConversationParameters(id: number, parameters: ModelParameters): Promise<PrismaResponse<Conversation>> {
-  if (!areValidModelParameters(parameters)){
-    return {status: 400, message: "Invalid model parameters"}; 
+export async function updateConversationParameters(
+  id: number,
+  parameters: ModelParameters
+): Promise<PrismaResponse<Conversation>> {
+  if (!areValidModelParameters(parameters)) {
+    return { status: 400, message: "Invalid model parameters" };
   }
 
   try {
     const conversation: Conversation = await prisma.conversation.update({
-      where: { id }, 
+      where: { id },
       data: {
-        parameters: parameters as any 
-      }
-    })
+        parameters: parameters as any,
+      },
+    });
 
-    return {status: 200, data: conversation}; 
-
+    return { status: 200, data: conversation };
   } catch (error: any) {
-    return {status: 500, message: error.message}; 
+    return { status: 500, message: error.message };
   }
 }
 
@@ -316,7 +360,7 @@ export async function deactivateConversationById(
   try {
     // Validate id
     if (!id || id <= 0) {
-      return { status: 400, message: 'Invalid conversation ID' };
+      return { status: 400, message: "Invalid conversation ID" };
     }
 
     // Update the 'active' field of the conversation in the database that matches the given ID
@@ -331,11 +375,11 @@ export async function deactivateConversationById(
 
     // If the conversation is not found, return a message indicating so
     if (!conversation) {
-      return { status: 404, message: 'Conversation not found' };
+      return { status: 404, message: "Conversation not found" };
     }
 
     // Return a message indicating the conversation is now inactive
-    return { status: 200, message: 'Conversation marked as inactive' };
+    return { status: 200, message: "Conversation marked as inactive" };
   } catch (error: any) {
     // Handle any errors that occur during the update
     return { status: 500, message: error.message };
@@ -356,7 +400,7 @@ export async function deactivateAllConversationsByUserId(
       where: { id: idUser },
     });
     if (!userExists) {
-      return { status: 404, message: 'User ID does not exist' };
+      return { status: 404, message: "User ID does not exist" };
     }
 
     // Update the 'active' field of all conversations that match the given user ID
@@ -372,13 +416,13 @@ export async function deactivateAllConversationsByUserId(
 
     // Check if any conversations were updated
     if (updateResponse.count === 0) {
-      return { status: 404, message: 'No conversations found for this user' };
+      return { status: 404, message: "No conversations found for this user" };
     }
 
     // Return a message indicating the conversations are now inactive
     return {
       status: 200,
-      message: 'Conversations marked as inactive',
+      message: "Conversations marked as inactive",
       data: { count: updateResponse.count },
     };
   } catch (error: any) {
@@ -387,6 +431,14 @@ export async function deactivateAllConversationsByUserId(
   }
 }
 
+// Call the delete function for the s3 bucket
+async function deleteImagesHandler(messageToDelete: Message) {
+    // Delete the image from the s3 bucket if the message belongs to the model
+    if (messageToDelete.sender === "MODEL") {
+      await deleteImage(messageToDelete.content)
+    }
+  // })
+}
 
 /**
  * Deletes a conversation and all its associated messages from the database.
@@ -399,9 +451,37 @@ export async function deleteConversationById(
   try {
     // Validate the ID to ensure it's a positive integer
     if (!id || id <= 0) {
-      return { status: 400, message: 'Invalid conversation ID' };
+      return { status: 400, message: "Invalid conversation ID" };
     }
 
+    // Retrieve the conversation's model
+    const model = await prisma.conversation.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        model: {
+          select: {
+            name: true
+          }
+        }
+      }
+    })
+    
+    // Check if the model the conversation is using is dalle to delete the images from the bucket
+    if (model?.model.name === "dalle"){
+      // Get all the messages to delete
+      const messagesToDelete = await prisma.message.findMany({
+        where: {
+          idConversation: id, // Filter messages by conversation ID
+        }
+      })
+      // Call the delete function for the s3 bucket and delete the message from the database
+      messagesToDelete.forEach((message: Message) => {
+        deleteImagesHandler(message).catch((error) => {console.log(error)})
+      })
+      
+    }
     // Delete all messages associated with the conversation
     await prisma.message.deleteMany({
       where: {
@@ -418,11 +498,14 @@ export async function deleteConversationById(
 
     // If the conversation is not found, return a message indicating so
     if (!conversation) {
-      return { status: 404, message: 'Conversation not found' };
+      return { status: 404, message: "Conversation not found" };
     }
 
     // Return a message indicating the conversation was successfully deleted
-    return { status: 200, message: 'Conversation and associated messages successfully deleted' };
+    return {
+      status: 200,
+      message: "Conversation and associated messages successfully deleted",
+    };
   } catch (error: any) {
     // Handle any errors that occur during the deletion
     return { status: 500, message: error.message };

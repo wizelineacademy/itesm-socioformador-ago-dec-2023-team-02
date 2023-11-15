@@ -23,7 +23,6 @@ import {
   PopoverContent,
 } from "@nextui-org/react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-
 import { Slider } from "@/components/ui/slider";
 
 interface Parameters {
@@ -33,7 +32,7 @@ interface Parameters {
 }
 
 // ModalParametersGPT Component
-export default function ModalParametersGPT(props: any) {
+export default function ModalParametersGPT(props: any): JSX.Element {
   // Destructuring props to get isOpen and onOpenChange properties
   const {
     isOpen,
@@ -42,7 +41,7 @@ export default function ModalParametersGPT(props: any) {
     responseContext,
     temperature,
     saveParameters,
-  }:{
+  }: {
     isOpen: boolean;
     onOpenChange: () => void;
     userContext: string;
@@ -51,13 +50,14 @@ export default function ModalParametersGPT(props: any) {
     saveParameters: (updatedParameters: Parameters) => void;
   } = props;
 
-  const [updatedUserContext, setUpdatedUserContext] = useState<string>(userContext);
+  const [updatedUserContext, setUpdatedUserContext] =
+    useState<string>(userContext);
   const [updatedResponseContext, setUpdatedResponseContext] =
     useState<string>(responseContext);
   const [updatedTemperature, setUpdatedTemperature] =
     useState<number>(temperature);
 
-  const handleSave = () => {
+  const handleSave = (): void => {
     const updatedParameters: Parameters = {
       userContext: updatedUserContext,
       responseContext: updatedResponseContext,
@@ -71,9 +71,9 @@ export default function ModalParametersGPT(props: any) {
     <Modal
       isOpen={isOpen} // Prop to control the open state of the modal
       onOpenChange={onOpenChange} // Handler for changes to the open state
-      size="lg" // Size of the modal (large)
       placement="center" // Placement of the modal (centered)
       radius="sm" // Border radius of the modal (small)
+      size="lg" // Size of the modal (large)
     >
       <ModalContent>
         {(onClose) => (
@@ -91,17 +91,19 @@ export default function ModalParametersGPT(props: any) {
                 </p>
               </label>
               {/* Tooltip for additional information on personal parameters */}
-              <Tooltip placement="right" content={<PersonalParameterTooltip />}>
+              <Tooltip content={<PersonalParameterTooltip />} placement="right">
                 <Textarea
+                  className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
+                  defaultValue={userContext}
                   labelPlacement="outside"
+                  maxRows={8}
+                  minRows={8}
+                  onChange={(e) => {
+                    setUpdatedUserContext(e.target.value);
+                  }}
                   placeholder=""
                   radius="sm"
-                  className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
                   variant="faded"
-                  minRows={8}
-                  maxRows={8}
-                  defaultValue={userContext}
-                  onChange={(e) => {setUpdatedUserContext(e.target.value)}}
                 />
               </Tooltip>
 
@@ -112,17 +114,19 @@ export default function ModalParametersGPT(props: any) {
                 </p>
               </label>
               {/* Tooltip for additional information on response parameters */}
-              <Tooltip placement="right" content={<ResponseParameterTooltip />}>
+              <Tooltip content={<ResponseParameterTooltip />} placement="right">
                 <Textarea
+                  className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
+                  defaultValue={responseContext}
                   labelPlacement="outside"
+                  maxRows={8}
+                  minRows={8}
+                  onChange={(e) => {
+                    setUpdatedResponseContext(e.target.value);
+                  }}
                   placeholder=""
                   radius="sm"
-                  className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
                   variant="faded"
-                  minRows={8}
-                  maxRows={8}
-                  defaultValue={responseContext}
-                  onChange={(e) => {setUpdatedResponseContext(e.target.value)}}
                 />
               </Tooltip>
 
@@ -152,7 +156,7 @@ export default function ModalParametersGPT(props: any) {
 
               {/* Label for temperature parameters for md and above screens*/}
               <div className="hidden md:inline">
-                <Tooltip placement="right" content={<TemperatureTooltip />}>
+                <Tooltip content={<TemperatureTooltip />} placement="right">
                   <label
                     className="mb-0 hidden md:inline "
                     htmlFor="customInstructions"
@@ -170,12 +174,14 @@ export default function ModalParametersGPT(props: any) {
               {/* Slider for temperature parameters */}
               <Slider
                 defaultValue={[updatedTemperature]}
-                value={[updatedTemperature]}
                 max={1}
                 min={0}
+                onValueChange={(value: number[]) => {
+                  setUpdatedTemperature(value[0]);
+                }}
                 step={0.1}
-                onValueChange={(value:number[]) => {setUpdatedTemperature(value[0])}}
-                />
+                value={[updatedTemperature]}
+              />
             </ModalBody>
             <ModalFooter className="flex flex-col md:flex-row justify-between">
               <div className="flex items-center justify-between mb-4 md:mb-0">
@@ -183,19 +189,19 @@ export default function ModalParametersGPT(props: any) {
                 <p className="text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
                   Use Global GPT Context
                 </p>
-                <Switch color="danger" className="md:pl-3"></Switch>
+                <Switch className="md:pl-3" color="danger" />
               </div>
               <div className="flex flex-col-reverse md:flex-row">
                 {/* Cancel and Save buttons */}
                 <Button
-                  color="default"
-                  variant="light"
-                  onPress={onClose}
                   className="mb-2 md:mb-0 md:mr-2"
+                  color="default"
+                  onPress={onClose}
+                  variant="light"
                 >
                   Cancel
                 </Button>
-                <Button color="danger" onPress={onClose} onClick={handleSave}>
+                <Button color="danger" onClick={handleSave} onPress={onClose}>
                   Save
                 </Button>
               </div>
@@ -208,7 +214,7 @@ export default function ModalParametersGPT(props: any) {
 }
 
 // Component to display a tooltip with personal parameter prompts
-function PersonalParameterTooltip() {
+function PersonalParameterTooltip(): JSX.Element {
   return (
     <div className="p-2">
       <h2 className="text-sm mb-1">Thought starters</h2>
@@ -225,7 +231,7 @@ function PersonalParameterTooltip() {
 }
 
 // Component to display a tooltip with response parameter prompts
-function ResponseParameterTooltip() {
+function ResponseParameterTooltip(): JSX.Element {
   return (
     <div className="p-2">
       <h2 className="text-sm mb-1">Thought starters</h2>
@@ -241,7 +247,7 @@ function ResponseParameterTooltip() {
 }
 
 // Component to display a tooltip with information about temperature and creativity levels
-function TemperatureTooltip() {
+function TemperatureTooltip(): JSX.Element {
   return (
     <div className="p-2">
       <h2 className="text-sm mb-1">Temperature and Creativity</h2>

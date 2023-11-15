@@ -10,18 +10,13 @@ import { Sender, type Message as WizepromptMessage } from "@prisma/client";
 import type { UseChatOptions } from "ai";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { convertToGptMessage } from "@/lib/helper/gpt/convert-message-type";
 import { saveMessage } from "@/lib/helper/data-handles";
 import ConversationHeader from "@/components/user/conversationHeader/molecules/conversation-top-header";
 import MessageList from "@/components/user/conversationBody/molecules/message-list";
-import PromptTextInput from "./prompt-text-input";
 import type { ConversationUpdateData } from "@/types/conversation-types";
-
-const providerImage =
-  "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"; // URL de la imagen del remitente
-
-const userImage =
-  "https://ui-avatars.com/api/?background=007CFF&color=fff&name=David";
+import PromptTextInput from "./prompt-text-input";
 
 /**
  * Extended options for the useChat hook.
@@ -45,6 +40,14 @@ interface ExtendedUseChatOptions extends UseChatOptions {
      * The temperature of the conversation, represented as a number.
      */
     temperature: number;
+    /**
+     * Image size
+     */
+    size: string;
+    /**
+     * The name of the model.
+     */
+    modelName: string;
   };
 }
 
@@ -52,6 +55,29 @@ interface Parameters {
   userContext: string;
   responseContext: string;
   temperature: number;
+  size: string;
+}
+
+interface ModelDescription {
+  details: string;
+  generalDescription: string;
+  typeOfUse: string[];
+  examples: string[];
+  capabilities: string[];
+  limitations: string[];
+  pricePerToken: number;
+}
+
+interface ConversationData {
+  model: {
+    name: string;
+    description: string;
+    provider: {
+      image: string;
+    };
+  };
+  messages: WizepromptMessage[];
+  parameters: Parameters;
 }
 
 /**
@@ -63,14 +89,15 @@ async function handleSaveMessage(
   idConversation: number,
   model: string,
   sender: Sender,
-  input: string
+  input: string,
+  size: string
 ): Promise<void> {
   try {
-    await saveMessage(idConversation, model, sender, input);
+    await saveMessage(idConversation, model, sender, input, size);
     toast.success("Model message saved");
   } catch {
     console.log("Error ocurred while saving message.");
-    toast.error("Error ocurred while saving message of user.");
+    toast.error("Error ocurred while saving message of model.");
   }
 }
 
@@ -81,9 +108,25 @@ export default function ConversationBody(): JSX.Element {
   const [userContext, setUserContext] = useState<string>("");
   const [responseContext, setResponseContext] = useState<string>("");
   const [temperature, setTemperature] = useState<number>(0.5);
+  const [size, setSize] = useState<string>("512x512")
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const model = "gpt-4";
+  const [modelDescription, setModelDescription] = useState<ModelDescription>(
+    {} as ModelDescription
+  );
+  const [modelName, setModelName] = useState<string>("");
+  const [providerImage, setProviderImage] = useState<string>("");
 
+  const { user } = useUser();
+
+  let userImage = "";
+
+  if (user?.picture) {
+    userImage = user?.picture;
+  } else {
+    userImage = `https://ui-avatars.com/api/?background=007CFF&color=fff&name=${user?.name?.split(
+      " "
+    )[0]}+${user?.name?.split(" ")[1]}`;
+  }
   const params = useParams();
   const idConversation = Number(params.id);
 
@@ -108,7 +151,7 @@ export default function ConversationBody(): JSX.Element {
     }
 
     // Parsing the JSON response from the API.
-    const data: any = await response.json();
+    const data: ConversationData = await response.json();
 
     // Extracting the messages from the conversation object.
     const messages: WizepromptMessage[] = data.messages;
@@ -118,11 +161,23 @@ export default function ConversationBody(): JSX.Element {
     // Extracting the context parameters from the conversation object.
     const parameters: Parameters = data.parameters;
 
+    //get model description
+    const description: string = JSON.parse(data.model.description);
+    // Parsing the JSON string into a JavaScript object
+    const descriptionObject: ModelDescription = JSON.parse(description);
+
+    const name: string = data.model.name;
+    const providerImageUrl: string = data.model.provider.image;
+
     // Updating the component state with the processed messages data
+    setModelName(name);
     setUserContext(parameters.userContext);
     setResponseContext(parameters.responseContext);
     setTemperature(parameters.temperature);
+    setSize(parameters.size || "1024x1024");
     setMessageData(processedData);
+    setModelDescription(descriptionObject);
+    setProviderImage(providerImageUrl);
   }
   /*
     try {
@@ -169,6 +224,7 @@ export default function ConversationBody(): JSX.Element {
         userContext: updatedParameters.userContext,
         responseContext: updatedParameters.responseContext,
         temperature: updatedParameters.temperature,
+        size: updatedParameters.size,
       },
     };
 
@@ -197,6 +253,7 @@ export default function ConversationBody(): JSX.Element {
       setTemperature(result.temperature);
       */
       setIsMounted(false);
+      //console.log(response)
 
       toast.success("Parameters saved");
     } catch (error) {
@@ -209,16 +266,19 @@ export default function ConversationBody(): JSX.Element {
   useEffect(() => {
     void getData();
     setIsMounted(true);
-  }, [isMounted, userContext, responseContext, temperature]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMounted, userContext, responseContext, temperature, size]);
 
   const options: ExtendedUseChatOptions = {
-    api: `/api/ai/openai/${model}?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}`,
+    api: `/api/ai/openai/?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}&modelName=${modelName}&size=${size}`,
     initialMessages: messageData,
     messages: messageData,
     body: {
       userContext,
       responseContext,
       temperature,
+      size,
+      modelName,
     },
 
     // onFinish callback function that runs when the response stream is finished
@@ -226,9 +286,10 @@ export default function ConversationBody(): JSX.Element {
     onFinish(message) {
       void handleSaveMessage(
         idConversation,
-        model,
+        modelName,
         Sender.MODEL,
-        message.content
+        message.content,
+        size
       );
     },
   };
@@ -240,21 +301,25 @@ export default function ConversationBody(): JSX.Element {
     handleSubmit, // Form submission handler that automatically resets the input field and appends a user message.
     messages, // The current array of chat messages.
     error, // An error object returned by SWR, if any.
-
+    isLoading, // Boolean flag indicating whether a request is currently in progress.
+    
     /*
-       isLoading, // Boolean flag indicating whether a request is currently in progress.
-       stop, // Function that aborts the current request
-       reload,//Function to reload the last AI chat response for the given chat history.
-       append, //append(message: Message | CreateMessage, chatRequestOptions: { options: { headers, body } }) Function to append a message to the chat, triggering an API call for the AI response.
-       */
+      stop, // Function that aborts the current request
+      reload,//Function to reload the last AI chat response for the given chat history.
+      append, //append(message: Message | CreateMessage, chatRequestOptions: { options: { headers, body } }) Function to append a message to the chat, triggering an API call for the AI response.
+    */
   } = useChat(options);
 
   return (
     <div>
       {/* Conversation Header Component */}
       <ConversationHeader
-        saveParameters={saveParameters}
+        modelDescription={modelDescription}
+        modelName={modelName}
+        providerImage={providerImage}
         responseContext={responseContext}
+        saveParameters={saveParameters}
+        size={size}
         temperature={temperature}
         userContext={userContext}
       />
@@ -263,6 +328,7 @@ export default function ConversationBody(): JSX.Element {
       <div className="message-list-container h-[calc(100vh-100px)] overflow-y-auto">
         <MessageList
           messages={messages}
+          modelName={modelName}
           providerImage={providerImage}
           userImage={userImage}
         />
@@ -282,6 +348,8 @@ export default function ConversationBody(): JSX.Element {
           handleSubmit={handleSubmit}
           idConversation={idConversation}
           input={input}
+          isLoading={isLoading}
+          model={modelName}
         />
       )}
     </div>

@@ -13,6 +13,14 @@ export interface ConversationCreateData {
     idUser: number;
     idModel: number;
     title: string;
+    tags: Tag[];
+}
+
+interface Parameters {
+    userContext?: string;
+    responseContext?: string;
+    temperature?: number;
+    size?: string;
 }
 
 /**
