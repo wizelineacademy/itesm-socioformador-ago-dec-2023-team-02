@@ -328,9 +328,9 @@ export default function ConversationBody(): JSX.Element {
       <div className="message-list-container h-[calc(100vh-100px)] overflow-y-auto">
         <MessageList
           messages={messages}
+          modelName={modelName}
           providerImage={providerImage}
           userImage={userImage}
-          modelName={modelName}
         />
       </div>
 
@@ -348,8 +348,8 @@ export default function ConversationBody(): JSX.Element {
           handleSubmit={handleSubmit}
           idConversation={idConversation}
           input={input}
-          model={modelName}
           isLoading={isLoading}
+          model={modelName}
         />
       )}
     </div>

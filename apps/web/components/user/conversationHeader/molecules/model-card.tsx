@@ -56,20 +56,20 @@ export const ModelCard: React.FC<ModelCardProps> = ({
       <button onClick={onOpen}>
         {/* User component from NextUI representing the model, with credits and image */}
         <User
-          className="xs:ml-10 md:ml-20"
-          name={modelName.toUpperCase()}
-          description={`${creditsAvailable} Tokens`}
           avatarProps={{
             radius: "sm",
             size: "sm",
             className: `p-1 ${avatarBackgroundColor}`,
             src: providerImageUrl,
           }}
+          className="xs:ml-10 md:ml-20"
+          description={`${creditsAvailable} Tokens`}
+          name={modelName.toUpperCase()}
         />
       </button>
 
       {/* Modal component to show the detailed description of the model */}
-      <Modal placement="center" size="md" radius="sm" isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" radius="sm" size="md">
         {/* ModalContent holds the content of the modal */}
         <ModalContent>
           {/* Function as a child pattern to render content with access to the close function */}
@@ -87,7 +87,7 @@ export const ModelCard: React.FC<ModelCardProps> = ({
               </ModalBody>
               {/* ModalFooter contains the actions, such as closing the modal */}
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button color="danger" onPress={onClose} variant="light">
                   Close
                 </Button>
               </ModalFooter>
