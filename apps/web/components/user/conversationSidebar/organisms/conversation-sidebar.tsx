@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {
   Badge,
   Button,
@@ -50,6 +50,20 @@ export default function ConversationSidebar({userConversations, userTags, models
 
   const { user } = useUser();
 
+  const moveToConversation: (conversationId: number) => void = (conversationId) => {
+    setSelectedConversation(conversationId)
+    router.push(`/conversation/${conversationId}`)
+  }
+
+  // Verificar que esto sea eficiente. 
+  useEffect(() => {
+    const firstConversationId: number | null = conversations[0]?.id
+    if (selectedConversation && firstConversationId && !conversations.map(({id}) => id).includes(selectedConversation)){
+      setSelectedConversation(firstConversationId)
+      router.push(`/conversation/${firstConversationId}`)
+    }
+  }, [conversations, selectedConversation, router])
+
   // Handler function for updating the search text
   const handleSearchTextChange: (value: string) => void = (value) => {
     setSearchText(value);
@@ -63,11 +77,6 @@ export default function ConversationSidebar({userConversations, userTags, models
 
   const handleConversationPress: (conversationId: number) => void = (conversationId) => {
     moveToConversation(conversationId)
-  }
-
-  const moveToConversation: (conversationId: number) => void = (conversationId) => {
-    setSelectedConversation(conversationId)
-    router.push(`/conversation/${conversationId}`)
   }
 
   const handleNewConversationPress: () => void = () => {setNewConversationModalIsOpen(true)}
