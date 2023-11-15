@@ -20,7 +20,6 @@ export default function NewGroupMenu({group, onGroupChange}: NewGroupMenuProps):
     }
 
     const handleGroupCreditsChange: (value: string) => void = (value) => {
-        console.log(group.creditsAssigned)
         onGroupChange(editGroupCredits(group, strToNumber(preventLeadingZeros(enforcePositiveNumericValuesOnly(value)))))
     }
 

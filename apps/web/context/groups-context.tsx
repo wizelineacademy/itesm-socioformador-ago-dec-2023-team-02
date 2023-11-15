@@ -13,7 +13,6 @@ export interface GroupsContextShape {
 export const GroupsContext = createContext<GroupsContextShape | null>(null)
 
 export function GroupsContextProvider({children}: {children: JSX.Element}): JSX.Element {
-  console.log("Hola 1")
 
   const [groups, groupsDispatch] = useReducer(groupsReducer, [])
 
