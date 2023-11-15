@@ -33,10 +33,8 @@ interface GroupTableProps {
 
 //columns
 const columns = [
-  { name: "ID", uid: "id", sortable: true },
   { name: "NAME", uid: "name", sortable: true },
   { name: "ROLE", uid: "role", sortable: true },
-  { name: "JOB POSITION", uid: "jobPosition", sortable: true },
   { name: "CREDITS REMAINING", uid: "creditsRemaining", sortable: true },
   { name: "ACTIONS", uid: "actions" },
 ];
@@ -57,7 +55,6 @@ const roleColorMap: Record<string, ChipProps["color"]> = {
 const INITIAL_VISIBLE_COLUMNS = [
   "name",
   "role",
-  "jobPosition",
   "creditsRemaining",
   "actions",
 ];
@@ -170,12 +167,6 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
             >
               {cellValue}
             </Chip>
-          );
-        case "jobPosition":
-          return (
-            <div className="flex flex-col">
-              <p className="text-bold text-sm capitalize">{cellValue}</p>
-            </div>
           );
         case "creditsRemaining":
           return (
