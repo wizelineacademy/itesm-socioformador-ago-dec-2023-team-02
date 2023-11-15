@@ -8,9 +8,11 @@ import {
   Button,
   Spinner,
 } from "@nextui-org/react";
+import SearchBar from "@/components/shared/molecules/search-bar";
 import UsersListBox from "./users-list-box";
 import { toast } from "sonner";
 import { User } from "@prisma/client";
+import { findMatchRatio, cleanString } from "@/helpers/string-helpers";
 
 interface AddUserModalProps {
   isOpen: boolean;
@@ -21,54 +23,66 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
   isOpen,
   onOpenChange,
 }) => {
-
   //users in database
   const [users, setUsers] = useState<User[] | null>(null);
-  
-  //submitting add users
-  //const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-    //get users from database
-    async function getUsers() {
-      try {
-        const response = await fetch(`http://localhost:3000/api/users/`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-  
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-  
-        const data: User[] = await response.json();
-        setUsers(data);
-      } catch (err: any) {
-        console.error(err);
-        toast.error("Failed getting user data");
+  //submitting add users
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>("");
+
+  // Filter users based on search text
+  function filterUsers(users: User[], searchText: string): User[] {
+    const cleanedSearchText: string = cleanString(searchText);
+    return users.filter(({ name }) => {
+      return (
+        cleanedSearchText.length === 0 ||
+        findMatchRatio(cleanedSearchText, cleanString(name)) > 0.7
+      );
+    });
+  }
+
+  // Handler function for updating the search text
+  const handleSearchTextChange: (value: string) => void = (value) => {
+    setSearchText(value);
+  };
+
+  //get users from database
+  async function getUsers() {
+    try {
+      const response = await fetch(`http://localhost:3000/api/users/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
       }
+
+      const data: User[] = await response.json();
+      setUsers(data);
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Failed getting user data");
     }
-  
-    useEffect(() => {
-      if (isOpen) {
-        void getUsers();
-      }
-    }, [isOpen]);
-  
-    useEffect(() => {
-      console.log("Updated users: ", users);
-    }, [users]);
+  }
+
+  useEffect(() => {
+    if (isOpen) {
+      void getUsers();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    console.log("Updated users: ", users);
+  }, [users]);
 
   //set values
   const [values, setValues] = React.useState<Set<string>>(new Set(["1"]));
 
-
   //array values
   const arrayValues = Array.from(values);
-
-
-
 
   // const handleAddUser = async () => {
   //   setIsSubmitting(true);
@@ -82,15 +96,34 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
   //   }
   // };
 
-
   return (
     <Modal className="w-full" isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 w-full">Add Users</ModalHeader>
+            <ModalHeader className="flex flex-col gap-1 w-full">
+              Add Users
+            </ModalHeader>
             <ModalBody className="flex w-full justify-center">
-              {users ? <UsersListBox users={users} setValues={setValues} values={values} arrayValues={arrayValues}/> : <div className="w-full h-full flex justify-center items-center"><Spinner color="danger" /></div>}
+              {/* Search bar component */}
+              <SearchBar
+                onTextChange={handleSearchTextChange}
+                overridingStyle="w-full text-sm shadow-none"
+                placeholder="Search User"
+                takeFullWidth={false}
+                text={searchText}
+              />
+              {users ? (
+                <UsersListBox
+                  users={filterUsers(users, searchText)}
+                  setValues={setValues}
+                  arrayValues={arrayValues}
+                />
+              ) : (
+                <div className="w-full h-full flex justify-center items-center">
+                  <Spinner color="danger" />
+                </div>
+              )}
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={onClose}>
@@ -101,7 +134,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
                 // onPress={handleAddUser}
                 disabled={isSubmitting}
               >
-                Add User
+                Add
               </Button>
             </ModalFooter>
           </>

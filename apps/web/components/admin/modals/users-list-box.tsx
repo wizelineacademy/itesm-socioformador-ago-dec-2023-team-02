@@ -13,12 +13,11 @@ import { User } from "@prisma/client";
 interface UsersListBoxProps {
     users: User[];
     setValues: (values: Set<string>) => void;
-    values: Set<string>;
     arrayValues: string[];
 }
 
 // Use the props interface
-export default function UsersListBox({ users, setValues, values, arrayValues }: UsersListBoxProps) {
+export default function UsersListBox({ users, setValues, arrayValues }: UsersListBoxProps) {
     //const [values, setValues] = React.useState<Set<string>>(new Set(["1"]));
 
     //const arrayValues = Array.from(values);
@@ -34,14 +33,23 @@ export default function UsersListBox({ users, setValues, values, arrayValues }: 
                 className="w-full flex py-0.5 px-2 gap-1"
                 orientation="horizontal"
             >
-                {arrayValues.map((value) => (
-                    <Chip key={value}>
-                        {users.find((user) => `${user.id}` === `${value}`).name}
-                    </Chip>
-                ))}
+                {arrayValues.map((value) => {
+                    // Find the user for the current value
+                    const foundUser = users.find((user) => `${user.id}` === value);
+
+                    // Check if a user was found
+                    if (!foundUser) return null;
+
+                    // Render the Chip for the found user
+                    return (
+                        <Chip key={value}>
+                            {foundUser.name}
+                        </Chip>
+                    );
+                })}
             </ScrollShadow>
         );
-    }, [arrayValues.length]);
+    }, [arrayValues, users]); // Include users in the dependency array
 
     return (
         <ListboxWrapper>
