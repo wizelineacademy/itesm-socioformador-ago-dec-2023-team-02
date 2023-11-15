@@ -22,6 +22,7 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
     const [conversationName, setConversationName] = useState<string>("")
     const [conversationModelId, setConversationModelId] = useState<number | null>(null)
     const [conversationTags, setConversationTags] = useState<Set<number>>(new Set<number>())
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const titleMaxLength = 25 
     const modalHorizontalPadding = "px-8"
 
@@ -29,6 +30,7 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
         setConversationName("")
         setConversationModelId(null)
         setConversationTags(new Set<number>())
+        setIsLoading(false)
     }
 
     const handleConversationNameChange: (newName: string) => void = (newName) => {
@@ -47,6 +49,7 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
 
     const handleCreateButtonPress: (e: any) => void = (_) => {
         if (!creationIsDisabled){
+            setIsLoading(true)
             createConversation()
         }
     }
@@ -111,8 +114,8 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
                             </Button>
 
                             <Button
-                                className={creationIsDisabled ? "opacity-50" : "opacity-100"}
-                                color="primary" isDisabled={creationIsDisabled}
+                                className={(creationIsDisabled || isLoading) ? "opacity-50" : "opacity-100"}
+                                color="primary" isDisabled={creationIsDisabled || isLoading}
                                 onPress={handleCreateButtonPress}
                             >
                                 Create
