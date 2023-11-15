@@ -39,7 +39,7 @@ export default async function ConversationRootLayout({
   
   return (
     <div className="flex flex-row">
-      <ConversationSidebar userId={userId} models={models} userConversations={userConversations} userTags={userTags}/>
+      <ConversationSidebar models={models} userConversations={userConversations} userTags={userTags}/>
       <section className="w-full">
           {children}
       </section>
