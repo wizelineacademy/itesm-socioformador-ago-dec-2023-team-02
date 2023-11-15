@@ -23,6 +23,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
     const [tagName, setTagName] = useState<string>(initialTagName || "")
     const [tagColor, setTagColor] = useState<string>(initialTagColor || "#bf4042")
     const [popoverIsOpen, setPopoverIsOpen] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const tagNameMaxLength = 15 
     const isNewTag: boolean = tagId === null
 
@@ -40,6 +41,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
     }
 
     const handleDeletePress: () => void = () => {
+        setIsLoading(true)
         const fetchOptions: RequestInit = {method: "DELETE", headers: {"Content-Type": "application/json"}}
         fetch(`/api/tags/${tagId}`, fetchOptions)
         .then((response) => {
@@ -52,6 +54,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
             onTagDeletion(deletedTag as Tag)
             toast.success("Tag deleted.")
             setPopoverIsOpen(false)
+            setIsLoading(false)
           })
         .catch((_) => {
             toast.error("The deletion of the tag failed.")
@@ -61,6 +64,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
     const handleCancelButtonPress: () => void = () => {setPopoverIsOpen(false)}
 
     const handleSaveButtonPress: () => void = () => {
+        setIsLoading(true)
         if (isNewTag) {
             createTag()
         } else {
@@ -89,6 +93,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
             onTagEdition(updatedTag as Tag)
             toast.success("Tag edited.")
             setPopoverIsOpen(false)
+            setIsLoading(false)
           })
         .catch((_) => {
             toast.error("The editing of the tag failed.")
@@ -112,6 +117,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
             onTagEdition(createdTag as Tag)
             toast.success("Tag created.")
             setPopoverIsOpen(false)
+            setIsLoading(false)
         })
         .catch((_) => {
             toast.error("The creation of the tag failed.")
@@ -133,7 +139,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
                         <p className="text-lg text-black dark:text-white font-semibold">{!isNewTag ? "Edit tag" : "Create tag"}</p>
 
                         {!isNewTag ? 
-                        <Button className="absolute right-0" color="danger" isIconOnly onPress={handleDeletePress} size="sm">
+                        <Button className="absolute right-0" color="danger" isDisabled={isLoading} isIconOnly onPress={handleDeletePress} size="sm">
                             <AiFillDelete/>
                         </Button>
                         : 
@@ -149,7 +155,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
 
                     <div className="flex flex-row w-full items-center justify-center gap-2">
                         <ButtonWithIcon icon={<MdOutlineCancel color="white"/>} isDisabled={false} onPress={handleCancelButtonPress} style="bg-red-700" text="Cancel"/>
-                        <ButtonWithIcon icon={<MdSaveAlt color="white"/>} isDisabled={disableSaveButton} onPress={handleSaveButtonPress} style="bg-sky-700" text="Save"/>
+                        <ButtonWithIcon icon={<MdSaveAlt color="white"/>} isDisabled={disableSaveButton || isLoading} onPress={handleSaveButtonPress} style="bg-sky-700" text="Save"/>
                     </div>
                 </div>
             </PopoverContent>
