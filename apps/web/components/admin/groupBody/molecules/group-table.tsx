@@ -1,5 +1,6 @@
 // GroupTable.tsx
 import React from "react";
+import AddUserModal from "../../modals/add-user-modal";
 import {
   Table,
   TableHeader,
@@ -19,6 +20,7 @@ import {
   Selection,
   ChipProps,
   SortDescriptor,
+  useDisclosure
 } from "@nextui-org/react";
 import { User } from "@prisma/client";
 import { SlOptionsVertical } from "react-icons/sl";
@@ -65,6 +67,9 @@ function capitalize(str: string) {
 }
 
 export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
+
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+
   type UserInfo = (typeof users)[0];
 
   const [filterValue, setFilterValue] = React.useState("");
@@ -301,7 +306,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button size="sm" color="danger" endContent={<AiOutlinePlus />}>
+            <Button size="sm" color="danger" onClick={onOpen} endContent={<AiOutlinePlus />}>
               Add New
             </Button>
           </div>
@@ -374,6 +379,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
   return (
+    <>
     <Table
       aria-label="Example table with custom cells, pagination and sorting"
       isHeaderSticky
@@ -411,5 +417,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
         )}
       </TableBody>
     </Table>
+    <AddUserModal isOpen={isOpen} onOpenChange={onOpenChange} />
+    </>
   );
 };
