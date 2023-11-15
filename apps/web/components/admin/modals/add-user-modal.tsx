@@ -21,39 +21,54 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
   isOpen,
   onOpenChange,
 }) => {
+
+  //users in database
   const [users, setUsers] = useState<User[] | null>(null);
-  // const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  
+  //submitting add users
+  //const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  async function getUsers() {
-    try {
-      const response = await fetch(`http://localhost:3000/api/users/`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+    //get users from database
+    async function getUsers() {
+      try {
+        const response = await fetch(`http://localhost:3000/api/users/`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+  
+        const data: User[] = await response.json();
+        setUsers(data);
+      } catch (err: any) {
+        console.error(err);
+        toast.error("Failed getting user data");
       }
-
-      const data: User[] = await response.json();
-      setUsers(data);
-    } catch (err: any) {
-      console.error(err);
-      toast.error("Failed getting user data");
     }
-  }
+  
+    useEffect(() => {
+      if (isOpen) {
+        void getUsers();
+      }
+    }, [isOpen]);
+  
+    useEffect(() => {
+      console.log("Updated users: ", users);
+    }, [users]);
 
-  useEffect(() => {
-    if (isOpen) {
-      void getUsers();
-    }
-  }, [isOpen]);
+  //set values
+  const [values, setValues] = React.useState<Set<string>>(new Set(["1"]));
 
-  useEffect(() => {
-    console.log("Updated users: ", users);
-  }, [users]);
+
+  //array values
+  const arrayValues = Array.from(values);
+
+
+
 
   // const handleAddUser = async () => {
   //   setIsSubmitting(true);
@@ -75,7 +90,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
           <>
             <ModalHeader className="flex flex-col gap-1 w-full">Add Users</ModalHeader>
             <ModalBody className="flex w-full justify-center">
-              {users ? <UsersListBox users={users} /> : <div className="w-full h-full flex justify-center items-center"><Spinner color="danger" /></div>}
+              {users ? <UsersListBox users={users} setValues={setValues} values={values} arrayValues={arrayValues}/> : <div className="w-full h-full flex justify-center items-center"><Spinner color="danger" /></div>}
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={onClose}>

@@ -12,13 +12,16 @@ import { User } from "@prisma/client";
 // Define the props in an interface
 interface UsersListBoxProps {
     users: User[];
+    setValues: (values: Set<string>) => void;
+    values: Set<string>;
+    arrayValues: string[];
 }
 
 // Use the props interface
-export default function UsersListBox({ users }: UsersListBoxProps) {
-    const [values, setValues] = React.useState<Set<string>>(new Set(["1"]));
+export default function UsersListBox({ users, setValues, values, arrayValues }: UsersListBoxProps) {
+    //const [values, setValues] = React.useState<Set<string>>(new Set(["1"]));
 
-    const arrayValues = Array.from(values);
+    //const arrayValues = Array.from(values);
 
     const topContent = React.useMemo(() => {
         if (!arrayValues.length) {
