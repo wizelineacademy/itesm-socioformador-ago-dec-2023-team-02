@@ -19,11 +19,17 @@ function extractFilename(content: string): string {
  * Function that deletes an image from the storage bucket using it's file name.
  * @param content String containing a message's content.
  */
-export async function deleteImage(content: string): Promise<NextResponse>{
+export async function deleteImage(content: string): Promise<NextResponse> {
+const secret = process.env.S3_SECRET_KEY
+
+    if (!secret) {
+        return new NextResponse(`Error: Invalid credentials`, { status: 500 })
+    }
+
     const client = new S3Client({
         credentials: {
             accessKeyId: "AKIAXNXJKBV77OB7CZPA",
-            secretAccessKey: process.env.S3_SECRET_KEY,
+            secretAccessKey: secret,
         },
         region: "us-east-1",
     });

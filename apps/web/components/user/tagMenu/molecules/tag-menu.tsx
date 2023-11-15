@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Button, Chip } from "@nextui-org/react";
-import { AiOutlineEdit } from "react-icons/ai";
-import { MdCancel } from "react-icons/md"
+import { Chip, Divider } from "@nextui-org/react";
+import { MdEdit } from "react-icons/md"
 import type { Tag } from "@prisma/client";
+import { IoMdCheckmarkCircle } from "react-icons/io";
 import SearchBar from "@/components/shared/molecules/search-bar";
 import { filterTags } from "@/helpers/tag-helpers";
 import { addItemToSet, removeItemFromSet} from "@/helpers/set-helpers";
@@ -13,17 +13,15 @@ import TagEditorPopover from "./tag-editor-popover";
 interface TagMenuProps {
     tags: Tag[]; 
     selectedTags: Set<number>;
-    onTagsChange: (newTags: Tag[]) => void;
+    isEditingTags: boolean; 
+    onTagsChange: ((newTags: Tag[]) => void) | null;
     onSelectedTagsChange: (newSelectedTags: Set<number>) => void;
-    allowEditing: boolean; 
 }
 
-export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTagsChange, allowEditing}: TagMenuProps): JSX.Element {
-    const [isEditingTags, setIsEditingTags] = useState<boolean>(false)
+export default function TagMenu({tags, selectedTags, isEditingTags, onTagsChange, onSelectedTagsChange}: TagMenuProps): JSX.Element {
     const [searchText, setSearchText] = useState<string>("")
 
     const handleSearchTextChange: (text: string) => void = (text) => {setSearchText(text)}
-    const handleEditButtonPress: (e: any) => void = (_) => {setIsEditingTags(!isEditingTags)}
 
     const handleTagPress: (pressedTag: Tag) => void = (pressedTag) => {
         const tagIsSelected: boolean = selectedTags.has(pressedTag.id)
@@ -31,53 +29,62 @@ export default function TagMenu({tags, selectedTags, onTagsChange, onSelectedTag
     }
 
     const handleTagDeletion: (deletedTag: Tag) => void = (deleteTag) => {
-        onTagsChange(removeItemWithId<Tag>(deleteTag, tags))
+        if (onTagsChange){
+            onTagsChange(removeItemWithId<Tag>(deleteTag, tags))
+        }
         onSelectedTagsChange(removeItemFromSet<number>(deleteTag.id, selectedTags))
     }
 
     const handleTagEdition: (editedTag: Tag) => void = (editedTag) => {
-        onTagsChange(editItemWithId<Tag>(editedTag, tags))
+        if (onTagsChange){
+            onTagsChange(editItemWithId<Tag>(editedTag, tags))
+        }
     }
 
     const handleTagEditionNewTag: (editedTag: Tag) => void = (editedTag) => {
-        onTagsChange(addItem<Tag>(editedTag, tags))
+        if (onTagsChange){
+            onTagsChange(addItem<Tag>(editedTag, tags))
+        }
     }
 
-    const editButtonIcon: JSX.Element = isEditingTags ? <MdCancel/> : <AiOutlineEdit/>
+    const newTagChip: JSX.Element = <Chip className="m-1" variant="bordered">New tag +</Chip>
+    
+    const noTagsLabel: JSX.Element = <div><p className="text-sm opacity-40">No tags to display</p></div>
 
-    const newTagChip: JSX.Element = (
-        <Chip className="m-1" variant="bordered">
-            New tag +
-        </Chip>)
+    const filteredTags: Tag[] = filterTags(tags, searchText)
 
     return (
-        <div className="flex flex-col justify-start items-start p-2 space-y-4 w-full">
-            <div className="flex flex-row space-x-2 items-center">
-                <SearchBar onTextChange={handleSearchTextChange} placeholder="Search tags" takeFullWidth text={searchText}/>
-
-                {allowEditing ? <Button isIconOnly onPress={handleEditButtonPress}>{editButtonIcon}</Button> : null}
+        <div className="flex flex-col justify-start items-start space-y-4 w-full">
+            <div className="flex flex-row space-x-2 items-center w-full">
+                <SearchBar onTextChange={handleSearchTextChange} overridingStyle="w-3/5" placeholder="Search tags" text={searchText}/>
             </div>
 
-            <div className="flex flex-row flex-wrap">
-                {filterTags(tags, searchText).map((tag) => (                    
-                    isEditingTags ? 
-                    <TagEditorPopover initialTagColor={tag.color} initialTagName={tag.name} key={tag.id} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEdition} placement="top" tagId={tag.id}>
+            <Divider/>
+
+            <div className="min-h-[150px] max-h-[450px] overflow-y-auto">
+                <div className="flex flex-row flex-wrap">
+                    {filteredTags.map((tag) => (                    
+                        isEditingTags ? 
+                        <TagEditorPopover initialTagColor={tag.color} initialTagName={tag.name} key={tag.id} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEdition} placement="top" tagId={tag.id}>
+                            <button type="button">
+                                <TagDisplay badgeContent={<MdEdit/>} isActive tagColor={tag.color} tagName={tag.name}/>
+                            </button>
+                        </TagEditorPopover>
+                        :
+                        <TagDisplay badgeContent={<IoMdCheckmarkCircle/>} isActive={selectedTags.has(tag.id)} key={tag.id} onPress={()=>{handleTagPress(tag)}} tagColor={tag.color} tagName={tag.name} />
+                    ))}
+
+                    {filteredTags.length === 0 ? noTagsLabel : null}
+
+                    {isEditingTags ?  
+                    <TagEditorPopover initialTagColor={null} initialTagName={null} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEditionNewTag} placement="top" tagId={null}>
                         <button type="button">
-                            <TagDisplay isBeingEdited isSelected tagColor={tag.color} tagName={tag.name}/>
+                            {newTagChip}
                         </button>
                     </TagEditorPopover>
                     :
-                    <TagDisplay isBeingEdited={false} isSelected={selectedTags.has(tag.id)} key={tag.id} onPress={()=>{handleTagPress(tag)}} tagColor={tag.color} tagName={tag.name} />
-                ))}
-
-                {isEditingTags ?  
-                <TagEditorPopover initialTagColor={null} initialTagName={null} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEditionNewTag} placement="top" tagId={null}>
-                    <button type="button">
-                        {newTagChip}
-                    </button>
-                </TagEditorPopover>
-                :
-                null}
+                    null}
+                </div>
             </div>
         </div>
     );

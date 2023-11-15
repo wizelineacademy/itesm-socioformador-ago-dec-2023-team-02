@@ -8,7 +8,7 @@
 
 "use client";
 import React from "react";
-import { Textarea, Button } from "@nextui-org/react";
+import { Textarea, Button, Spinner } from "@nextui-org/react";
 import { IoMdSend } from "react-icons/io";
 import { Sender } from "@prisma/client";
 import { toast } from "sonner";
@@ -43,12 +43,14 @@ export default function PromptTextInput({
   input,
   handleInputChange,
   handleSubmit,
+  isLoading,
 }: {
   idConversation: number;
   model: string;
   input: string;
   handleInputChange: any;
   handleSubmit: any;
+  isLoading: boolean;
 }): JSX.Element {
   return (
     <div className="flex justify-center w-full z-30 bg-black">
@@ -73,30 +75,40 @@ export default function PromptTextInput({
               value={input}
               variant="faded"
             />
-            {/* Send button */}
-            <Button
-              className={`${
-                !input
-                  ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10"
-                  : "bg-danger"
-              } text-white  rounded-r-xl`}
-              disabled={!input}
-              isIconOnly
-              onClick={() => {
-                void handleSaveMessage(
-                  idConversation,
-                  model,
-                  Sender.USER,
-                  input
-                );
-              }}
-              size="lg"
-              type="submit"
-              // Saves user's message when the send button is clicked
-              variant="flat"
-            >
-              <IoMdSend className="text-lg" />
-            </Button>
+            {/* Check if a response is being generated to show a spinner or submit button*/}
+            {
+              isLoading 
+                ? 
+                <Spinner 
+                  className="flex items-center ml-1"
+                  color="danger"
+                />
+                :
+                <Button
+                  className={`${
+                    !input
+                      ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10"
+                      : "bg-danger"
+                  } text-white  rounded-r-xl`}
+                  disabled={!input}
+                  isIconOnly
+                  onClick={() => {
+                    void handleSaveMessage(
+                      idConversation,
+                      model,
+                      Sender.USER,
+                      input
+                    );
+                  }}
+                  size="lg"
+                  type="submit"
+                  // Saves user's message when the send button is clicked
+                  variant="flat"
+                >
+                  <IoMdSend className="text-lg" />
+                </Button>
+            }
+
           </form>
           {/* Footer */}
           <div className=" w-full text-center bg-white dark:bg-black pb-0">

@@ -56,3 +56,15 @@ export function trimLeadingSpaces(str: string): string {
 export function imposeMaxLength(str: string, maxLength: number): string {
     return str.length <= maxLength ? str : str.slice(0, maxLength)
 }
+
+export function enforcePositiveNumericValuesOnly(str: string): string {
+    return str.replaceAll(/[^0-9]/g, "")
+}
+
+export function preventLeadingZeros(str: string): string {
+    return str.replace(/(?<=^0)0+$/, "")
+}
+
+export function strToNumber(str: string): number {
+    return parseInt(str, 10)
+}
