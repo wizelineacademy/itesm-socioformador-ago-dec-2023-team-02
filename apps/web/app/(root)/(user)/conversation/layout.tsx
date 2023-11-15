@@ -25,7 +25,7 @@ export default async function ConversationRootLayout({
 
   //If no user, redirect to login
   if(!user){
-    redirect("/conversation/new")
+    redirect("/api/auth/login");
   }
 
   //get user from database
@@ -39,7 +39,7 @@ export default async function ConversationRootLayout({
   
   return (
     <div className="flex flex-row">
-      <ConversationSidebar models={models} userConversations={userConversations} userTags={userTags}/>
+      <ConversationSidebar userId={userId} models={models} userConversations={userConversations} userTags={userTags}/>
       <section className="w-full">
           {children}
       </section>
