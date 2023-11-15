@@ -74,7 +74,7 @@ export default function TagMenu({tags, selectedTags, isEditingTags, onTagsChange
                         <TagDisplay badgeContent={<IoMdCheckmarkCircle/>} isActive={selectedTags.has(tag.id)} key={tag.id} onPress={()=>{handleTagPress(tag)}} tagColor={tag.color} tagName={tag.name} />
                     ))}
 
-                    {filteredTags.length === 0 ? noTagsLabel : null}
+                    {filteredTags.length === 0 && !isEditingTags ? noTagsLabel : null}
 
                     {isEditingTags ?  
                     <TagEditorPopover initialTagColor={null} initialTagName={null} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEditionNewTag} placement="top" tagId={null}>
