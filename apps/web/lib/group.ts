@@ -282,8 +282,8 @@ export async function deleteGroup(
  * @returns A Promise that resolves to an object containing the updated group and an array of updated users, or an error message and status code if an error occurs.
  */
 export async function addUsersToGroup(
-    groupId: number,
-    userIds: number[] 
+  groupId: number,
+  userIds: number[]
 ): Promise<PrismaResponse<{ group: Group; users: User[] }>> {
   //const { groupId, userIds } = params;
 
@@ -291,11 +291,11 @@ export async function addUsersToGroup(
     // Fetch the group's creditsAssigned value
     const group = await prisma.group.findUnique({
       where: { id: groupId },
-      select: { creditsAssigned: true }
+      select: { creditsAssigned: true },
     });
 
     if (!group) {
-      return { status: 404, message: 'Group not found' };
+      return { status: 404, message: "Group not found" };
     }
 
     // Start a transaction to update both users and group
@@ -319,17 +319,59 @@ export async function addUsersToGroup(
               connect: { id: groupId },
             },
             creditsRemaining: {
-              increment: group.creditsAssigned
-            }
+              increment: group.creditsAssigned,
+            },
           },
         })
       ),
     ]);
 
-
     return { data: { group: updatedGroup, users: updatedUsers }, status: 200 };
   } catch (error: any) {
     console.error("Error adding users to group:", error.message);
+    return { status: 500, message: error.message };
+  }
+}
+
+/**
+ * Removes users from a group and updates the database accordingly.
+ * @param groupId - The ID of the group to remove users from.
+ * @param userIds - An array of user IDs to remove from the group.
+ * @returns A Promise that resolves to a PrismaResponse object containing the updated group and users, or an error message and status code if an error occurs.
+ */
+export async function removeUsersFromGroup(
+  groupId: number,
+  userIds: number[]
+): Promise<PrismaResponse<{ group: Group; users: User[] }>> {
+  try {
+    // Start a transaction to update both users and group
+    const [updatedGroup, updatedUsers] = await prisma.$transaction([
+      // Update the group to remove users
+      prisma.group.update({
+        where: { id: groupId },
+        data: {
+          users: {
+            disconnect: userIds.map((id) => ({ id })),
+          },
+        },
+        include: { users: true },
+      }),
+      // Update each user to remove the group
+      ...userIds.map((userId) =>
+        prisma.user.update({
+          where: { id: userId },
+          data: {
+            groups: {
+              disconnect: { id: groupId },
+            },
+          },
+        })
+      ),
+    ]);
+
+    return { data: { group: updatedGroup, users: updatedUsers }, status: 200 };
+  } catch (error: any) {
+    console.error("Error removing users from group:", error.message);
     return { status: 500, message: error.message };
   }
 }
