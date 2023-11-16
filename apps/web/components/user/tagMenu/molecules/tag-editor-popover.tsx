@@ -139,7 +139,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
                         <p className="text-lg text-black dark:text-white font-semibold">{!isNewTag ? "Edit tag" : "Create tag"}</p>
 
                         {!isNewTag ? 
-                        <Button className="absolute right-0" color="danger" isDisabled={isLoading} isIconOnly onPress={handleDeletePress} size="sm">
+                        <Button className="absolute right-0" color="danger" isDisabled={isLoading} isIconOnly onPress={handleDeletePress} size="sm" id="tag-delete">
                             <AiFillDelete/>
                         </Button>
                         : 

@@ -21,11 +21,11 @@ export default function TagDisplay({tagName, tagColor, badgeContent, isActive, o
 
     return (
         <button className="m-1" onClick={handleTagPress} type="button">
-            <Badge content={badgeContent} isDot isInvisible={!isActive} isOneChar showOutline={false} variant="faded">
+            <Badge content={badgeContent} isDot isInvisible={!isActive} isOneChar showOutline={false} variant="faded" id="tag-edit">
                 <Chip
                 className={isActive ? "opacity-100" : "opacity-50 hover:opacity-70"}
                 style={{backgroundColor: tagColor, color: tagTextColor}}>
-                    <p className={isActive ? "font-medium" : "font-normal"}>{tagName}</p>
+                    <p className={isActive ? "font-medium" : "font-normal"}>{tagName} </p>
                 </Chip>
             </Badge>
         </button>
