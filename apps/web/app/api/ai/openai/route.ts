@@ -4,8 +4,7 @@ import { OpenAIStream, StreamingTextResponse } from "ai";
 import { NextResponse } from "next/server";
 import { uploadToLightsail } from "@/lib/helper/storage/upload-image";
 
-export const runtime = 'edge';
-
+export const runtime = "edge";
 
 // Stores the API key of our OpenAI model
 const config = new Configuration({
@@ -23,8 +22,14 @@ export async function POST(
   request: Request
 ): Promise<StreamingTextResponse | NextResponse> {
   // Destructure the incoming request to get the messages array, model, and temperature
-  const { messages, userContext, responseContext, temperature, modelName, size } =
-    await request.json(); 
+  const {
+    messages,
+    userContext,
+    responseContext,
+    temperature,
+    modelName,
+    size,
+  } = await request.json();
 
   if (modelName === "dalle") {
     try {
@@ -35,25 +40,26 @@ export async function POST(
        * Sets image size.
        */
       const response: Response = await openai.createImage({
-          prompt: messages[messages.length - 1].content,
-          response_format: 'b64_json',
-          size
+        prompt: messages[messages.length - 1].content,
+        response_format: "b64_json",
+        size,
       });
 
-      const data = (await response.json() as ResponseTypes["createImage"])
+      const data = (await response.json()) as ResponseTypes["createImage"];
 
       // Extracts the image string from the response data.
-      const img: string | undefined = data.data[0].b64_json
+      const img: string | undefined = data.data[0].b64_json;
 
       // Checks that the base64 image is not undefined and uploads the image to the lightsail bucket
       // Returns the image url in markdown format
       // Otherwise returns an error message
       if (img) {
-        const imageUrl: string = await uploadToLightsail(img)
-        return new NextResponse(`![Generated image](${imageUrl})`, {status: 200})
-      } else {
-        return new NextResponse(`Error: No image was generated`, { status: 500 });
+        const imageUrl: string = await uploadToLightsail(img);
+        return new NextResponse(`![Generated image](${imageUrl})`, {
+          status: 200,
+        });
       }
+      return new NextResponse(`Error: No image was generated`, { status: 500 });
     } catch (error: any) {
       // If an error occurs, log it to the console and send a message to the user
       // console.error(error);
@@ -65,15 +71,15 @@ export async function POST(
       const temp = Number(temperature); //temperature of chat
       //construct Custom Instructions
       let customInstructions = ""; //custom instructions of chat
-  
+
       if (responseContext !== "") {
         customInstructions += `How you should respond: ${responseContext}. `;
       }
-  
+
       if (userContext !== "") {
         customInstructions += `User context: ${userContext}. `;
       }
-  
+
       /**
        * Function that utilizes the tool "createChatCompletion".
        * This defines the type of chat model that is going to be used.
@@ -84,15 +90,17 @@ export async function POST(
         model: modelName,
         stream: true, // Enable streaming
         temperature: temp, // Set temperature, default is 0.5 if not provided
-        messages: [{ "role": "system", "content": customInstructions }, ...messages],
+        messages: [
+          { role: "system", content: customInstructions },
+          ...messages,
+        ],
       });
-  
+
       // Creates a stream of data from OpenAI using the tool "OpenAIStream"
       const stream = OpenAIStream(response);
-  
+
       // Sends the stream as a response to our user.
       return new StreamingTextResponse(stream, { status: 200 });
-
     } catch (error: any) {
       // If an error occurs, log it to the console and send a message to the user
       // console.error(error);

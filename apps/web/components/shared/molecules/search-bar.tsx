@@ -5,7 +5,7 @@ interface SearchBarProps {
   text: string;
   placeholder: string;
   onTextChange: (text: string) => void;
-  takeFullWidth: boolean;
+  takeFullWidth?: boolean;
   overridingStyle?: string;
 }
 
