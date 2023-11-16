@@ -54,12 +54,13 @@ export default function UsersListBox({ users, setValues, arrayValues }: UsersLis
     return (
         <ListboxWrapper>
             <Listbox
+            emptyContent="All users assigned"
                 topContent={topContent}
                 classNames={{
                     base: "w-full",
                     list: "max-h-[300px] overflow-scroll w-full",
                 }}
-                defaultSelectedKeys={["1"]}
+                defaultSelectedKeys={[]}
                 items={users}
                 label="Assigned to"
                 selectionMode="multiple"
