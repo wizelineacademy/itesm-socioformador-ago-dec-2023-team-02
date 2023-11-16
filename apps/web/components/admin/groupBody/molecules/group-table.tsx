@@ -30,6 +30,7 @@ import { Role } from "@prisma/client";
 
 //Component props
 interface GroupTableProps {
+  setUpdatedUsers: any;
   idGroup: number;
   users: User[];
 }
@@ -67,7 +68,7 @@ function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export const GroupTable: React.FC<GroupTableProps> = ({ users, idGroup }) => {
+export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, idGroup }) => {
 
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
@@ -379,6 +380,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users, idGroup }) => {
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
+
   return (
     <>
     <Table
@@ -418,7 +420,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users, idGroup }) => {
         )}
       </TableBody>
     </Table>
-    <AddUserModal idGroup={idGroup} isOpen={isOpen} onOpenChange={onOpenChange} />
+    <AddUserModal setUpdatedUsers={setUpdatedUsers} idGroup={idGroup} isOpen={isOpen} onOpenChange={onOpenChange} />
     </>
   );
 };

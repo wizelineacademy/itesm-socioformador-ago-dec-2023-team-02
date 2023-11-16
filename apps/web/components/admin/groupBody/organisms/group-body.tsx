@@ -27,6 +27,10 @@ export default function GroupBody(): JSX.Element {
     // State for tracking loading status
     const [loading, setLoading] = useState<boolean>(true);
 
+    // State for updated users in group
+    const [updatedUsers, setUpdatedUsers] = useState<boolean>(false);
+
+
     // State for storing error messages
     // const [error, setError] = useState<any>(null);
 
@@ -59,7 +63,14 @@ export default function GroupBody(): JSX.Element {
         if (idGroup) {
             void getGroupData();
         }
-    }, [idGroup]);
+
+        if(updatedUsers){
+            setUpdatedUsers(false);
+        }
+    }, [idGroup, updatedUsers]);
+
+
+
 
     if (loading) return <div><Spinner color="danger" /></div>;
     // if (error) return <div>Error: {error}</div>;
@@ -69,7 +80,7 @@ export default function GroupBody(): JSX.Element {
             {/* Group Header */}
             <GroupHeader groupName={groupData.name} creditsAssigned={groupData.creditsAssigned}/>
             {/* Group Table */}
-            <GroupTable idGroup={idGroup} users={groupData.users} />
+            <GroupTable setUpdatedUsers={setUpdatedUsers} idGroup={idGroup} users={groupData.users} />
 
         </div>
     );

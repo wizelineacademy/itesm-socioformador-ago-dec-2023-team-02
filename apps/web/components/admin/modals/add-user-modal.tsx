@@ -16,12 +16,14 @@ import { findMatchRatio, cleanString } from "@/helpers/string-helpers";
 
 
 interface AddUserModalProps {
+  setUpdatedUsers: any;
   idGroup: number;
   isOpen: boolean;
   onOpenChange: () => void;
 }
 
 const AddUserModal: React.FC<AddUserModalProps> = ({
+  setUpdatedUsers,
   idGroup,
   isOpen,
   onOpenChange,
@@ -115,6 +117,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
       toast.error('Failed to add users to the group');
     } finally {
       setIsSubmitting(false);
+      setUpdatedUsers(true);
     }
   };
 
@@ -153,7 +156,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
               </Button>
               <Button
                 color="primary"
-                onPress={void handleAddUser}
+                onPress={() => {void handleAddUser()}}
                 disabled={isSubmitting}
               >
                 Add
