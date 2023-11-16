@@ -1,5 +1,5 @@
 import type { Group } from "@prisma/client";
-import { findMatchRatio } from "./string-helpers";
+import { cleanString, findMatchRatio } from "./string-helpers";
 
 export enum GroupsActionType {
     Create, 
@@ -32,7 +32,8 @@ export function groupsReducer(state: Group[], action: GroupsAction): Group[] {
 }
 
 export function filterGroups(groups: Group[], searchText: string): Group[] {
-    return searchText.length > 0 ? groups.filter((group) => findMatchRatio(group.name, searchText) > 0.5) : groups
+    const cleanedSearchText: string = cleanString(searchText)
+    return searchText.length > 0 ? groups.filter((group) => findMatchRatio(cleanString(group.name), cleanedSearchText) > 0.5) : groups
 }
 
 export function editGroupName(group: Group, newName: string): Group {

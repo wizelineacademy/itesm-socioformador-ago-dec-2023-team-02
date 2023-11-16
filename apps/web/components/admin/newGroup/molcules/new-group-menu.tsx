@@ -1,7 +1,7 @@
 import { Input, Textarea } from "@nextui-org/react";
 import type { Group } from "@prisma/client";
 import { editGroupCredits, editGroupDescription, editGroupName } from "@/helpers/group-helpers";
-import { enforcePositiveNumericValuesOnly, imposeMaxLength, preventLeadingZeros, strToNumber, trimLeadingSpaces } from "@/helpers/string-helpers";
+import { enforcePositiveNumericValuesOnly, imposeMaxLength, removeLeadingZeros, strToNumber, trimLeadingSpaces } from "@/helpers/string-helpers";
 
 interface NewGroupMenuProps {
     group: Group;
@@ -20,8 +20,12 @@ export default function NewGroupMenu({group, onGroupChange}: NewGroupMenuProps):
     }
 
     const handleGroupCreditsChange: (value: string) => void = (value) => {
-        console.log(group.creditsAssigned)
-        onGroupChange(editGroupCredits(group, strToNumber(preventLeadingZeros(enforcePositiveNumericValuesOnly(value)))))
+        const normalizedNumberString: string = removeLeadingZeros(enforcePositiveNumericValuesOnly(value))
+        if (normalizedNumberString.length === 0){
+            onGroupChange(editGroupCredits(group, 0))
+        } else {
+            onGroupChange(editGroupCredits(group, strToNumber(normalizedNumberString)))
+        }
     }
 
     return (
