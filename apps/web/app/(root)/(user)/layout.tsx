@@ -1,10 +1,9 @@
-import { withPageAuthRequired } from "@auth0/nextjs-auth0";
+// import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 
+// export default withPageAuthRequired(function User({ children }: any): any {
+//   return children;
+// });
 
-export default withPageAuthRequired(function User({
-    children,
-}: {
-    children: React.ReactNode;
-}){
-    return  children
-})
+export default function UserLayout({ children }: any): any {
+  return children;
+}
