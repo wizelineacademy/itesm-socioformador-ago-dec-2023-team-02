@@ -157,7 +157,8 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
                 Close
               </Button>
               <Button
-                color="primary"
+                color="success"
+                className="text-white"
                 onPress={() => {void handleAddUser()}}
                 disabled={isSubmitting}
               >

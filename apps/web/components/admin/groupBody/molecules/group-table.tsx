@@ -20,13 +20,14 @@ import {
   Selection,
   ChipProps,
   SortDescriptor,
-  useDisclosure
+  useDisclosure,
 } from "@nextui-org/react";
 import { User } from "@prisma/client";
 import { SlOptionsVertical } from "react-icons/sl";
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
 import { BsChevronCompactDown } from "react-icons/bs";
 import { Role } from "@prisma/client";
+import { FaMinus } from "react-icons/fa";
 
 //Component props
 interface GroupTableProps {
@@ -52,25 +53,23 @@ const roleOptions = [
 //role color mapping
 const roleColorMap: Record<string, ChipProps["color"]> = {
   ADMIN: "success",
-  USER: "danger",
+  USER: "warning",
 };
 
 //initial visible columns
-const INITIAL_VISIBLE_COLUMNS = [
-  "name",
-  "role",
-  "creditsRemaining",
-  "actions",
-];
+const INITIAL_VISIBLE_COLUMNS = ["name", "role", "creditsRemaining", "actions"];
 
 //function to capitalize strings
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, idGroup }) => {
-
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+export const GroupTable: React.FC<GroupTableProps> = ({
+  setUpdatedUsers,
+  users,
+  idGroup,
+}) => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   type UserInfo = (typeof users)[0];
 
@@ -78,6 +77,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, 
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([])
   );
+
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
@@ -166,18 +166,28 @@ export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, 
           );
         case "role":
           return (
-            <Chip
-              className="capitalize"
-              color={roleColorMap[user.role]}
-              size="sm"
-              variant="flat"
-            >
-              {cellValue}
-            </Chip>
+            <div className="w-full pl-0 ml-0 flex justify-start">
+             <Chip
+               className="pl-0 ml-0 capitalize border-none gap-1 text-default-600"
+               color={roleColorMap[user.role]}
+               size="sm"
+               variant="dot"
+             >
+               {cellValue}
+             </Chip>
+            </div>
+            // <Chip
+            //   className="capitalize border-none gap-1 text-default-600"
+            //   color={roleColorMap[user.role]}
+            //   size="sm"
+            //   variant="dot"
+            // >
+            //   {cellValue}
+            // </Chip>
           );
         case "creditsRemaining":
           return (
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full justify-end">
               <p className="text-bold text-sm capitalize">{cellValue}</p>
               {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
             </div>
@@ -185,7 +195,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, 
 
         case "actions":
           return (
-            <div className="relative flex justify-center items-center gap-2">
+            <div className="relative flex justify-start items-center gap-2">
               <Dropdown placement="left">
                 <DropdownTrigger>
                   <Button isIconOnly size="sm" variant="light">
@@ -245,8 +255,8 @@ export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, 
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-center">
-            <Input
-          size="sm"
+          <Input
+            size="sm"
             isClearable
             className="w-full sm:max-w-[44%]"
             placeholder="Search by name..."
@@ -261,7 +271,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, 
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
-                size="sm"
+                  size="sm"
                   endContent={<BsChevronCompactDown className="text-small" />}
                   variant="light"
                 >
@@ -286,7 +296,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, 
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
-                size="sm"
+                  size="sm"
                   endContent={<BsChevronCompactDown className="text-small" />}
                   variant="light"
                 >
@@ -308,9 +318,21 @@ export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, 
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button size="sm" color="danger" onClick={onOpen} endContent={<AiOutlinePlus />}>
-              Add New
-            </Button>
+            {selectedKeys.size > 0 ? (
+              <Button size="sm" color="danger" endContent={<FaMinus />}>
+                Remove Users
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                color="success"
+                className="text-white"
+                onClick={onOpen}
+                endContent={<AiOutlinePlus />}
+              >
+                Add Users
+              </Button>
+            )}
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -332,6 +354,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, 
       </div>
     );
   }, [
+    selectedKeys,
     filterValue,
     roleFilter,
     visibleColumns,
@@ -380,47 +403,57 @@ export const GroupTable: React.FC<GroupTableProps> = ({ setUpdatedUsers, users, 
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
-
+  
   return (
     <>
-    <Table
-      aria-label="Example table with custom cells, pagination and sorting"
-      isHeaderSticky
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "max-h-[382px] shadow-none p-4",
-      }}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-    <AddUserModal setUpdatedUsers={setUpdatedUsers} idGroup={idGroup} isOpen={isOpen} onOpenChange={onOpenChange} />
+      <Table
+        aria-label="Example table with custom cells, pagination and sorting"
+        isHeaderSticky
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
+        classNames={{
+          wrapper: "max-h-[382px] shadow-none p-4",
+        }}
+        checkboxesProps={{
+          classNames: {
+            wrapper: "after:bg-foreground after:text-background text-background",
+          },
+        }}
+        selectedKeys={selectedKeys}
+        selectionMode="multiple"
+        sortDescriptor={sortDescriptor}
+        topContent={topContent}
+        topContentPlacement="outside"
+        onSelectionChange={setSelectedKeys}
+        onSortChange={setSortDescriptor}
+      >
+        <TableHeader columns={headerColumns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+              allowsSorting={column.sortable}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No users found"} items={sortedItems}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <AddUserModal
+        setUpdatedUsers={setUpdatedUsers}
+        idGroup={idGroup}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      />
     </>
   );
 };
