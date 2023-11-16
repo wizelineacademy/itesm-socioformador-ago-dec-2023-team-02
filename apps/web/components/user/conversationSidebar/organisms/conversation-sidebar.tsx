@@ -23,7 +23,6 @@ import { TbEdit } from "react-icons/tb";
 import { BiLineChart } from "react-icons/bi";
 import { TiKeyOutline } from "react-icons/ti";
 import { useRouter } from "next/navigation";
-import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SearchBar from "@/components/shared/molecules/search-bar";
 import {
@@ -70,7 +69,7 @@ export default function ConversationSidebar({
   const [newConversationModalIsOpen, setNewConversationModalIsOpen] =
     useState<boolean>(false);
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
-  const router: AppRouterInstance = useRouter();
+  const router = useRouter();
 
   const { user } = useUser();
 

@@ -41,7 +41,7 @@ function Descripcion(): JSX.Element {
   );
 }
 
-export default function RequestCredits() {
+export default function RequestCredits(): JSX.Element {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (

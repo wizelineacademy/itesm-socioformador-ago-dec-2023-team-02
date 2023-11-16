@@ -20,7 +20,7 @@ export function ChatMessageActions({
   };
 
   return (
-    <Button isIconOnly size="sm" onClick={onCopy} variant="light">
+    <Button isIconOnly onClick={onCopy} size="sm" variant="light">
       {isCopied ? <IconCheck /> : <IconCopy />}
       <span className="sr-only">Copy message</span>
     </Button>

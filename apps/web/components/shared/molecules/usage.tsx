@@ -2,7 +2,7 @@
 
 import { Card, CardBody, Accordion, AccordionItem } from "@nextui-org/react";
 
-export default function Usage() {
+export default function Usage(): JSX.Element {
   const months = [
     "January",
     "February",

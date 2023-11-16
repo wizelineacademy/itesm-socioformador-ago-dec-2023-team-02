@@ -1,9 +1,9 @@
 "use client";
+
 import { Select, SelectItem } from "@nextui-org/react";
 // Provider is imported from the Prisma client which is an ORM for TypeScript.
 import type { ModelWithProvider } from "@/types/moder-with-provider-types";
 import ModelSelectionCard from "../atoms/model-selection-card";
-
 
 // Props interface for the ModelSelector component.
 interface ModelSelectorProps {
@@ -13,12 +13,16 @@ interface ModelSelectorProps {
 
 // ModelSelector component definition with type annotation for props.
 
-export default function ModelSelector({models, onModelSelection}: ModelSelectorProps): JSX.Element {
+export default function ModelSelector({
+  models,
+  onModelSelection,
+}: ModelSelectorProps): JSX.Element {
   // Event handler for the select change event, updates the selected model via the passed-in callback.
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  // const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  function handleChange(event: React.ChangeEvent<HTMLSelectElement>): void {
     const newModel = Number(event.target.value);
     onModelSelection(newModel === 0 ? null : newModel); // Converts the selected model ID to a number and updates state.
-  };
+  }
 
   // JSX for rendering the select dropdown with model options.
   return (
@@ -32,13 +36,12 @@ export default function ModelSelector({models, onModelSelection}: ModelSelectorP
         size="sm"
       >
         {/* This function renders each model as a selectable item with a custom ModelSelectionCard. */}
-        {models.map((model) =>(
+        {models.map((model) => (
           <SelectItem key={model.id} textValue={model.name.toUpperCase()}>
-            <ModelSelectionCard model={model}/>
+            <ModelSelectionCard model={model} />
           </SelectItem>
         ))}
       </Select>
     </div>
   );
-};
-
+}

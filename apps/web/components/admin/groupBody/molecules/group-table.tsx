@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // GroupTable.tsx
-import React from "react";
+import type { Selection, ChipProps, SortDescriptor } from "@nextui-org/react";
 import {
   Table,
   TableHeader,
@@ -16,15 +17,14 @@ import {
   Chip,
   User as UserIcon,
   Pagination,
-  Selection,
-  ChipProps,
-  SortDescriptor,
 } from "@nextui-org/react";
-import { User } from "@prisma/client";
+import { Role } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { SlOptionsVertical } from "react-icons/sl";
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
 import { BsChevronCompactDown } from "react-icons/bs";
-import { Role } from "@prisma/client";
+import type { ChangeEvent, Key } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 //Component props
 interface GroupTableProps {
@@ -63,32 +63,30 @@ const INITIAL_VISIBLE_COLUMNS = [
 ];
 
 //function to capitalize strings
-function capitalize(str: string) {
+function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
+export function GroupTable({ users }: GroupTableProps): JSX.Element {
   type UserInfo = (typeof users)[0];
 
-  const [filterValue, setFilterValue] = React.useState("");
-  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
-    new Set([])
-  );
-  const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
+  const [filterValue, setFilterValue] = useState("");
+  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+  const [visibleColumns, setVisibleColumns] = useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
-  const [roleFilter, setRoleFilter] = React.useState<Selection>("all");
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
+  const [roleFilter, setRoleFilter] = useState<Selection>("all");
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "name",
     direction: "ascending",
   });
 
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = useState(1);
 
   const hasSearchFilter = Boolean(filterValue);
 
-  const headerColumns = React.useMemo(() => {
+  const headerColumns = useMemo(() => {
     if (visibleColumns === "all") return columns;
 
     return columns.filter((column) =>
@@ -96,7 +94,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
     );
   }, [visibleColumns]);
 
-  const filteredItems = React.useMemo(() => {
+  const filteredItems = useMemo(() => {
     let filteredUsers = [...users];
 
     if (hasSearchFilter) {
@@ -118,14 +116,14 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
-  const items = React.useMemo(() => {
+  const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
-  const sortedItems = React.useMemo(() => {
+  const sortedItems = useMemo(() => {
     return [...items].sort((a: UserInfo, b: UserInfo) => {
       const first = a[sortDescriptor.column as keyof UserInfo] as string;
       const second = b[sortDescriptor.column as keyof UserInfo] as string;
@@ -145,91 +143,92 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
   }, [sortDescriptor, items]);
 
   // This function renders the table cell depending on the column key and user data
-  const renderCell = React.useCallback(
-    (user: UserInfo, columnKey: React.Key) => {
-      const cellValue = user[columnKey as keyof UserInfo];
+  const renderCell = useCallback((user: UserInfo, columnKey: Key) => {
+    const cellValue = user[columnKey as keyof UserInfo];
 
-      switch (columnKey) {
-        case "name":
-          return (
-            <UserIcon
-              avatarProps={{ radius: "sm", src: user.image }}
-              description={user.email}
-              name={cellValue}
-            >
-              {user.email}
-            </UserIcon>
-          );
-        case "role":
-          return (
-            <Chip
-              className="capitalize"
-              color={roleColorMap[user.role]}
-              size="sm"
-              variant="flat"
-            >
-              {cellValue}
-            </Chip>
-          );
-        case "jobPosition":
-          return (
-            <div className="flex flex-col">
-              <p className="text-bold text-sm capitalize">{cellValue}</p>
-            </div>
-          );
-        case "creditsRemaining":
-          return (
-            <div className="flex flex-col">
-              <p className="text-bold text-sm capitalize">{cellValue}</p>
-              {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
-            </div>
-          );
+    switch (columnKey) {
+      case "name":
+        return (
+          <UserIcon
+            avatarProps={{ radius: "sm", src: user.image }}
+            description={user.email}
+            name={cellValue as string}
+          >
+            {user.email}
+          </UserIcon>
+        );
+      case "role":
+        return (
+          <Chip
+            className="capitalize"
+            color={roleColorMap[user.role]}
+            size="sm"
+            variant="flat"
+          >
+            {cellValue as string}
+          </Chip>
+        );
+      case "jobPosition":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-sm capitalize">
+              {cellValue as string}
+            </p>
+          </div>
+        );
+      case "creditsRemaining":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-sm capitalize">
+              {cellValue as string}
+            </p>
+            {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
+          </div>
+        );
 
-        case "actions":
-          return (
-            <div className="relative flex justify-center items-center gap-2">
-              <Dropdown placement="left">
-                <DropdownTrigger>
-                  <Button isIconOnly size="sm" variant="light">
-                    <SlOptionsVertical className="text-default-600" />
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu>
-                  <DropdownItem>View</DropdownItem>
-                  <DropdownItem>Edit</DropdownItem>
-                  <DropdownItem>Delete</DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-          );
-        default:
-          return cellValue;
-      }
-    },
-    []
-  );
+      case "actions":
+        return (
+          <div className="relative flex justify-center items-center gap-2">
+            <Dropdown placement="left">
+              <DropdownTrigger>
+                <Button isIconOnly size="sm" variant="light">
+                  <SlOptionsVertical className="text-default-600" />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu>
+                <DropdownItem>View</DropdownItem>
+                <DropdownItem>Edit</DropdownItem>
+                <DropdownItem>Delete</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        );
+      default:
+        return cellValue;
+    }
+  }, []);
 
-  const onNextPage = React.useCallback(() => {
+  const onNextPage = useCallback(() => {
     if (page < pages) {
       setPage(page + 1);
     }
   }, [page, pages]);
 
-  const onPreviousPage = React.useCallback(() => {
+  const onPreviousPage = useCallback(() => {
     if (page > 1) {
       setPage(page - 1);
     }
   }, [page]);
 
-  const onRowsPerPageChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const onRowsPerPageChange = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
     []
   );
 
-  const onSearchChange = React.useCallback((value?: string) => {
+  const onSearchChange = useCallback((value?: string) => {
     if (value) {
       setFilterValue(value);
       setPage(1);
@@ -238,48 +237,48 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
     }
   }, []);
 
-  const onClear = React.useCallback(() => {
+  const onClear = useCallback(() => {
     setFilterValue("");
     setPage(1);
   }, []);
 
-  const topContent = React.useMemo(() => {
+  const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-center">
-            <Input
-          size="sm"
-            isClearable
+          <Input
             className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
-            startContent={<AiOutlineSearch />}
-            value={filterValue}
+            isClearable
             onClear={() => {
               onClear();
             }}
             onValueChange={onSearchChange}
+            placeholder="Search by name..."
+            size="sm"
+            startContent={<AiOutlineSearch />}
+            value={filterValue}
           />
           <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
-                size="sm"
                   endContent={<BsChevronCompactDown className="text-small" />}
+                  size="sm"
                   variant="light"
                 >
                   Role
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
-                disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
+                disallowEmptySelection
+                onSelectionChange={setRoleFilter as any}
                 selectedKeys={roleFilter}
                 selectionMode="multiple"
-                onSelectionChange={setRoleFilter}
               >
                 {roleOptions.map((role) => (
-                  <DropdownItem key={role.uid} className="capitalize">
+                  <DropdownItem className="capitalize" key={role.uid}>
                     {capitalize(role.name)}
                   </DropdownItem>
                 ))}
@@ -288,29 +287,29 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
-                size="sm"
                   endContent={<BsChevronCompactDown className="text-small" />}
+                  size="sm"
                   variant="light"
                 >
                   Columns
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
-                disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
+                disallowEmptySelection
+                onSelectionChange={setVisibleColumns as any}
                 selectedKeys={visibleColumns}
                 selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
               >
                 {columns.map((column) => (
-                  <DropdownItem key={column.uid} className="capitalize">
+                  <DropdownItem className="capitalize" key={column.uid}>
                     {capitalize(column.name)}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button size="sm" color="danger" endContent={<AiOutlinePlus />}>
+            <Button color="danger" endContent={<AiOutlinePlus />} size="sm">
               Add New
             </Button>
           </div>
@@ -343,7 +342,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
     hasSearchFilter,
   ]);
 
-  const bottomContent = React.useMemo(() => {
+  const bottomContent = useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
@@ -352,28 +351,28 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
         </span>
         <Pagination
+          color="danger"
           isCompact
+          onChange={setPage}
+          page={page}
           showControls
           showShadow
-          color="danger"
-          page={page}
           total={pages}
-          onChange={setPage}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
             isDisabled={pages === 1}
+            onPress={onPreviousPage}
             size="sm"
             variant="flat"
-            onPress={onPreviousPage}
           >
             Previous
           </Button>
           <Button
             isDisabled={pages === 1}
+            onPress={onNextPage}
             size="sm"
             variant="flat"
-            onPress={onNextPage}
           >
             Next
           </Button>
@@ -385,40 +384,40 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
   return (
     <Table
       aria-label="Example table with custom cells, pagination and sorting"
-      isHeaderSticky
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
         wrapper: "max-h-[382px] shadow-none p-4",
       }}
+      isHeaderSticky
+      onSelectionChange={setSelectedKeys as any}
+      onSortChange={setSortDescriptor as any}
       selectedKeys={selectedKeys}
       selectionMode="multiple"
       sortDescriptor={sortDescriptor}
       topContent={topContent}
       topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
     >
       <TableHeader columns={headerColumns}>
         {(column) => (
           <TableColumn
-            key={column.uid}
             align={column.uid === "actions" ? "center" : "start"}
             allowsSorting={column.sortable}
+            key={column.uid}
           >
             {column.name}
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
+      <TableBody emptyContent="No users found" items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
+              <TableCell>{renderCell(item, columnKey) as any}</TableCell>
             )}
           </TableRow>
         )}
       </TableBody>
     </Table>
   );
-};
+}
