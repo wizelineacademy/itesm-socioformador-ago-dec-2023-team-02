@@ -56,7 +56,7 @@ export default function TagMenu({tags, selectedTags, isEditingTags, onTagsChange
     return (
         <div className="flex flex-col justify-start items-start space-y-4 w-full">
             <div className="flex flex-row space-x-2 items-center w-full">
-                <SearchBar onTextChange={handleSearchTextChange} overridingStyle="w-3/5" placeholder="Search tags" text={searchText}/>
+                <SearchBar onTextChange={handleSearchTextChange} placeholder="Search tags" takeFullWidth={false} text={searchText} widthStyle="w-3/5"/>
             </div>
 
             <Divider/>
