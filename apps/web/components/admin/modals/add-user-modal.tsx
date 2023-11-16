@@ -51,23 +51,25 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
     setSearchText(value);
   };
 
-  //get users from database
   async function getUsers() {
     try {
-      const response = await fetch(`http://localhost:3000/api/users/`, {
+      // Modify the URL to include the groupId
+      const url = `http://localhost:3000/api/users/group/${idGroup}`;
+      
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
-
+  
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-
+  
       const data: User[] = await response.json();
-      setUsers(data);
-    } catch (err: any) {
+      setUsers(data); // setUsers is a state setter function for users
+    } catch (err) {
       console.error(err);
       toast.error("Failed getting user data");
     }
