@@ -38,8 +38,7 @@ export default function NewGroupMenu({group, onGroupChange}: NewGroupMenuProps):
             <div className="flex flex-col items-start gap-2 w-full">
                 <p>Credits assigned</p>
                 <Input
-                    className="w-1/3"
-                    isClearable
+                    className="w-1/4"
                     onValueChange={handleGroupCreditsChange}
                     placeholder="Group credits"
                     value={group.creditsAssigned.toString()}

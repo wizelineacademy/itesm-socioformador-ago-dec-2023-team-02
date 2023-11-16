@@ -12,8 +12,6 @@ export default function GroupCard({group, isSelected, onPress}: GroupCardProps):
         onPress()
     }
 
-    const cardBackground: string = isSelected ? "bg-neutral-500" : "bg-neutral-700 hover:bg-neutral-600"
-
     const cardTooltipContent: JSX.Element = (
         <div className="flex flex-row justify-center items-center">
             <p className="text-sm">Credits assigned: {group.creditsAssigned}</p>
@@ -23,7 +21,7 @@ export default function GroupCard({group, isSelected, onPress}: GroupCardProps):
     return (
         <button onClick={handleCardPress} type="button">
             <Tooltip content={cardTooltipContent} delay={1000} placement="right">
-                <Card className={cardBackground} fullWidth radius="sm">
+                <Card className={isSelected ? "border-1" : "border-0"}  fullWidth isHoverable radius="sm" shadow="none">
                     <CardBody>
                         <div className="flex flex-row justify-center items-center w-full gap-2">
                             <p className="text-sm">{group.name}</p>
