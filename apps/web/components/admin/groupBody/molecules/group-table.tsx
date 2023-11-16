@@ -28,6 +28,7 @@ import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
 import { BsChevronCompactDown } from "react-icons/bs";
 import { Role } from "@prisma/client";
 import { FaMinus } from "react-icons/fa";
+import { toast } from "sonner";
 
 //Component props
 interface GroupTableProps {
@@ -87,6 +88,36 @@ export const GroupTable: React.FC<GroupTableProps> = ({
     column: "name",
     direction: "ascending",
   });
+
+  // Function to remove users from the group
+  const removeUsersFromGroup = async () => {
+    try {
+      console.log("Selected keys: ", selectedKeys);
+      console.log("Selected keys2: ", Array.from(selectedKeys));
+      const response = await fetch(`http://localhost:3000/api/groups/add-users/${idGroup}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userIds: Array.from(selectedKeys) }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Result: ", result);
+      toast.success('Users removed from the group successfully');
+
+      setUpdatedUsers(true);
+      setSelectedKeys(new Set([])); // Reset selection
+    } catch (error) {
+      console.error('Failed to remove users:', error);
+      toast.error('Failed to remove users from the group');
+    }
+  };
+
 
   const [page, setPage] = React.useState(1);
 
@@ -318,7 +349,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({
               </DropdownMenu>
             </Dropdown>
             {selectedKeys.size > 0 ? (
-              <Button size="sm" color="danger" endContent={<FaMinus />}>
+              <Button size="sm" color="danger" onClick={() => {void removeUsersFromGroup()}} endContent={<FaMinus />}>
                 Remove Users
               </Button>
             ) : (
@@ -401,6 +432,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({
       </div>
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+
 
   
   return (
