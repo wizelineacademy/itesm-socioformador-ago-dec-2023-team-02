@@ -159,7 +159,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   }
 
   const titleWhenNotEditing: JSX.Element = (
-    <div className="overflow-scroll scrollbar-hide">
+    <div className="flex flex-row justify-start items-center w-full overflow-scroll scrollbar-hide">
         <p className="text-xs text-white whitespace-nowrap">{title}</p>
     </div>
   );
@@ -200,13 +200,13 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   }
 
   return (
-    <button className="w-full group relative p-0" onClick={onClick} ref={cardContainerRef} type="button">
+    <button className="w-full group p-0" onClick={onClick} ref={cardContainerRef} type="button">
       <Card
-        className={`py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
+        className={`flex flex-row items-center h-11 py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
         fullWidth
         radius="none"
       >
-        <div className="flex flex-row gap-2 justify-start items-center px-1">
+        <div className="w-full flex flex-row gap-2 justify-start items-center px-1">
           <Avatar classNames={{base:`p-1 min-w-unit-6 h-6 w-6 ${avatarBackgroundColor}`}} radius="sm" src={conversation.model.provider.image}/>
 
           {editingTitle ? titleWhenEditing : titleWhenNotEditing}
@@ -221,13 +221,11 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
 
           {/* Button as overlay */}
           {isSelected && !editingTitle ? (
-            <div className="absolute right-0 gradient-shadow-dark-conversation-card py-2 pl-1">
-              <SingleSelectionDropdown dropdownItems={singleSelectionListItems} placement="right">
-                <Button className="text-white bg-inherit" isIconOnly size="sm" variant="solid">
-                  <AiOutlineEdit />
-                </Button>
-              </SingleSelectionDropdown>
-            </div>
+            <SingleSelectionDropdown dropdownItems={singleSelectionListItems} placement="right">
+              <button className="text-white bg-inherit pl-1 pr-2" type="button">
+                <AiOutlineEdit />
+              </button>
+            </SingleSelectionDropdown>
           ) : null}
         </div>
       </Card>
