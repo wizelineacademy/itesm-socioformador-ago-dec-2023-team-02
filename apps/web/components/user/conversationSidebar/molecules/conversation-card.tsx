@@ -12,6 +12,7 @@ import { ConversationsActionType, buildTagSet, isValidConversationName  } from "
 import { setToArray, setsAreEqual } from "@/helpers/set-helpers";
 import { mapTagIdsToTags } from "@/helpers/tag-helpers";
 import { imposeMaxLength, trimLeadingSpaces } from "@/helpers/string-helpers";
+import ConfirmDeleteModal from "@/components/shared/molecules/confirm-delete-modal";
 import ConversationTitleControls from "../atoms/conversation-title-controls";
 import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 
@@ -28,6 +29,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   const [conversationTags, setConversationTags] = useState<Set<number>>(buildTagSet(conversation));
   const [editingTitle, setEditingTitle] = useState<boolean>(false);
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
+  const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false)
   const cardContainerRef = useRef<HTMLButtonElement | null>(null);
   const titleMaxLength = 20
 
@@ -75,6 +77,13 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
       saveTagSelection(newSelectedTags)
     }
     setTagMenuModalIsOpen(false)
+  }
+
+  const handleConfirmDeleteModalClose: (confirm: boolean) => void = (confirm) => {
+    if (confirm) {
+      removeThisConversation()
+    }
+    setConfirmDeleteModalIsOpen(false)
   }
 
   const saveConversationTitle: () => void = () => {
@@ -171,7 +180,7 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
   const singleSelectionListItems: SingleSelectionDropdownItem[] = [
     {key: "rename", name: "Rename", action: () => {setEditingTitle(true);}},
     {key: "editTags", name: "Edit Tags", action: () => {setTagMenuModalIsOpen(true);}},
-    {key: "delete", name: "Delete", style: "text-danger", action: () => {removeThisConversation();}},
+    {key: "delete", name: "Delete", style: "text-danger", action: () => {setConfirmDeleteModalIsOpen(true);}},
   ];
 
   let cardBackgroundColor = "";
@@ -230,6 +239,12 @@ export function ConversationCard({userTags, conversation, conversationsDispatch,
         isOpen={tagMenuModalIsOpen}
         modalTitle="Conversation tags"
         onModalClose={handleTagMenuModalClose}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={confirmDeleteModalIsOpen}
+        modalText="conversation"
+        onModalClose={handleConfirmDeleteModalClose}
       />
     </button>
   );

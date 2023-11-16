@@ -61,7 +61,11 @@ export function enforcePositiveNumericValuesOnly(str: string): string {
     return str.replaceAll(/[^0-9]/g, "")
 }
 
-export function preventLeadingZeros(str: string): string {
+export function removeLeadingZeros(str: string): string {
+    return str.replace(/^0+/, "")
+}
+
+export function removeTrailingZeros(str: string): string {
     return str.replace(/(?<=^0)0+$/, "")
 }
 
