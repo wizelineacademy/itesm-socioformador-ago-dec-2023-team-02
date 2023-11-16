@@ -1,12 +1,14 @@
+/* eslint-disable no-nested-ternary */
 "use client";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { Spinner } from "@nextui-org/react";
 import { Button } from "@/components/ui/button";
 
 export default function Home(): JSX.Element {
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
   const router = useRouter();
 
   return (
@@ -43,16 +45,11 @@ export default function Home(): JSX.Element {
             <p className="text-xl sm:text-2xl mt-4 text-gray-300">
               The centralised platform for all your AI needs.
             </p>
-            {!user ? (
-              <Button
-                className="w-20 mt-8 px-6 py-3 text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700"
-                onClick={() => {
-                  router.push("/api/auth/login");
-                }}
-              >
-                Login
+            {isLoading ? (
+              <Button className="w-30 mt-8 px-6 py-3 text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700">
+                <Spinner color="current" />
               </Button>
-            ) : (
+            ) : user ? (
               <Button
                 className="w-30 mt-8 px-6 py-3 text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700"
                 onClick={() => {
@@ -60,6 +57,15 @@ export default function Home(): JSX.Element {
                 }}
               >
                 Get Started
+              </Button>
+            ) : (
+              <Button
+                className="w-30 mt-8 px-6 py-3 text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700"
+                onClick={() => {
+                  router.push("/api/auth/login");
+                }}
+              >
+                Login
               </Button>
             )}
           </section>
