@@ -192,9 +192,8 @@ export default function ConversationSidebar({
             {/* Search bar component */}
             <SearchBar
               onTextChange={handleSearchTextChange}
-              overridingStyle="w-full text-sm shadow-none dark text-white"
               placeholder="Search Chat"
-              takeFullWidth={false}
+              takeFullWidth
               text={searchText}
             />
 
