@@ -14,12 +14,15 @@ import { toast } from "sonner";
 import { User } from "@prisma/client";
 import { findMatchRatio, cleanString } from "@/helpers/string-helpers";
 
+
 interface AddUserModalProps {
+  idGroup: number;
   isOpen: boolean;
   onOpenChange: () => void;
 }
 
 const AddUserModal: React.FC<AddUserModalProps> = ({
+  idGroup,
   isOpen,
   onOpenChange,
 }) => {
@@ -31,9 +34,9 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
   const [searchText, setSearchText] = useState<string>("");
 
   // Filter users based on search text
-  function filterUsers(users: User[], searchText: string): User[] {
-    const cleanedSearchText: string = cleanString(searchText);
-    return users.filter(({ name }) => {
+  function filterUsers(usersArray: User[], textToSearch: string): User[] {
+    const cleanedSearchText: string = cleanString(textToSearch);
+    return usersArray.filter(({ name }) => {
       return (
         cleanedSearchText.length === 0 ||
         findMatchRatio(cleanedSearchText, cleanString(name)) > 0.7
@@ -84,17 +87,36 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
   //array values
   const arrayValues = Array.from(values);
 
-  // const handleAddUser = async () => {
-  //   setIsSubmitting(true);
-  //   try {
-  //     // Implement your add user logic here
-  //     onOpenChange(); // Close the modal on success
-  //   } catch (error: any) {
-  //     console.error("Error adding user:", error);
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
+  const handleAddUser = async () => {
+    setIsSubmitting(true);
+    try {
+      // Get the user IDs from the values Set
+      const userIds = Array.from(values).map(Number);
+  
+      // Send the POST request to your API endpoint
+      const response = await fetch(`http://localhost:3000/api/groups/add-users/${idGroup}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userIds }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log('Users added to group:', data);
+      toast.success('Users added to the group successfully');
+      onOpenChange(); // Close the modal on success
+    } catch (error) {
+      console.error('Error adding users:', error);
+      toast.error('Failed to add users to the group');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Modal className="w-full" isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -131,7 +153,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
               </Button>
               <Button
                 color="primary"
-                // onPress={handleAddUser}
+                onPress={void handleAddUser}
                 disabled={isSubmitting}
               >
                 Add
