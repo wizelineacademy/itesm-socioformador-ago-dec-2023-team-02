@@ -1,11 +1,9 @@
-"use client";
-
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useUser } from "@auth0/nextjs-auth0/client";
-import { Button } from "@/components/ui/button";
 import { getUserbyAuthID, createUser } from "@/lib/user";
 import { UserCreateData } from "@/types/user-types";
+import LoginButton from "@/components/login/login-button";
+import { getSession } from "@auth0/nextjs-auth0";
+
 interface Parameters {
   userContext: string;
   responseContext: string;
@@ -42,10 +40,8 @@ export async function handleAuth0User(authUser: any) { // Replace Auth0SessionTy
   }
 }
 
-export default function Home(): JSX.Element {
-  const { user } = useUser();
-  const router = useRouter();
-
+export default async function  Home() {
+  const { user } = (await getSession()) || {};
   if(user){
     await handleAuth0User(user);
   }
@@ -84,25 +80,7 @@ export default function Home(): JSX.Element {
             <p className="text-xl sm:text-2xl mt-4 text-gray-300">
               The centralised platform for all your AI needs.
             </p>
-            {!user ? (
-              <Button
-                className="w-20 mt-8 px-6 py-3 text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700"
-                onClick={() => {
-                  router.push("/api/auth/login");
-                }}
-              >
-                Login
-              </Button>
-            ) : (
-              <Button
-                className="w-30 mt-8 px-6 py-3 text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700"
-                onClick={() => {
-                  router.push("/conversation/new");
-                }}
-              >
-                Get Started
-              </Button>
-            )}
+            <LoginButton user={user} />
           </section>
         </main>
       </div>
