@@ -344,8 +344,18 @@ export async function removeUsersFromGroup(
   userIds: number[]
 ): Promise<PrismaResponse<{ group: Group; users: User[] }>> {
   try {
-    // Start a transaction to update both users and group
-    const [updatedGroup, updatedUsers] = await prisma.$transaction([
+    // Fetch the group's creditsAssigned value
+    const group = await prisma.group.findUnique({
+      where: { id: groupId },
+      select: { creditsAssigned: true }
+    });
+
+    if (!group) {
+      return { status: 404, message: 'Group not found' };
+    }
+
+    // First Pass: Start a transaction to update both users and group
+    const transactionResult = await prisma.$transaction([
       // Update the group to remove users
       prisma.group.update({
         where: { id: groupId },
@@ -356,7 +366,7 @@ export async function removeUsersFromGroup(
         },
         include: { users: true },
       }),
-      // Update each user to remove the group
+      // Update each user to remove the group and decrement credits
       ...userIds.map((userId) =>
         prisma.user.update({
           where: { id: userId },
@@ -364,12 +374,35 @@ export async function removeUsersFromGroup(
             groups: {
               disconnect: { id: groupId },
             },
+            creditsRemaining: {
+              decrement: group.creditsAssigned
+            }
           },
         })
       ),
     ]);
 
-    return { data: { group: updatedGroup, users: updatedUsers }, status: 200 };
+    // Extract the updated group and users from the transaction result
+    const updatedGroup = transactionResult[0] as Group;
+    const updatedUsersFirstPass = transactionResult.slice(1) as User[];
+
+    // Second Pass: Adjust credits for users if they fall below zero
+    const updatedUsersSecondPass = await Promise.all(
+      updatedUsersFirstPass.map(async (user) => {
+        if (user.creditsRemaining < 0) {
+          return prisma.user.update({
+            where: { id: user.id },
+            data: {
+              creditsRemaining: 0,
+            },
+          });
+        }
+        return user;
+      })
+    );
+
+
+    return { data: { group: updatedGroup, users: updatedUsersSecondPass }, status: 200 };
   } catch (error: any) {
     console.error("Error removing users from group:", error.message);
     return { status: 500, message: error.message };
