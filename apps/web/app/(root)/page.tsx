@@ -11,39 +11,40 @@ interface Parameters {
   size: string;
 }
 
-export async function handleAuth0User(authUser: any) { // Replace Auth0SessionType with the actual type
+export async function handleAuth0User(authUser: any) {
+  // Replace Auth0SessionType with the actual type
 
   //check if current auth0 user exists in database
   const authUserId: string = authUser.sub;
-  const result = await getUserbyAuthID(authUserId); 
+  const result = await getUserbyAuthID(authUserId);
 
   //If user does not exists in database
-  if(result.status === 404){
-      // User doesn't exist in database, create a new one
-      const newUser: UserCreateData = {
-        idAuth0: authUserId,
-        name: authUser.name,
-        email: authUser.email,
-        jobPosition: "",
-        role: 'USER', 
-        image: authUser.picture,
-        creditsRemaining: 0,
-        globalParameters: {} as Parameters
-      }
+  if (result.status === 404) {
+    // User doesn't exist in database, create a new one
+    const newUser: UserCreateData = {
+      idAuth0: authUserId,
+      name: authUser.name,
+      email: authUser.email,
+      jobPosition: "",
+      role: "USER",
+      image: authUser.picture,
+      creditsRemaining: 0,
+      globalParameters: {} as Parameters,
+    };
 
-      //create new user on the database
-      try{
-        void await createUser(newUser, [1]);
-      }catch(error){
-        console.log("error", error);
-      } 
+    //create new user on the database
+    try {
+      void (await createUser(newUser, [1]));
+    } catch (error) {
+      console.log("error", error);
+    }
   }
 }
 
-export default async function  Home() {
+export default async function Home() {
   const { user } = (await getSession()) || {};
-  
-  if(user){
+
+  if (user) {
     await handleAuth0User(user);
   }
 
@@ -82,7 +83,6 @@ export default async function  Home() {
               The centralised platform for all your AI needs.
             </p>
             <LoginButton user={user} />
-
           </section>
         </main>
       </div>
