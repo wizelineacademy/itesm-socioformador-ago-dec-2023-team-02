@@ -57,6 +57,31 @@ export async function getAllUsers(): Promise<PrismaResponse<User[]>> {
 }
 
 /**
+ * Fetches all users that are not in the specified group.
+ * @param groupId - The ID of the group to filter users by.
+ * @returns A Promise that resolves to a PrismaResponse containing an array of User objects.
+ */
+export async function getUsersNotInGroup(groupId: number): Promise<PrismaResponse<User[]>> {
+    try {
+        // Fetch users not in the specified group
+        const users: User[] = await prisma.user.findMany({
+            where: {
+                groups: {
+                    none: {
+                        id: groupId
+                    }
+                }
+            }
+        });
+
+        return { status: 200, data: users };
+    } catch (error: any) {
+        console.error("Error fetching users not in group:", error.message);
+        return { status: 500, message: error.message };
+    }
+}
+
+/**
  * Retrieves all users that belong to the group with the given group ID. 
  * @param idGroup - The ID of the group whose users will be retrieved (number). 
  * @returns Promise that resolves to an object that implements PrismaResponse, and that potentially contains an array of users (User[]). 

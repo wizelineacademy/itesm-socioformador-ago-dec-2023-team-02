@@ -41,7 +41,6 @@ export default function NewGroupMenuModal({isOpen, onModalClose}: NewGroupMenuMo
             body: JSON.stringify({...group, id: undefined})
         }
 
-        console.log(JSON.stringify({...group, id: undefined}))
         fetch("/api/groups", fetchOptions)
         .then((response) => {
             if (!response.ok){
@@ -50,7 +49,6 @@ export default function NewGroupMenuModal({isOpen, onModalClose}: NewGroupMenuMo
             return response.json()
         })
         .then((createdGroup) => {
-            console.log(createdGroup)
             groupsContext?.groupsDispatch({
                 type: GroupsActionType.Create,
                 group: createdGroup as Group
