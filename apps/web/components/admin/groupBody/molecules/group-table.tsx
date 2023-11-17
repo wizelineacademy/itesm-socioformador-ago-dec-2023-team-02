@@ -488,3 +488,4 @@ export const GroupTable: React.FC<GroupTableProps> = ({
     </>
   );
 };
+

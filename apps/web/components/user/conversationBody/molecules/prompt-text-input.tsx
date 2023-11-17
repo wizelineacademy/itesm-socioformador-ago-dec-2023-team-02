@@ -25,17 +25,17 @@ async function handleSaveMessage(
   idConversation: number,
   model: string,
   sender: Sender,
-  input: string
+  input: string,
+  size?: string
 ): Promise<void> {
   try {
-    await saveMessage(idConversation, model, sender, input);
+    await saveMessage(idConversation, model, sender, input, size || "");
     toast.success("User message saved");
   } catch {
     console.log("Error ocurred while saving message.");
     toast.error("Error ocurred while saving message of user.");
   }
 }
-
 
 export default function PromptTextInput({
   idConversation,
@@ -76,39 +76,33 @@ export default function PromptTextInput({
               variant="faded"
             />
             {/* Check if a response is being generated to show a spinner or submit button*/}
-            {
-              isLoading 
-                ? 
-                <Spinner 
-                  className="flex items-center ml-1"
-                  color="danger"
-                />
-                :
-                <Button
-                  className={`${
-                    !input
-                      ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10"
-                      : "bg-danger"
-                  } text-white  rounded-r-xl`}
-                  disabled={!input}
-                  isIconOnly
-                  onClick={() => {
-                    void handleSaveMessage(
-                      idConversation,
-                      model,
-                      Sender.USER,
-                      input
-                    );
-                  }}
-                  size="lg"
-                  type="submit"
-                  // Saves user's message when the send button is clicked
-                  variant="flat"
-                >
-                  <IoMdSend className="text-lg" />
-                </Button>
-            }
-
+            {isLoading ? (
+              <Spinner className="flex items-center ml-1" color="danger" />
+            ) : (
+              <Button
+                className={`${
+                  !input
+                    ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10"
+                    : "bg-danger"
+                } text-white  rounded-r-xl`}
+                disabled={!input}
+                isIconOnly
+                onClick={() => {
+                  void handleSaveMessage(
+                    idConversation,
+                    model,
+                    Sender.USER,
+                    input
+                  );
+                }}
+                size="lg"
+                type="submit"
+                // Saves user's message when the send button is clicked
+                variant="flat"
+              >
+                <IoMdSend className="text-lg" />
+              </Button>
+            )}
           </form>
           {/* Footer */}
           <div className=" w-full text-center bg-white dark:bg-black pb-0">

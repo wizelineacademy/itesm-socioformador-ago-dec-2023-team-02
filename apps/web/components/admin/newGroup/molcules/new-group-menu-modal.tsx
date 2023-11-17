@@ -1,5 +1,5 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { Group } from "@prisma/client";
 import { toast } from "sonner";
 import { GroupsActionType, defaultGroup, isValidGroup } from "@/helpers/group-helpers";
@@ -16,6 +16,12 @@ export default function NewGroupMenuModal({isOpen, onModalClose}: NewGroupMenuMo
     const groupsContext: GroupsContextShape | null = useContext<GroupsContextShape | null>(GroupsContext)
     const [group, setGroup] = useState<Group>(defaultGroup())
     const modalHorizontalPadding = 5
+
+    useEffect(() => {
+        if (!isOpen){
+            setGroup(defaultGroup())
+        }
+    }, [isOpen])
 
     const handleGroupChange: (editedGroup: Group) => void = (editedGroup) => {
         setGroup(editedGroup)
