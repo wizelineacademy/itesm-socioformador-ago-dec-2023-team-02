@@ -101,24 +101,17 @@ export function editConversationTags(
   return { ...conversation, tags: newTags };
 }
 
+/**
+ * Modifies the model associated to the given conversation.
+ * @param conversation - A conversation whose model will be edited.
+ * @param newModel - The model object the edited conversation will have. 
+ * @returns A new conversation, that has as model newModel.
+ */
 export function editConversationModel(
   conversation: SidebarConversation,
   newModel: SidebarConversationModel
 ): SidebarConversation {
   return { ...conversation, model: newModel };
-}
-
-export function sidebarModelToSidebarConversationModel(
-  sidebarModel: any
-): SidebarConversationModel {
-  return {
-    id: sidebarModel.id,
-    name: sidebarModel.name,
-    provider: {
-      id: sidebarModel.provider.id,
-      image: sidebarModel.provider.image,
-    },
-  };
 }
 
 /**
