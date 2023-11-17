@@ -38,9 +38,9 @@ export type UserData = UserUpdateData | UserCreateData
  * @returns A boolean value that indicates whether or not the given user is valid. 
  */
 export function isValidUser(user: UserData): boolean {
-    if (user.email && !isValidUserEmail(user.email)){
-        return false 
-    }
+    // if (user.email && !isValidUserEmail(user.email)){
+    //     return false 
+    // }
     return true 
 }
 
