@@ -19,7 +19,7 @@ interface GroupData {
 
 export default function GroupBody(): JSX.Element {
     const params = useParams();
-    const idConversation = Number(params.id);
+    const idGroup = Number(params.id);
 
     // State for storing group data
     const [groupData, setGroupData] = useState<GroupData | null>(null);
@@ -27,13 +27,17 @@ export default function GroupBody(): JSX.Element {
     // State for tracking loading status
     const [loading, setLoading] = useState<boolean>(true);
 
+    // State for updated users in group
+    const [updatedUsers, setUpdatedUsers] = useState<boolean>(false);
+
+
     // State for storing error messages
     // const [error, setError] = useState<any>(null);
 
     useEffect(() => {
         async function getGroupData() {
             try {
-                const response = await fetch(`http://localhost:3000/api/groups/${idConversation}`, {
+                const response = await fetch(`http://localhost:3000/api/groups/${idGroup}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -56,10 +60,17 @@ export default function GroupBody(): JSX.Element {
             }
         }
 
-        if (idConversation) {
+        if (idGroup) {
             void getGroupData();
         }
-    }, [idConversation]);
+
+        if(updatedUsers){
+            setUpdatedUsers(false);
+        }
+    }, [idGroup, updatedUsers]);
+
+
+
 
     if (loading) return <div><Spinner color="danger" /></div>;
     // if (error) return <div>Error: {error}</div>;
@@ -69,7 +80,7 @@ export default function GroupBody(): JSX.Element {
             {/* Group Header */}
             <GroupHeader groupName={groupData.name} creditsAssigned={groupData.creditsAssigned}/>
             {/* Group Table */}
-            <GroupTable users={groupData.users} />
+            <GroupTable setUpdatedUsers={setUpdatedUsers} idGroup={idGroup} users={groupData.users} />
 
         </div>
     );

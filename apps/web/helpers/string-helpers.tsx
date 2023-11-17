@@ -53,18 +53,49 @@ export function trimLeadingSpaces(str: string): string {
     return str.replace(/^\s+/, "")
 }
 
+/**
+ * Enforces a maximium length on the given string. 
+ * @param str - A string whose copy's length will be trimmed if necessary. 
+ * @param maxLength - The maximum number of characters the provided string will be able to have. 
+ * @returns A new string, shortened if its original lenght is greather that maxLength.
+ */
 export function imposeMaxLength(str: string, maxLength: number): string {
     return str.length <= maxLength ? str : str.slice(0, maxLength)
 }
 
+/**
+ * Enforces the sole presence of numeric characters in a string.
+ * @param str - A string, whose copy will be forced to abide by the non-numeric characters rule. 
+ * @returns A new string, if necessary, removed of all of its non-numeric characters. 
+ */
 export function enforcePositiveNumericValuesOnly(str: string): string {
     return str.replaceAll(/[^0-9]/g, "")
 }
 
-export function preventLeadingZeros(str: string): string {
+
+/**
+ * Removes from a string every leading 0 character. 
+ * @param str - A string whose copy will be modified in the case it has leading 0s. 
+ * @returns A new string, if necessary, removed of all of its leading 0s.
+ */
+export function removeLeadingZeros(str: string): string {
+    return str.replace(/^0+/, "")
+}
+
+/**
+ * Removes from a string every trailing 0 character. 
+ * @param str - A string whose copy will be modified in the case it has trailing 0s. 
+ * @returns A new string, if necessary, removed of all of its trailing 0s.
+ */
+export function removeTrailingZeros(str: string): string {
     return str.replace(/(?<=^0)0+$/, "")
 }
 
+/**
+ * Converts a string to a number. 
+ * @param str - A string to convert to a number.
+ * @returns The number value represented by the given string. 
+ */
 export function strToNumber(str: string): number {
     return parseInt(str, 10)
 }

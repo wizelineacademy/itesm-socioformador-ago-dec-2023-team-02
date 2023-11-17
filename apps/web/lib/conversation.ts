@@ -49,6 +49,7 @@ export async function getAllConversationsByUserId(
           tags: {
             select: {
               id: true,
+              idUser: true,
               name: true,
               color: true,
             },
@@ -56,9 +57,11 @@ export async function getAllConversationsByUserId(
           active: true,
           model: {
             select: {
+              id: true,
               name: true,
               provider: {
                 select: {
+                  id: true,
                   image: true,
                 },
               },
@@ -164,31 +167,32 @@ export async function getConversationById(
     }
 
     // Fetch the conversation from the database that matches the given ID
-    const conversation: Conversation | null = await prisma.conversation.findUnique({
-      where: {
-        id, // Conversation ID to filter
-      },
-      include: {
-        user: true, // Include user details
-        model: {
-          include: {
-            provider: {
-              select: {
-                image: true, // Select only the image of the provider
-              }
-            }
-          }
+    const conversation: Conversation | null =
+      await prisma.conversation.findUnique({
+        where: {
+          id, // Conversation ID to filter
         },
-        messages: {
-          orderBy: {
-            createdAt: 'asc', // Ordena los mensajes por fecha de creación, de más antiguo a más nuevo
-          }
+        include: {
+          user: true, // Include user details
+          model: {
+            include: {
+              provider: {
+                select: {
+                  image: true, // Select only the image of the provider
+                },
+              },
+            },
+          },
+          messages: {
+            orderBy: {
+              createdAt: "asc", // Ordena los mensajes por fecha de creación, de más antiguo a más nuevo
+            },
+          },
+          tags: true, // Include tags associated with the conversation
         },
-        tags: true, // Include tags associated with the conversation
-      },
-    });
-    
-  /*
+      });
+
+    /*
     const conversation: Conversation | null =
       await prisma.conversation.findUnique({
         where: {
@@ -307,7 +311,7 @@ export async function createConversation(
   input: ConversationCreateData
 ): Promise<PrismaResponse<SidebarConversation>> {
   try {
-    const { idUser, idModel, title, tags} = input || {};
+    const { idUser, idModel, title, tags } = input || {};
     const userId = Number(idUser);
     const modelId = Number(idModel);
 
@@ -357,8 +361,10 @@ export async function createConversation(
           parameters: parameters ? parameters : "", // Set parameters if applicable
           active: true, // Set the 'active' field to true by default
           tags: {
-            connect: tags.map((tag) => {return {id: tag.id}})
-          }
+            connect: tags.map((tag) => {
+              return { id: tag.id };
+            }),
+          },
         },
         // Include additional models (relations) in the result
         select: {
@@ -693,11 +699,11 @@ export async function deactivateAllConversationsByUserId(
 }
 
 // Call the delete function for the s3 bucket
-async function deleteImagesHandler(messageToDelete: Message) {
-    // Delete the image from the s3 bucket if the message belongs to the model
-    if (messageToDelete.sender === "MODEL") {
-      await deleteImage(messageToDelete.content)
-    }
+async function deleteImagesHandler(messageToDelete: Message): Promise<void> {
+  // Delete the image from the s3 bucket if the message belongs to the model
+  if (messageToDelete.sender === "MODEL") {
+    await deleteImage(messageToDelete.content);
+  }
   // })
 }
 
@@ -723,25 +729,26 @@ export async function deleteConversationById(
       select: {
         model: {
           select: {
-            name: true
-          }
-        }
-      }
-    })
-    
+            name: true,
+          },
+        },
+      },
+    });
+
     // Check if the model the conversation is using is dalle to delete the images from the bucket
-    if (model?.model.name === "dalle"){
+    if (model?.model.name === "dalle") {
       // Get all the messages to delete
       const messagesToDelete = await prisma.message.findMany({
         where: {
           idConversation: id, // Filter messages by conversation ID
-        }
-      })
+        },
+      });
       // Call the delete function for the s3 bucket and delete the message from the database
       messagesToDelete.forEach((message: Message) => {
-        deleteImagesHandler(message).catch((error) => {console.log(error)})
-      })
-      
+        deleteImagesHandler(message).catch((error) => {
+          console.log(error);
+        });
+      });
     }
     // Delete all messages associated with the conversation
     await prisma.message.deleteMany({

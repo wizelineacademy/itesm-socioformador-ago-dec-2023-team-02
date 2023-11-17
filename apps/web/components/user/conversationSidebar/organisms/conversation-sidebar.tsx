@@ -23,7 +23,6 @@ import { TbEdit } from "react-icons/tb";
 import { BiLineChart } from "react-icons/bi";
 import { TiKeyOutline } from "react-icons/ti";
 import { useRouter } from "next/navigation";
-import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SearchBar from "@/components/shared/molecules/search-bar";
 import {
@@ -63,7 +62,7 @@ export default function ConversationSidebar({userConversations, userTags, models
   const [newConversationModalIsOpen, setNewConversationModalIsOpen] =
     useState<boolean>(false);
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
-  const router: AppRouterInstance = useRouter();
+  const router = useRouter();
 
   const { user } = useUser();
 
@@ -185,9 +184,8 @@ export default function ConversationSidebar({userConversations, userTags, models
             {/* Search bar component */}
             <SearchBar
               onTextChange={handleSearchTextChange}
-              overridingStyle="w-full text-sm shadow-none dark text-white"
               placeholder="Search Chat"
-              takeFullWidth={false}
+              takeFullWidth
               text={searchText}
             />
 

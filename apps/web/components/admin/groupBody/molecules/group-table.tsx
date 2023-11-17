@@ -1,5 +1,6 @@
 // GroupTable.tsx
 import React from "react";
+import AddUserModal from "../../modals/add-user-modal";
 import {
   Table,
   TableHeader,
@@ -19,24 +20,27 @@ import {
   Selection,
   ChipProps,
   SortDescriptor,
+  useDisclosure,
 } from "@nextui-org/react";
 import { User } from "@prisma/client";
 import { SlOptionsVertical } from "react-icons/sl";
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
 import { BsChevronCompactDown } from "react-icons/bs";
 import { Role } from "@prisma/client";
+import { FaMinus } from "react-icons/fa";
+import { toast } from "sonner";
 
 //Component props
 interface GroupTableProps {
+  setUpdatedUsers: any;
+  idGroup: number;
   users: User[];
 }
 
 //columns
 const columns = [
-  { name: "ID", uid: "id", sortable: true },
   { name: "NAME", uid: "name", sortable: true },
   { name: "ROLE", uid: "role", sortable: true },
-  { name: "JOB POSITION", uid: "jobPosition", sortable: true },
   { name: "CREDITS REMAINING", uid: "creditsRemaining", sortable: true },
   { name: "ACTIONS", uid: "actions" },
 ];
@@ -50,30 +54,31 @@ const roleOptions = [
 //role color mapping
 const roleColorMap: Record<string, ChipProps["color"]> = {
   ADMIN: "success",
-  USER: "danger",
+  USER: "warning",
 };
 
 //initial visible columns
-const INITIAL_VISIBLE_COLUMNS = [
-  "name",
-  "role",
-  "jobPosition",
-  "creditsRemaining",
-  "actions",
-];
+const INITIAL_VISIBLE_COLUMNS = ["name", "role", "creditsRemaining", "actions"];
 
 //function to capitalize strings
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
+export const GroupTable: React.FC<GroupTableProps> = ({
+  setUpdatedUsers,
+  users,
+  idGroup,
+}) => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   type UserInfo = (typeof users)[0];
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([])
   );
+
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
@@ -83,6 +88,36 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
     column: "name",
     direction: "ascending",
   });
+
+  // Function to remove users from the group
+  const removeUsersFromGroup = async () => {
+    try {
+      console.log("Selected keys: ", selectedKeys);
+      console.log("Selected keys2: ", Array.from(selectedKeys));
+      const response = await fetch(`http://localhost:3000/api/groups/add-users/${idGroup}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userIds: Array.from(selectedKeys) }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Result: ", result);
+      toast.success('Users removed from the group successfully');
+
+      setUpdatedUsers(true);
+      setSelectedKeys(new Set([])); // Reset selection
+    } catch (error) {
+      console.error('Failed to remove users:', error);
+      toast.error('Failed to remove users from the group');
+    }
+  };
+
 
   const [page, setPage] = React.useState(1);
 
@@ -162,24 +197,28 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
           );
         case "role":
           return (
-            <Chip
-              className="capitalize"
-              color={roleColorMap[user.role]}
-              size="sm"
-              variant="flat"
-            >
-              {cellValue}
-            </Chip>
-          );
-        case "jobPosition":
-          return (
-            <div className="flex flex-col">
-              <p className="text-bold text-sm capitalize">{cellValue}</p>
+            <div className="w-full pl-0 ml-0 flex justify-start">
+             <Chip
+               className="pl-0 ml-0 capitalize border-none gap-1 text-default-600"
+               color={roleColorMap[user.role]}
+               size="sm"
+               variant="dot"
+             >
+               {cellValue}
+             </Chip>
             </div>
+            // <Chip
+            //   className="capitalize border-none gap-1 text-default-600"
+            //   color={roleColorMap[user.role]}
+            //   size="sm"
+            //   variant="dot"
+            // >
+            //   {cellValue}
+            // </Chip>
           );
         case "creditsRemaining":
           return (
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full justify-end">
               <p className="text-bold text-sm capitalize">{cellValue}</p>
               {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
             </div>
@@ -187,7 +226,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
 
         case "actions":
           return (
-            <div className="relative flex justify-center items-center gap-2">
+            <div className="relative flex justify-start items-center gap-2">
               <Dropdown placement="left">
                 <DropdownTrigger>
                   <Button isIconOnly size="sm" variant="light">
@@ -195,7 +234,6 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownItem>View</DropdownItem>
                   <DropdownItem>Edit</DropdownItem>
                   <DropdownItem>Delete</DropdownItem>
                 </DropdownMenu>
@@ -247,8 +285,8 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-center">
-            <Input
-          size="sm"
+          <Input
+            size="sm"
             isClearable
             className="w-full sm:max-w-[44%]"
             placeholder="Search by name..."
@@ -263,7 +301,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
-                size="sm"
+                  size="sm"
                   endContent={<BsChevronCompactDown className="text-small" />}
                   variant="light"
                 >
@@ -288,7 +326,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
-                size="sm"
+                  size="sm"
                   endContent={<BsChevronCompactDown className="text-small" />}
                   variant="light"
                 >
@@ -310,9 +348,21 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button size="sm" color="danger" endContent={<AiOutlinePlus />}>
-              Add New
-            </Button>
+            {selectedKeys.size > 0 ? (
+              <Button size="sm" color="danger" onClick={() => {void removeUsersFromGroup()}} endContent={<FaMinus />}>
+                Remove Users
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                color="success"
+                className="text-white"
+                onClick={onOpen}
+                endContent={<AiOutlinePlus />}
+              >
+                Add Users
+              </Button>
+            )}
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -334,6 +384,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
       </div>
     );
   }, [
+    selectedKeys,
     filterValue,
     roleFilter,
     visibleColumns,
@@ -382,43 +433,59 @@ export const GroupTable: React.FC<GroupTableProps> = ({ users }) => {
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
+
+  
   return (
-    <Table
-      aria-label="Example table with custom cells, pagination and sorting"
-      isHeaderSticky
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "max-h-[382px] shadow-none p-4",
-      }}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <>
+      <Table
+        aria-label="Example table with custom cells, pagination and sorting"
+        isHeaderSticky
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
+        classNames={{
+          wrapper: "max-h-[382px] shadow-none p-4",
+        }}
+        checkboxesProps={{
+          classNames: {
+            wrapper: "after:bg-foreground after:text-background text-background",
+          },
+        }}
+        selectedKeys={selectedKeys}
+        selectionMode="multiple"
+        sortDescriptor={sortDescriptor}
+        topContent={topContent}
+        topContentPlacement="outside"
+        onSelectionChange={setSelectedKeys}
+        onSortChange={setSortDescriptor}
+      >
+        <TableHeader columns={headerColumns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+              allowsSorting={column.sortable}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No users found"} items={sortedItems}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <AddUserModal
+        setUpdatedUsers={setUpdatedUsers}
+        idGroup={idGroup}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      />
+    </>
   );
 };
+

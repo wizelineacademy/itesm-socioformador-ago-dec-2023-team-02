@@ -42,6 +42,7 @@ export async function handleAuth0User(authUser: any) { // Replace Auth0SessionTy
 
 export default async function  Home() {
   const { user } = (await getSession()) || {};
+  
   if(user){
     await handleAuth0User(user);
   }
@@ -81,6 +82,7 @@ export default async function  Home() {
               The centralised platform for all your AI needs.
             </p>
             <LoginButton user={user} />
+
           </section>
         </main>
       </div>

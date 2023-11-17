@@ -1,10 +1,16 @@
+/**
+ * Defines a context of an array of groups and its providing component.
+ */
+
 'use client';
 
 import type { Group } from "@prisma/client";
-import { createContext, useEffect, useReducer } from "react";
-import { toast } from "sonner";
-import { groupsReducer, type GroupsAction, GroupsActionType } from "@/helpers/group-helpers";
+import { createContext, useReducer } from "react";
+import { groupsReducer, type GroupsAction } from "@/helpers/group-helpers";
 
+/**
+ * The shape of the groups context, that is, the type of the value it provides.
+ */
 export interface GroupsContextShape {
     groups: Group[];
     groupsDispatch: React.Dispatch<GroupsAction>;
@@ -12,30 +18,16 @@ export interface GroupsContextShape {
 
 export const GroupsContext = createContext<GroupsContextShape | null>(null)
 
-export function GroupsContextProvider({children}: {children: JSX.Element}): JSX.Element {
-  console.log("Hola 1")
+interface GroupsContextProviderProps {
+  children: JSX.Element;
+  initialGroups: Group[];
+}
 
-  const [groups, groupsDispatch] = useReducer(groupsReducer, [])
-
-  useEffect(() => {
-    console.log("Hola 2")
-    const fetchOptions: RequestInit = {method: "GET"}
-
-    fetch("/api/groups", fetchOptions)
-    .then((response) => {
-      if (!response.ok){
-        throw new Error("Network response was not ok")
-      }
-      return response.json()
-    })
-    .then((fetchedGroups) => {
-      groupsDispatch({type: GroupsActionType.Set, groups: (fetchedGroups as Group[])})
-    })
-    .catch((_) => {
-      toast.error("Failed to load groups.")
-      console.log("Failure")
-    })
-  }, [])
+/**
+ * Component whose function is to provide a groups context.
+ */
+export function GroupsContextProvider({children, initialGroups}: GroupsContextProviderProps): JSX.Element {
+  const [groups, groupsDispatch] = useReducer(groupsReducer, initialGroups)
 
   return (
       <GroupsContext.Provider value={{groups, groupsDispatch}}>
