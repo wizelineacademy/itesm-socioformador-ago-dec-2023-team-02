@@ -3,7 +3,7 @@
  * @packageDocumentation
  */
 
-import type { Conversation, Message, Prisma, Tag } from "@prisma/client";
+import type { Conversation, Message, Prisma, Tag, User } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import type { ConversationCreateData } from "@/types/conversation-types";
 import { areValidModelParameters } from "@/types/model-parameters-types";
@@ -81,6 +81,75 @@ export async function getAllConversationsByUserId(
 }
 
 /**
+ * Retrieves all conversations from the database that match the given user ID.
+ * @param idUser - The ID of the user to filter conversations.
+ * @returns An object containing either an array of conversations or an error object.
+ */
+export async function getAllConversationsByUserAuthId(
+  idAuth: string
+): Promise<PrismaResponse<SidebarConversation[]>> {
+  try {
+    // Validate idUser
+    if (!idAuth || idAuth.length === 0) {
+      return { status: 400, message: "Invalid user ID" };
+    }
+
+    // Check if the user exists in the database
+    const userExists = await prisma.user.findUnique({
+      where: { idAuth0: idAuth },
+    });
+
+    if (!userExists) {
+      return { status: 404, message: "User not found" };
+    }
+
+    // Search all conversations in the database that match the user ID
+    const conversations: SidebarConversation[] =
+      await prisma.conversation.findMany({
+        where: {
+          idUser: userExists.id, // User id to filter conversations
+          active: true, // Only fetch active conversations
+        },
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          tags: {
+            select: {
+              id: true,
+              name: true,
+              color: true,
+            },
+          },
+          active: true,
+          model: {
+            select: {
+              name: true,
+              provider: {
+                select: {
+                  image: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+    // If there are no conversations, return a message indicating that there are none
+    if (conversations.length === 0) {
+      return { status: 404, message: "No conversations found for this user" };
+    }
+
+    // Return found conversations
+    return { data: conversations, status: 200 };
+  } catch (error: any) {
+    // Handle any errors that occur during the fetch
+    return { status: 500, message: error.message };
+  }
+}
+
+
+/**
  * Retrieves a conversation from the database by its ID, along with all its details.
  * @param id - The ID of the conversation to retrieve.
  * @returns An object containing the retrieved conversation, or an error message if the conversation is not found.
@@ -98,6 +167,87 @@ export async function getConversationById(
     const conversation: Conversation | null = await prisma.conversation.findUnique({
       where: {
         id, // Conversation ID to filter
+      },
+      include: {
+        user: true, // Include user details
+        model: {
+          include: {
+            provider: {
+              select: {
+                image: true, // Select only the image of the provider
+              }
+            }
+          }
+        },
+        messages: {
+          orderBy: {
+            createdAt: 'asc', // Ordena los mensajes por fecha de creación, de más antiguo a más nuevo
+          }
+        },
+        tags: true, // Include tags associated with the conversation
+      },
+    });
+    
+  /*
+    const conversation: Conversation | null =
+      await prisma.conversation.findUnique({
+        where: {
+          id, // Conversation ID to filter
+        },
+        // Include additional models (relations) in the result
+        include: {
+          user: true, // Include user details
+          model: true, // Include model details
+          messages: true, // Include messages in the conversation
+          tags: true, // Include tags associated with the conversation
+        },
+      });
+      */
+
+    // If the conversation is not found, return a message indicating so
+    if (!conversation) {
+      return { status: 404, message: "Conversation not found" };
+    }
+
+    // Return the found conversation along with all its details
+    return { data: conversation, status: 200 };
+  } catch (error: any) {
+    // Handle any errors that occur during the fetch
+    return { status: 500, message: error.message };
+  }
+}
+
+/**
+ * Retrieves a conversation from the database by its ID, along with all its details.
+ * @param id - The ID of the conversation to retrieve.
+ * @returns An object containing the retrieved conversation, or an error message if the conversation is not found.
+ */
+export async function getConversationAuthById(
+  id: string
+): Promise<PrismaResponse<Conversation>> {
+  try {
+    // Validate id
+    if (!id || id.length === 0) {
+      return { status: 400, message: "Invalid conversation ID" };
+    }
+
+    //get user from auth0 string
+    const user : User | null = await prisma.user.findUnique({
+      where: {
+        idAuth0: id,
+      },
+    });
+
+    //Validate user
+    if (!user) {
+      return { status: 400, message: "User not found" };
+    }
+
+
+    // Fetch the conversation from the database that matches the given ID
+    const conversation: Conversation | null = await prisma.conversation.findUnique({
+      where: {
+        id: user.id, // Conversation ID to filter
       },
       include: {
         user: true, // Include user details
@@ -248,6 +398,115 @@ export async function createConversation(
 }
 
 /**
+ * Creates a new conversation in the database.
+ * @param input - The conversation data input.
+ * @returns A promise that resolves to a PrismaResponse containing the newly created conversation or an error message.
+ */
+export async function createConversationByUserAuthId(
+  authId: string,
+  input: ConversationCreateData
+): Promise<PrismaResponse<SidebarConversation>> {
+  try {
+    const { idModel, title, tags} = input || {};
+    const modelId = Number(idModel);
+
+    // Validate input conversation creation
+    if (!idModel || !title) {
+      return {
+        status: 400,
+        message: "Invalid input for creating conversation",
+      };
+    }
+
+    // Validate input user auth id
+    if(!authId || authId.length === 0){
+      return {
+        status: 400,
+        message: "User not found",
+      };      
+    }
+
+    // get user through auth0 id
+    const user = await prisma.user.findUnique({
+      where: {
+        idAuth0: authId,
+      },
+    });
+
+    //Validate user exists
+    if (!user) {
+      return { status: 404, message: "User not found" };
+    }
+
+    //get model through id
+    const model = await prisma.model.findUnique({
+      where: {
+        id: modelId,
+      },
+    });
+
+      // Validate that the model exists
+    if (!model) {
+      return { status: 404, message: "Model not found" };
+    }
+
+    // Prepare parameters based on useGlobalParameters flag
+    const userGlobalParameters: string = JSON.stringify(user.globalParameters);
+    const parameters: string = JSON.stringify(
+      JSON.parse(userGlobalParameters)[model.name]
+    );
+
+    // Create a new conversation in the database
+    const newConversation: SidebarConversation =
+      await prisma.conversation.create({
+        data: {
+          title,
+          idUser: user.id,
+          idModel,
+          parameters: parameters ? parameters : "", // Set parameters if applicable
+          active: true, // Set the 'active' field to true by default
+          tags: {
+            connect: tags.map((tag) => {return {id: tag.id}})
+          }
+        },
+        // Include additional models (relations) in the result
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          tags: {
+            select: {
+              id: true,
+              idUser: true,
+              name: true,
+              color: true,
+            },
+          },
+          active: true,
+          model: {
+            select: {
+              id: true,
+              name: true,
+              provider: {
+                select: {
+                  id: true,
+                  image: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+    // Return the newly created conversation
+    return { data: newConversation, status: 201 };
+  } catch (error: any) {
+    // Handle any errors that occur during the creation
+    return { status: 500, message: error.message };
+  }
+}
+
+/**
  * Represents the updated information for a conversation.
  */
 export interface UpdatedInfo {
@@ -320,6 +579,8 @@ export async function updateConversationById(
     return { status: 500, message: error.message };
   }
 }
+
+
 
 /**
  * Updates the model parameters associated to the given conversation and used in the generation of promts.

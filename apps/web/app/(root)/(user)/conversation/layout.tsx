@@ -7,7 +7,9 @@ import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import { getAllModelsWithProvider } from "@/lib/model";
 import type { ModelWithProvider } from "@/types/moder-with-provider-types";
 import { PrismaUserContextProvider } from "@/context/prisma-user-context";
+import { getSession } from "@auth0/nextjs-auth0";
 import { getUserbyAuthID } from "@/lib/user";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "WizePrompt",
@@ -19,8 +21,20 @@ export default async function ConversationRootLayout({
 }: {
   children: React.ReactNode;
 }): Promise<any> {
-  const userAuthId = "auth0|123455"; 
-  const prismaUser: User | null = (await getUserbyAuthID(userAuthId)).data ?? null
+
+
+  const { user } = (await getSession()) || {};
+
+  //If no user, redirect to login
+  if(!user){
+    redirect("/api/auth/login");
+  }
+
+  //get user from database
+  const userAuthID: string = user.sub;
+  const prismaUser: User | null = (await getUserbyAuthID(userAuthID)).data ?? null
+  //const userId: number = prismaUser.id;
+
   const userConversations: SidebarConversation[] = prismaUser ? ((await getAllConversationsByUserId(prismaUser.id)).data || []) : [] 
   const userTags: Tag[] = prismaUser ? ((await getAllSidebarTagsByUserID(prismaUser.id)).data || []) : []
   const models: ModelWithProvider[] = prismaUser ? ((await getAllModelsWithProvider()).data || []) : []

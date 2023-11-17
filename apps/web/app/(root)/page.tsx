@@ -4,10 +4,51 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { Button } from "@/components/ui/button";
+import { getUserbyAuthID, createUser } from "@/lib/user";
+import { UserCreateData } from "@/types/user-types";
+interface Parameters {
+  userContext: string;
+  responseContext: string;
+  temperature: number;
+  size: string;
+}
+
+export async function handleAuth0User(authUser: any) { // Replace Auth0SessionType with the actual type
+
+  //check if current auth0 user exists in database
+  const authUserId: string = authUser.sub;
+  const result = await getUserbyAuthID(authUserId); 
+
+  //If user does not exists in database
+  if(result.status === 404){
+      // User doesn't exist in database, create a new one
+      const newUser: UserCreateData = {
+        idAuth0: authUserId,
+        name: authUser.name,
+        email: authUser.email,
+        jobPosition: "",
+        role: 'USER', 
+        image: authUser.picture,
+        creditsRemaining: 0,
+        globalParameters: {} as Parameters
+      }
+
+      //create new user on the database
+      try{
+        void await createUser(newUser, [1]);
+      }catch(error){
+        console.log("error", error);
+      } 
+  }
+}
 
 export default function Home(): JSX.Element {
   const { user } = useUser();
   const router = useRouter();
+
+  if(user){
+    await handleAuth0User(user);
+  }
 
   return (
     <section>
