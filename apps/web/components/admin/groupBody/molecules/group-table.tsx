@@ -1,6 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 // GroupTable.tsx
-import type { Selection, ChipProps, SortDescriptor } from "@nextui-org/react";
+import React from "react";
+import AddUserModal from "../../modals/add-user-modal";
 import {
   Table,
   TableHeader,
@@ -17,26 +17,30 @@ import {
   Chip,
   User as UserIcon,
   Pagination,
+  Selection,
+  ChipProps,
+  SortDescriptor,
+  useDisclosure,
 } from "@nextui-org/react";
-import { Role } from "@prisma/client";
-import type { User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { SlOptionsVertical } from "react-icons/sl";
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
 import { BsChevronCompactDown } from "react-icons/bs";
-import type { ChangeEvent, Key } from "react";
-import { useCallback, useMemo, useState } from "react";
+import { Role } from "@prisma/client";
+import { FaMinus } from "react-icons/fa";
+import { toast } from "sonner";
 
 //Component props
 interface GroupTableProps {
+  setUpdatedUsers: any;
+  idGroup: number;
   users: User[];
 }
 
 //columns
 const columns = [
-  { name: "ID", uid: "id", sortable: true },
   { name: "NAME", uid: "name", sortable: true },
   { name: "ROLE", uid: "role", sortable: true },
-  { name: "JOB POSITION", uid: "jobPosition", sortable: true },
   { name: "CREDITS REMAINING", uid: "creditsRemaining", sortable: true },
   { name: "ACTIONS", uid: "actions" },
 ];
@@ -50,43 +54,76 @@ const roleOptions = [
 //role color mapping
 const roleColorMap: Record<string, ChipProps["color"]> = {
   ADMIN: "success",
-  USER: "danger",
+  USER: "warning",
 };
 
 //initial visible columns
-const INITIAL_VISIBLE_COLUMNS = [
-  "name",
-  "role",
-  "jobPosition",
-  "creditsRemaining",
-  "actions",
-];
+const INITIAL_VISIBLE_COLUMNS = ["name", "role", "creditsRemaining", "actions"];
 
 //function to capitalize strings
-function capitalize(str: string): string {
+function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function GroupTable({ users }: GroupTableProps): JSX.Element {
+export const GroupTable: React.FC<GroupTableProps> = ({
+  setUpdatedUsers,
+  users,
+  idGroup,
+}) => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   type UserInfo = (typeof users)[0];
 
-  const [filterValue, setFilterValue] = useState("");
-  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
-  const [visibleColumns, setVisibleColumns] = useState<Selection>(
+  const [filterValue, setFilterValue] = React.useState("");
+  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
+    new Set([])
+  );
+
+  const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
-  const [roleFilter, setRoleFilter] = useState<Selection>("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+  const [roleFilter, setRoleFilter] = React.useState<Selection>("all");
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: "name",
     direction: "ascending",
   });
 
-  const [page, setPage] = useState(1);
+  // Function to remove users from the group
+  const removeUsersFromGroup = async () => {
+    try {
+      console.log("Selected keys: ", selectedKeys);
+      console.log("Selected keys2: ", Array.from(selectedKeys));
+      const response = await fetch(`http://localhost:3000/api/groups/add-users/${idGroup}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userIds: Array.from(selectedKeys) }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Result: ", result);
+      toast.success('Users removed from the group successfully');
+
+      setUpdatedUsers(true);
+      setSelectedKeys(new Set([])); // Reset selection
+    } catch (error) {
+      console.error('Failed to remove users:', error);
+      toast.error('Failed to remove users from the group');
+    }
+  };
+
+
+  const [page, setPage] = React.useState(1);
 
   const hasSearchFilter = Boolean(filterValue);
 
-  const headerColumns = useMemo(() => {
+  const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
 
     return columns.filter((column) =>
@@ -94,7 +131,7 @@ export function GroupTable({ users }: GroupTableProps): JSX.Element {
     );
   }, [visibleColumns]);
 
-  const filteredItems = useMemo(() => {
+  const filteredItems = React.useMemo(() => {
     let filteredUsers = [...users];
 
     if (hasSearchFilter) {
@@ -116,14 +153,14 @@ export function GroupTable({ users }: GroupTableProps): JSX.Element {
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
-  const items = useMemo(() => {
+  const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
-  const sortedItems = useMemo(() => {
+  const sortedItems = React.useMemo(() => {
     return [...items].sort((a: UserInfo, b: UserInfo) => {
       const first = a[sortDescriptor.column as keyof UserInfo] as string;
       const second = b[sortDescriptor.column as keyof UserInfo] as string;
@@ -143,92 +180,94 @@ export function GroupTable({ users }: GroupTableProps): JSX.Element {
   }, [sortDescriptor, items]);
 
   // This function renders the table cell depending on the column key and user data
-  const renderCell = useCallback((user: UserInfo, columnKey: Key) => {
-    const cellValue = user[columnKey as keyof UserInfo];
+  const renderCell = React.useCallback(
+    (user: UserInfo, columnKey: React.Key) => {
+      const cellValue = user[columnKey as keyof UserInfo];
 
-    switch (columnKey) {
-      case "name":
-        return (
-          <UserIcon
-            avatarProps={{ radius: "sm", src: user.image }}
-            description={user.email}
-            name={cellValue as string}
-          >
-            {user.email}
-          </UserIcon>
-        );
-      case "role":
-        return (
-          <Chip
-            className="capitalize"
-            color={roleColorMap[user.role]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue as string}
-          </Chip>
-        );
-      case "jobPosition":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">
-              {cellValue as string}
-            </p>
-          </div>
-        );
-      case "creditsRemaining":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">
-              {cellValue as string}
-            </p>
-            {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
-          </div>
-        );
+      switch (columnKey) {
+        case "name":
+          return (
+            <UserIcon
+              avatarProps={{ radius: "sm", src: user.image }}
+              description={user.email}
+              name={cellValue}
+            >
+              {user.email}
+            </UserIcon>
+          );
+        case "role":
+          return (
+            <div className="w-full pl-0 ml-0 flex justify-start">
+             <Chip
+               className="pl-0 ml-0 capitalize border-none gap-1 text-default-600"
+               color={roleColorMap[user.role]}
+               size="sm"
+               variant="dot"
+             >
+               {cellValue}
+             </Chip>
+            </div>
+            // <Chip
+            //   className="capitalize border-none gap-1 text-default-600"
+            //   color={roleColorMap[user.role]}
+            //   size="sm"
+            //   variant="dot"
+            // >
+            //   {cellValue}
+            // </Chip>
+          );
+        case "creditsRemaining":
+          return (
+            <div className="flex flex-col w-full justify-end">
+              <p className="text-bold text-sm capitalize">{cellValue}</p>
+              {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
+            </div>
+          );
 
-      case "actions":
-        return (
-          <div className="relative flex justify-center items-center gap-2">
-            <Dropdown placement="left">
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <SlOptionsVertical className="text-default-600" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+        case "actions":
+          return (
+            <div className="relative flex justify-start items-center gap-2">
+              <Dropdown placement="left">
+                <DropdownTrigger>
+                  <Button isIconOnly size="sm" variant="light">
+                    <SlOptionsVertical className="text-default-600" />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu>
+                  <DropdownItem>Edit</DropdownItem>
+                  <DropdownItem>Delete</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    []
+  );
 
-  const onNextPage = useCallback(() => {
+  const onNextPage = React.useCallback(() => {
     if (page < pages) {
       setPage(page + 1);
     }
   }, [page, pages]);
 
-  const onPreviousPage = useCallback(() => {
+  const onPreviousPage = React.useCallback(() => {
     if (page > 1) {
       setPage(page - 1);
     }
   }, [page]);
 
-  const onRowsPerPageChange = useCallback(
-    (e: ChangeEvent<HTMLSelectElement>) => {
+  const onRowsPerPageChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
       setRowsPerPage(Number(e.target.value));
       setPage(1);
     },
     []
   );
 
-  const onSearchChange = useCallback((value?: string) => {
+  const onSearchChange = React.useCallback((value?: string) => {
     if (value) {
       setFilterValue(value);
       setPage(1);
@@ -237,48 +276,48 @@ export function GroupTable({ users }: GroupTableProps): JSX.Element {
     }
   }, []);
 
-  const onClear = useCallback(() => {
+  const onClear = React.useCallback(() => {
     setFilterValue("");
     setPage(1);
   }, []);
 
-  const topContent = useMemo(() => {
+  const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-center">
           <Input
-            className="w-full sm:max-w-[44%]"
+            size="sm"
             isClearable
+            className="w-full sm:max-w-[44%]"
+            placeholder="Search by name..."
+            startContent={<AiOutlineSearch />}
+            value={filterValue}
             onClear={() => {
               onClear();
             }}
             onValueChange={onSearchChange}
-            placeholder="Search by name..."
-            size="sm"
-            startContent={<AiOutlineSearch />}
-            value={filterValue}
           />
           <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
-                  endContent={<BsChevronCompactDown className="text-small" />}
                   size="sm"
+                  endContent={<BsChevronCompactDown className="text-small" />}
                   variant="light"
                 >
                   Role
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
+                disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
-                disallowEmptySelection
-                onSelectionChange={setRoleFilter as any}
                 selectedKeys={roleFilter}
                 selectionMode="multiple"
+                onSelectionChange={setRoleFilter}
               >
                 {roleOptions.map((role) => (
-                  <DropdownItem className="capitalize" key={role.uid}>
+                  <DropdownItem key={role.uid} className="capitalize">
                     {capitalize(role.name)}
                   </DropdownItem>
                 ))}
@@ -287,31 +326,43 @@ export function GroupTable({ users }: GroupTableProps): JSX.Element {
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
-                  endContent={<BsChevronCompactDown className="text-small" />}
                   size="sm"
+                  endContent={<BsChevronCompactDown className="text-small" />}
                   variant="light"
                 >
                   Columns
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
+                disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
-                disallowEmptySelection
-                onSelectionChange={setVisibleColumns as any}
                 selectedKeys={visibleColumns}
                 selectionMode="multiple"
+                onSelectionChange={setVisibleColumns}
               >
                 {columns.map((column) => (
-                  <DropdownItem className="capitalize" key={column.uid}>
+                  <DropdownItem key={column.uid} className="capitalize">
                     {capitalize(column.name)}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="danger" endContent={<AiOutlinePlus />} size="sm">
-              Add New
-            </Button>
+            {selectedKeys.size > 0 ? (
+              <Button size="sm" color="danger" onClick={() => {void removeUsersFromGroup()}} endContent={<FaMinus />}>
+                Remove Users
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                color="success"
+                className="text-white"
+                onClick={onOpen}
+                endContent={<AiOutlinePlus />}
+              >
+                Add Users
+              </Button>
+            )}
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -333,6 +384,7 @@ export function GroupTable({ users }: GroupTableProps): JSX.Element {
       </div>
     );
   }, [
+    selectedKeys,
     filterValue,
     roleFilter,
     visibleColumns,
@@ -342,7 +394,7 @@ export function GroupTable({ users }: GroupTableProps): JSX.Element {
     hasSearchFilter,
   ]);
 
-  const bottomContent = useMemo(() => {
+  const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
         <span className="w-[30%] text-small text-default-400">
@@ -351,28 +403,28 @@ export function GroupTable({ users }: GroupTableProps): JSX.Element {
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
         </span>
         <Pagination
-          color="danger"
           isCompact
-          onChange={setPage}
-          page={page}
           showControls
           showShadow
+          color="danger"
+          page={page}
           total={pages}
+          onChange={setPage}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
             isDisabled={pages === 1}
-            onPress={onPreviousPage}
             size="sm"
             variant="flat"
+            onPress={onPreviousPage}
           >
             Previous
           </Button>
           <Button
             isDisabled={pages === 1}
-            onPress={onNextPage}
             size="sm"
             variant="flat"
+            onPress={onNextPage}
           >
             Next
           </Button>
@@ -381,43 +433,59 @@ export function GroupTable({ users }: GroupTableProps): JSX.Element {
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
+
+  
   return (
-    <Table
-      aria-label="Example table with custom cells, pagination and sorting"
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "max-h-[382px] shadow-none p-4",
-      }}
-      isHeaderSticky
-      onSelectionChange={setSelectedKeys as any}
-      onSortChange={setSortDescriptor as any}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
-            key={column.uid}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent="No users found" items={sortedItems}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey) as any}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <>
+      <Table
+        aria-label="Example table with custom cells, pagination and sorting"
+        isHeaderSticky
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
+        classNames={{
+          wrapper: "max-h-[382px] shadow-none p-4",
+        }}
+        checkboxesProps={{
+          classNames: {
+            wrapper: "after:bg-foreground after:text-background text-background",
+          },
+        }}
+        selectedKeys={selectedKeys}
+        selectionMode="multiple"
+        sortDescriptor={sortDescriptor}
+        topContent={topContent}
+        topContentPlacement="outside"
+        onSelectionChange={setSelectedKeys}
+        onSortChange={setSortDescriptor}
+      >
+        <TableHeader columns={headerColumns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+              allowsSorting={column.sortable}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No users found"} items={sortedItems}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(item, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <AddUserModal
+        setUpdatedUsers={setUpdatedUsers}
+        idGroup={idGroup}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      />
+    </>
   );
-}
+};
+

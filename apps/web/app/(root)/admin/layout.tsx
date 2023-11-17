@@ -10,7 +10,7 @@ export default async function AdminRootLayout({children}: {children: React.React
     <GroupsContextProvider initialGroups={initialGroups}>
         <div className="flex flex-row">
           <GroupSidebar/>
-          <section>
+          <section className="w-full h-full">
             {children}
           </section>
         </div>
