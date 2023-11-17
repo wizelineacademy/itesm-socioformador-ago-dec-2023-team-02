@@ -1,12 +1,13 @@
 import { Button, Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 import { toast } from "sonner";
-import { useState } from "react";
-import type { Tag } from "@prisma/client";
+import { useContext, useState } from "react";
+import type { Tag, User } from "@prisma/client";
 import {  MdOutlineCancel, MdSaveAlt} from "react-icons/md"
 import { AiFillDelete } from "react-icons/ai";
 import type { PopoverPlacement } from "@/types/component-types";
 import ButtonWithIcon from "@/components/shared/atoms/button-with-icon";
 import { imposeMaxLength, trimLeadingSpaces } from "@/helpers/string-helpers";
+import { PrismaUserContext } from "@/context/prisma-user-context";
 import { TagEditor } from "./tag-editor";
 
 interface TagEditorPopoverProps {
@@ -20,6 +21,7 @@ interface TagEditorPopoverProps {
 }
 
 export default function TagEditorPopover({children, tagId, initialTagName, initialTagColor, placement, onTagDeletion, onTagEdition}: TagEditorPopoverProps): JSX.Element {
+    const prismaUserContext: User | null = useContext<User | null>(PrismaUserContext)
     const [tagName, setTagName] = useState<string>(initialTagName || "")
     const [tagColor, setTagColor] = useState<string>(initialTagColor || "#bf4042")
     const [popoverIsOpen, setPopoverIsOpen] = useState<boolean>(false)
@@ -41,31 +43,15 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
     }
 
     const handleDeletePress: () => void = () => {
-        setIsLoading(true)
-        const fetchOptions: RequestInit = {method: "DELETE", headers: {"Content-Type": "application/json"}}
-        fetch(`/api/tags/${tagId}`, fetchOptions)
-        .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok")
-            }
-            return response.json()
-          })
-        .then((deletedTag) => {
-            onTagDeletion(deletedTag as Tag)
-            toast.success("Tag deleted.")
-            setPopoverIsOpen(false)
-            setIsLoading(false)
-          })
-        .catch((_) => {
-            toast.error("The deletion of the tag failed.")
-        });
+        deleteTag()
     }
 
     const handleCancelButtonPress: () => void = () => {setPopoverIsOpen(false)}
 
     const handleSaveButtonPress: () => void = () => {
         setIsLoading(true)
-        if (isNewTag) {
+
+        if (isNewTag && prismaUserContext) {
             createTag()
         } else {
             editTag()
@@ -102,7 +88,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
 
     const createTag: () => void = () => {
         const fetchOptions: RequestInit = {method: "POST", headers: {"Content-Type": "application/json",}, body: JSON.stringify({
-            idUser: 1,
+            idUser: prismaUserContext?.id,
             name: tagName,
             color: tagColor
         })}
@@ -124,6 +110,27 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
             resetTagState()
         });
     } 
+
+    const deleteTag: () => void = () => {
+        setIsLoading(true)
+        const fetchOptions: RequestInit = {method: "DELETE", headers: {"Content-Type": "application/json"}}
+        fetch(`/api/tags/${tagId}`, fetchOptions)
+        .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok")
+            }
+            return response.json()
+          })
+        .then((deletedTag) => {
+            onTagDeletion(deletedTag as Tag)
+            toast.success("Tag deleted.")
+            setPopoverIsOpen(false)
+            setIsLoading(false)
+          })
+        .catch((_) => {
+            toast.error("The deletion of the tag failed.")
+        });
+    }
 
     const tagHasChanged: boolean = initialTagName !== tagName || initialTagColor !== tagColor
     const disableSaveButton: boolean = !tagHasChanged || tagName.length === 0
