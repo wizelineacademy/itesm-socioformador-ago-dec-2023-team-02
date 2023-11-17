@@ -1,21 +1,12 @@
 "use client";
 import React, { useContext } from "react";
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  Image,
-  Button,
   Divider,
 } from "@nextui-org/react";
 import { PrismaUserContext } from "@/context/prisma-user-context";
 import ModelSelectionCard from "../atoms/model-selection-card";
 import { ModelWithProvider } from "@/types/moder-with-provider-types";
 
-interface Model {
-  name: string;
-  // Add additional properties as needed
-}
 
 interface WelcomeProps {
   models: ModelWithProvider[];
@@ -23,16 +14,6 @@ interface WelcomeProps {
 
 function Welcome({ models }: WelcomeProps): JSX.Element {
   const prismaUser = useContext(PrismaUserContext);
-
-  // Function to calculate credits per model (placeholder logic)
-  //   const calculateCreditsPerModel = () => {
-  //     return modelList.map(model => ({
-  //       ...model,
-  //       creditsUsage: 'TBD' // Replace 'TBD' with actual calculation
-  //     }));
-  //   };
-
-  //   const modelsWithCredits = calculateCreditsPerModel();
 
   return (
     <div className="flex justify-center  pt-20 w-full h-full">
