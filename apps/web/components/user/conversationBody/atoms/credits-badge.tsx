@@ -5,10 +5,11 @@ export default function CreditsBadge({
   creditsUsed,
 }: {
   creditsUsed: number;
+  
 }): JSX.Element {
   return (
-    <Chip avatar={<TbCoins />} radius="sm" size="sm" variant="flat">
-      {creditsUsed}
+    <Chip  avatar={<TbCoins />} radius="sm" size="sm" variant="flat" id="token-count">
+      { creditsUsed }
     </Chip>
   );
 }

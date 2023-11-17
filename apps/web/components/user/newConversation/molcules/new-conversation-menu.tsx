@@ -60,7 +60,7 @@ export default function NewConversationMenu(props: NewConversationMenuProps): JS
                         placement="top"
                         tags={props.userTags}
                     >
-                        <button type="button">
+                        <button type="button" id="add-tag">
                             <MdAddCircle size="1.2em"/>
                         </button>
                     </TagMenuPopover>    

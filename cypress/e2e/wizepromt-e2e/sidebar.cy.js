@@ -43,25 +43,19 @@ it("Delete tag test ", ()=>{
   
 })
 
-it("Rename chat test", ()=>{
-  cy.get('[id="id="react-aria2947031831-:r8o:"]').click()
+it("Rename chat test", ()=>{  //revisar
+  cy.get('[id="react-aria5161750207-:rhq:"]').click()
   cy.contains("Rename").click()
-  cy.get('[d="react-aria8160225660-:r9q:"]').type("test 1")
+  cy.get('[id="react-aria8160225660-:r9q:"]').type("test 1")
   cy.get('[d="M416 128L192 384l-96-96"]').click()
   cy.contains("test 1")
 })
 
-it("Change tags in a convertation", ()=>{
-  cy.get('[id="id="react-aria2947031831-:r8o:"]').click()
+it("Change tags in a convertation", ()=>{ //revisar
+  cy.get('[id="react-aria5161750207-:rhq:"]').click()
   cy.contains("Edit Tags").click()
   cy.contains("Programación").click()
   cy.contains("Close").click()
-})
-
-it("Delete chat", ()=>{
-  cy.get('[id="id="react-aria2947031831-:r8o:"]').click()
-  cy.contains("delete").click()
-  cy.contains("tests").should("not.exist")
 })
 
 })

@@ -101,7 +101,7 @@ export default function ModalParametersGPT(props: any): JSX.Element {
                   onChange={(e) => {
                     setUpdatedUserContext(e.target.value);
                   }}
-                  placeholder=""
+                  placeholder="Chat context"
                   radius="sm"
                   variant="faded"
                 />
@@ -124,7 +124,7 @@ export default function ModalParametersGPT(props: any): JSX.Element {
                   onChange={(e) => {
                     setUpdatedResponseContext(e.target.value);
                   }}
-                  placeholder=""
+                  placeholder="ChatGPT response"
                   radius="sm"
                   variant="faded"
                 />
@@ -181,6 +181,7 @@ export default function ModalParametersGPT(props: any): JSX.Element {
                 }}
                 step={0.1}
                 value={[updatedTemperature]}
+                
               />
             </ModalBody>
             <ModalFooter className="flex flex-col md:flex-row justify-between">

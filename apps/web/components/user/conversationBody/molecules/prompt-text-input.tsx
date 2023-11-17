@@ -95,6 +95,7 @@ export default function PromptTextInput({
                     input
                   );
                 }}
+                id="submit"
                 size="lg"
                 type="submit"
                 // Saves user's message when the send button is clicked
