@@ -50,7 +50,7 @@ export default function TagMenuModal({modalTitle, initialTags, initialSelectedTa
     )
     
     return (
-        <Modal hideCloseButton isOpen={isOpen} onClose={handleModalClose}>
+        <Modal placement="center" hideCloseButton isOpen={isOpen} onClose={handleModalClose}>
             <ModalContent>
             {(onClose) => (
                 <>
