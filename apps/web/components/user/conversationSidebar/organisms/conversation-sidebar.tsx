@@ -42,6 +42,7 @@ import UserCard from "../molecules/user-card";
 import { ConversationList } from "../molecules/conversation-list";
 import NewConversationMenuModal from "../../newConversation/molcules/new-conversation-menu-modal";
 import { PrismaUserContext } from "@/context/prisma-user-context";
+import { Role } from "@prisma/client";
 
 interface ConversationSidebarProps {
   userConversations: SidebarConversation[];
@@ -68,6 +69,7 @@ export default function ConversationSidebar({userConversations, userTags, models
   const { user } = useUser();
 
   const prismaUser = useContext(PrismaUserContext);
+  const isAdmin = prismaUser?.role === Role.ADMIN;
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [tab, setTab] = useState("general");
@@ -270,7 +272,10 @@ export default function ConversationSidebar({userConversations, userTags, models
                 <p className="font-semibold">{user ? user.email : ""}</p>
               </DropdownItem>
               {
-                
+                isAdmin ? <DropdownItem href="/admin/group/1" key="admin">
+                Admin Dashboard
+              </DropdownItem>:
+              null
               }
               <DropdownItem key="help_and_feedback">
                 Help & Feedback
