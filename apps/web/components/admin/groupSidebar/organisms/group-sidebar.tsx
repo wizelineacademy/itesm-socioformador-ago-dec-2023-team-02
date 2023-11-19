@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { Group } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@nextui-org/react";
@@ -22,6 +22,18 @@ export default function GroupSidebar(): JSX.Element {
   const router = useRouter();
   const sidebarTopPadding = "py-4";
 
+  useEffect(() => {
+    if (groupsContext?.groups){
+      if (selectedGroup !== undefined && selectedGroup !== null && !groupsContext?.groups.map(({id}) => id).includes(selectedGroup)){
+        const firstGroup: number | undefined = groupsContext?.groups[0]?.id || undefined
+        if (firstGroup !== undefined){
+          router.push(`/admin/group/${firstGroup}`)
+          setSelectedGroup(firstGroup)
+        }
+      }
+    }
+  }, [groupsContext?.groups, selectedGroup, router])
+
   const handleSearchTextChange: (text: string) => void = (text) => {
     setSearchText(text);
   };
@@ -41,6 +53,9 @@ export default function GroupSidebar(): JSX.Element {
         type: GroupsActionType.Create,
         group: savedGroup
       })
+
+      setSelectedGroup(savedGroup.id);
+      router.push(`/admin/group/${savedGroup.id}`);
     }
   } 
 

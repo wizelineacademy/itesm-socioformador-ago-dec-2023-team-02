@@ -22,7 +22,7 @@ export default function EditGroupMenuModal({isNew, initialGroup, isOpen, onGroup
     const saveIsDisabled = !isValidGroup(group) || groupsAreEqual(initialGroup, group)
 
     useEffect(() => {
-        if (isOpen){
+        if (!isOpen){
             setGroup(initialGroup)
         }
     }, [initialGroup, isOpen])
@@ -139,6 +139,7 @@ export default function EditGroupMenuModal({isNew, initialGroup, isOpen, onGroup
                     <ModalBody className={`${modalHorizontalPadding}`}>
                         <NewGroupMenu
                             group={group}
+                            isEditing={isOpen}
                             onGroupChange={handleGroupChange}
                         />
                     </ModalBody>
