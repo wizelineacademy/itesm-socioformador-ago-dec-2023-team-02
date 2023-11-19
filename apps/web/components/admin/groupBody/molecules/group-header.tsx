@@ -9,6 +9,7 @@ interface GroupHeaderProps {
   groupName: string; // The name of the group
   // groupDescription: string;   // A brief description of the group
   creditsAssigned: number; // The number of credits assigned to the group
+  onGroupsSettingsPress: () => void;
 }
 
 // GroupHeader component definition with explicit return type JSX.Element
@@ -16,7 +17,12 @@ export function GroupHeader({
   groupName,
   // groupDescription ,
   creditsAssigned,
+  onGroupsSettingsPress
 }: GroupHeaderProps): JSX.Element {
+  const handleGroupSettingsPress: (e: any) => void = (_) => {
+    onGroupsSettingsPress()
+  }
+
   return (
     <div className="flex flex-wrap items-start justify-between my-2">
       {/* Adjust the order of items for XS screens */}
@@ -41,7 +47,7 @@ export function GroupHeader({
           Modify Credits
         </Button>
 
-        <Button endContent={<AiOutlineSetting />} size="sm" variant="flat">
+        <Button endContent={<AiOutlineSetting />} onPress={handleGroupSettingsPress} size="sm" variant="flat">
           Group Settings
         </Button>
       </div>

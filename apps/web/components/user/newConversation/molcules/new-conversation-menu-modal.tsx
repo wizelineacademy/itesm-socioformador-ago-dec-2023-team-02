@@ -118,6 +118,7 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
                             <Button
                                 className={(creationIsDisabled || isLoading) ? "opacity-50" : "opacity-100"}
                                 color="primary" isDisabled={creationIsDisabled || isLoading}
+                                isLoading={isLoading}
                                 onPress={handleCreateButtonPress}
                             >
                                 Create
