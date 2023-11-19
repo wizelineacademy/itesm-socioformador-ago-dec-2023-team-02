@@ -1,18 +1,27 @@
 import { Input, Textarea } from "@nextui-org/react";
 import type { Group } from "@prisma/client";
 import { BiCoinStack } from "react-icons/bi"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { editGroupCredits, editGroupDescription, editGroupName } from "@/helpers/group-helpers";
 import { imposeMaxLength, strToNumber, trimLeadingSpaces, isPositiveDecimal } from "@/helpers/string-helpers";
 
 interface EditGroupMenuProps {
+    isEditing: boolean;
     group: Group;
     onGroupChange: (editedGroup: Group) => void;
 }
 
-export default function EditGroupMenu({group, onGroupChange}: EditGroupMenuProps): JSX.Element {
+export default function EditGroupMenu({isEditing, group, onGroupChange}: EditGroupMenuProps): JSX.Element {
     const [creditsString, setCreditsString] = useState<string>(group.creditsAssigned.toString())
     const groupNameMaxLength = 20 
+
+    useEffect(() => {
+        console.log(isEditing)
+
+        if (!isEditing){
+            setCreditsString(group.creditsAssigned.toString())
+        }
+    }, [group.creditsAssigned, isEditing])
 
     const handleGroupNameChange: (value: string) => void = (value) => {
         onGroupChange(editGroupName(group, imposeMaxLength(trimLeadingSpaces(value), groupNameMaxLength)))

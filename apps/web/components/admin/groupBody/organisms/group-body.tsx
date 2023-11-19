@@ -1,7 +1,7 @@
 "use client";
 // Import necessary hooks and utilities from React and Next.js
 import { useContext, useEffect, useState } from "react";
-import { useParams , useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import type { Group, User } from "@prisma/client";
 import {Spinner} from "@nextui-org/react";
 import { toast } from "sonner";
@@ -26,7 +26,6 @@ export default function GroupBody(): JSX.Element {
     const [editGroupModalIsOpen, setEditGroupModalIsOpen] = useState<boolean>(false)
     const params = useParams();
     const idGroup = Number(params.id);
-    const router = useRouter()
 
     // State for storing group data
     const [groupData, setGroupData] = useState<GroupData | null>(null);
@@ -60,8 +59,6 @@ export default function GroupBody(): JSX.Element {
             type: GroupsActionType.Delete,
             groupId: deletedGroup.id,
         })
-
-        router.push(`/admin/group/${sidebarGroupsContext?.groups[0]?.id}`)
     }
 
     useEffect(() => {

@@ -49,7 +49,7 @@ export function groupsReducer(state: Group[], action: GroupsAction): Group[] {
 }
 
 /**
- * Filters an array of groups, admitting only those whose name match the searchText string. 
+ * Filters an array of groups, admitting only those whose name matches the searchText string. 
  * @param groups - An array of user groups to filter. 
  * @param searchText - A string pattern to compare with the name of each group in the array. 
  * @returns A filtered group array. 
@@ -124,4 +124,22 @@ export function groupsAreEqual(groupA: Group, groupB: Group): boolean {
         groupA.description === groupB.description &&
         groupA.creditsAssigned === groupB.creditsAssigned
     )
+}
+
+/**
+ * Sorts an array of groups by their name; placing the group whose id is placeFirst in the first position. 
+ * @param groups - An array of group objects to sort. 
+ * @param placeFirst - The id of the group that will be given precedence over the rest and unconditionally
+ * placed in the first position. 
+ * @returns A new, sorted array of groups. 
+ */
+export function sortGroups(groups: Group[], groupToPlaceFirst?: number): Group[] {
+    return groups.length === 0 ? [] : [...groups].sort((groupA, groupB) => {
+        if (groupToPlaceFirst !== undefined && groupA.id === groupToPlaceFirst){
+            return -1
+        } else if (groupToPlaceFirst !== undefined && groupB.id === groupToPlaceFirst){
+            return 1
+        } 
+        return groupA.name.localeCompare(groupB.name)
+    })
 }
