@@ -520,6 +520,7 @@ export interface UpdatedInfo {
   title?: string; //The updated title of the conversation.
   parameters?: JSON; // The updated parameters for the conversation.
   includeRelatedEntities?: boolean; // Whether to include related entities in the returned conversation object.
+  updateCreatedAt?: boolean;
 }
 
 /**
@@ -559,6 +560,7 @@ export async function updateConversationById(
       data: {
         tags: updatedInfo.tags ? { set: updatedInfo.tags } : undefined,
         title: updatedInfo.title || undefined,
+        createdAt: updatedInfo.updateCreatedAt ? new Date() : undefined,
         parameters: updatedInfo.parameters as any, // Add parameters to the update
       },
       include: updatedInfo.includeRelatedEntities

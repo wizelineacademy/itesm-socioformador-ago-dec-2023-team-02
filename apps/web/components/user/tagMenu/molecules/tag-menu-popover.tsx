@@ -79,6 +79,7 @@ export default function TagMenuPopover({
             <ButtonWithIcon
               icon={<MdOutlineCancel color="white" />}
               isDisabled={false}
+              isLoading={false}
               onPress={handleCancelButtonPress}
               style="bg-red-700"
               text="Cancel"
@@ -86,6 +87,7 @@ export default function TagMenuPopover({
             <ButtonWithIcon
               icon={<IoCheckmarkSharp color="white" />}
               isDisabled={false}
+              isLoading={false}
               onPress={handleSaveButtonPress}
               style="bg-sky-700"
               text="Confirm"

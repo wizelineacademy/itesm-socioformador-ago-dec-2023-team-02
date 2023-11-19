@@ -133,7 +133,7 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
     }
 
     const tagHasChanged: boolean = initialTagName !== tagName || initialTagColor !== tagColor
-    const disableSaveButton: boolean = !tagHasChanged || tagName.length === 0
+    const disableSaveButton: boolean = !tagHasChanged || tagName.length === 0 || isLoading
     
     return (
         <Popover backdrop="opaque" isOpen={popoverIsOpen} onOpenChange={handleOpenChange} placement={placement} showArrow>
@@ -161,8 +161,8 @@ export default function TagEditorPopover({children, tagId, initialTagName, initi
                     />
 
                     <div className="flex flex-row w-full items-center justify-center gap-2">
-                        <ButtonWithIcon icon={<MdOutlineCancel color="white"/>} isDisabled={false} onPress={handleCancelButtonPress} style="bg-red-700" text="Cancel"/>
-                        <ButtonWithIcon icon={<MdSaveAlt color="white"/>} isDisabled={disableSaveButton || isLoading} onPress={handleSaveButtonPress} style="bg-sky-700" text="Save"/>
+                        <ButtonWithIcon icon={<MdOutlineCancel color="white"/>} isDisabled={false} isLoading={false} onPress={handleCancelButtonPress} style="bg-red-700" text="Cancel"/>
+                        <ButtonWithIcon icon={<MdSaveAlt color="white"/>} isDisabled={disableSaveButton} isLoading={isLoading} onPress={handleSaveButtonPress} style="bg-sky-700" text="Save"/>
                     </div>
                 </div>
             </PopoverContent>

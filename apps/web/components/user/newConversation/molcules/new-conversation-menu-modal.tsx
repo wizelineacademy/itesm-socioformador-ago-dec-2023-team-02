@@ -67,7 +67,7 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
               tags: conversationTagArray
             }),
           };
-        fetch(`/api/conversations`, fetchOptions)
+        fetch("/api/conversations", fetchOptions)
         .then((response) => {
             if (!response.ok) {
                 throw new Error("Network response was not ok");
