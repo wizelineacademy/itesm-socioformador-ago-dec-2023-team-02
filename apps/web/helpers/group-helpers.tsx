@@ -110,3 +110,18 @@ export function defaultGroup(): Group {
 export function isValidGroup(group: Group): boolean {
     return group.name.length > 0 && group.creditsAssigned >= 0 
 } 
+
+/**
+ * Indicates whether two group objects are identical.
+ * @param groupA - A group object, to compare with groupB.
+ * @param groupB - A group object, to compare with groupA.
+ * @returns A boolean value that indicates whether two group objects are identical.
+ */
+export function groupsAreEqual(groupA: Group, groupB: Group): boolean {
+    return (
+        groupA.id === groupB.id &&
+        groupA.name === groupB.name &&
+        groupA.description === groupB.description &&
+        groupA.creditsAssigned === groupB.creditsAssigned
+    )
+}
