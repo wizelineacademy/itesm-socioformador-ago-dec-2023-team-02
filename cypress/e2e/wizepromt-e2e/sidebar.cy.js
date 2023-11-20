@@ -1,5 +1,5 @@
 const { contains } = require("cypress/types/jquery")
-const { not } = require("git-cz")
+
 
 context('Sidebar test', ()=> {
   beforeEach(() => {
@@ -59,5 +59,3 @@ it("Change tags in a convertation", ()=>{ //revisar
 })
 
 })
-
-//xmlns="http://www.w3.org/2000/svg"

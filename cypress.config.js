@@ -1,7 +1,9 @@
 const { defineConfig } = require("cypress");
 const pg = require('pg');
+require('dotenv').config({ path: ".env.local" })
 
 module.exports = defineConfig({
+  projectId: 'etb4cb',
   e2e: {
     baseUrl: 'http://localhost:3000/',
     setupNodeEvents(on, config) {
@@ -21,6 +23,11 @@ module.exports = defineConfig({
     ssl: true,
     port: 5432  
   }
-  }
+  },
+  env: {
+    auth0_username: process.env.AUTH0_USERNAME,
+    auth0_password: process.env.AUTH0_PASSWORD,
+    auth0_domain: process.env.REACT_APP_AUTH0_DOMAIN,
+  },
 });
   
