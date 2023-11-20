@@ -22,7 +22,7 @@ export interface GroupUpdateData {
     name?: string;
     description?: string;
     creditsAssigned?: number;
-    users: User[];
+    users?: User[];
 };
 
 /**

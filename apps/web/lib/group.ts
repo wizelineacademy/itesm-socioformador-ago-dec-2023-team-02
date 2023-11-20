@@ -186,7 +186,7 @@ export async function updateGroupById(
     }
 
     //Validate credits are assigned
-    if (!updateData.creditsAssigned || updateData.creditsAssigned < 0) {
+    if (updateData.creditsAssigned === undefined || updateData.creditsAssigned < 0) {
       return {
         status: 400,
         message: "Credits assigned cannot be empty or negative",
@@ -263,13 +263,13 @@ export async function deleteGroup(
     }
 
     // Attempt to delete the group by its ID
-    await prisma.group.delete({
+    const deletedGroup: Group = await prisma.group.delete({
       where: {
         id: idGroup,
       },
     });
 
-    return { message: "Group deleted successfully", status: 200 };
+    return { message: "Group deleted successfully", status: 200, data: deletedGroup};
   } catch (error: any) {
     console.error("Error deleting group:", error.message); // Logging the error
     return { status: 500, message: error.message };

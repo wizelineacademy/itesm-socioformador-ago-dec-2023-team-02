@@ -1,12 +1,16 @@
 "use client";
 // Import necessary hooks and utilities from React and Next.js
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { User } from "@prisma/client";
+import type { Group, User } from "@prisma/client";
 import {Spinner} from "@nextui-org/react";
+import { toast } from "sonner";
+import type { GroupsContextShape } from "@/context/groups-context";
+import { GroupsContext } from "@/context/groups-context";
+import { GroupsActionType } from "@/helpers/group-helpers";
 import { GroupHeader } from "../molecules/group-header";
 import { GroupTable } from "../molecules/group-table";
-import { toast } from "sonner";
+import EditGroupMenuModal from "../../editGroup/molcules/edit-group-menu-modal";
 
 // Define the type for the group data
 interface GroupData {
@@ -18,6 +22,8 @@ interface GroupData {
 };
 
 export default function GroupBody(): JSX.Element {
+    const sidebarGroupsContext = useContext<GroupsContextShape | null>(GroupsContext)
+    const [editGroupModalIsOpen, setEditGroupModalIsOpen] = useState<boolean>(false)
     const params = useParams();
     const idGroup = Number(params.id);
 
@@ -33,6 +39,27 @@ export default function GroupBody(): JSX.Element {
 
     // State for storing error messages
     // const [error, setError] = useState<any>(null);
+
+    const handleGroupSettingsPress: () => void = () => {setEditGroupModalIsOpen(true)}
+
+    const handleGroupEditModalClose: () => void = () => {setEditGroupModalIsOpen(false)}
+
+    const handleGroupSave: (savedGroup: Group) => void = (savedGroup) => {
+        setGroupData({...savedGroup, users: groupData?.users})
+
+        sidebarGroupsContext?.groupsDispatch({
+            type: GroupsActionType.Edit,
+            groupId: savedGroup.id,
+            group: savedGroup
+        })
+    }
+
+    const handleGroupDeletion: (deletedGroup: Group) => void = (deletedGroup) => {
+        sidebarGroupsContext?.groupsDispatch({
+            type: GroupsActionType.Delete,
+            groupId: deletedGroup.id,
+        })
+    }
 
     useEffect(() => {
         async function getGroupData() {
@@ -78,10 +105,18 @@ export default function GroupBody(): JSX.Element {
     return (
         <div className="p-5">
             {/* Group Header */}
-            <GroupHeader groupName={groupData.name} creditsAssigned={groupData.creditsAssigned}/>
+            <GroupHeader creditsAssigned={groupData.creditsAssigned} groupName={groupData.name} onGroupsSettingsPress={handleGroupSettingsPress}/>
             {/* Group Table */}
-            <GroupTable setUpdatedUsers={setUpdatedUsers} idGroup={idGroup} users={groupData.users} />
+            <GroupTable idGroup={idGroup} setUpdatedUsers={setUpdatedUsers} users={groupData.users} />
 
+            <EditGroupMenuModal
+                initialGroup={{...groupData, users: undefined} as Group}
+                isNew={false}
+                isOpen={editGroupModalIsOpen}
+                onGroupDeletion={handleGroupDeletion}
+                onGroupSave={handleGroupSave}
+                onModalClose={handleGroupEditModalClose}
+            />
         </div>
     );
 }

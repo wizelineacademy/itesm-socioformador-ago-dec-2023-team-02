@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, useContext } from "react";
 import {
   Badge,
   Button,
@@ -41,6 +41,8 @@ import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 import UserCard from "../molecules/user-card";
 import { ConversationList } from "../molecules/conversation-list";
 import NewConversationMenuModal from "../../newConversation/molcules/new-conversation-menu-modal";
+import { PrismaUserContext } from "@/context/prisma-user-context";
+import { Role } from "@prisma/client";
 
 interface ConversationSidebarProps {
   userConversations: SidebarConversation[];
@@ -65,6 +67,9 @@ export default function ConversationSidebar({userConversations, userTags, models
   const router = useRouter();
 
   const { user } = useUser();
+
+  const prismaUser = useContext(PrismaUserContext);
+  const isAdmin = prismaUser?.role === Role.ADMIN;
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [tab, setTab] = useState("general");
@@ -234,7 +239,7 @@ export default function ConversationSidebar({userConversations, userTags, models
                     //     ? `${user?.email?.slice(0, 18)}...`
                     //     : "No email provided"
                     // }
-                    description="1740 tokens"
+                    description={`${prismaUser?.creditsRemaining} credits`}
                     name={
                       user?.name
                         ? `${
@@ -261,10 +266,19 @@ export default function ConversationSidebar({userConversations, userTags, models
                 )}
               </div>
             </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem className="h-14 gap-2" key="profile">
+            <DropdownMenu className="radius-small dark" aria-label="Profile Actions" variant="flat">
+              <DropdownItem className="h-14 gap-2 dark" key="profile">
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{user ? user.email : ""}</p>
+              </DropdownItem>
+              {
+                isAdmin ? <DropdownItem href="/admin/group/1" key="admin">
+                Admin Dashboard
+              </DropdownItem>:
+              null
+              }
+              <DropdownItem key="help_and_feedback">
+                Help & Feedback
               </DropdownItem>
               <DropdownItem key="settings" onPress={onOpen}>
                 Settings
@@ -274,7 +288,7 @@ export default function ConversationSidebar({userConversations, userTags, models
               <DropdownItem key="help_and_feedback">
                 Help & Feedback
               </DropdownItem>
-              <DropdownItem color="danger" href="/api/auth/logout" key="logout">
+              <DropdownItem color="danger" href="/api/auth/logout" key="logout" className="text-red-600">
                 Log Out
               </DropdownItem>
             </DropdownMenu>
@@ -313,7 +327,9 @@ export default function ConversationSidebar({userConversations, userTags, models
         />
       </div>
       <Modal
+      radius="sm"
         className="min-h-[500px] overflow-y-scroll"
+        placement="center"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         size="4xl"
@@ -326,14 +342,14 @@ export default function ConversationSidebar({userConversations, userTags, models
               </ModalHeader>
               <ModalBody className="flex flex-col md:flex-row gap-1">
                 <div className="sidebar">
-                  <ul className=" flex flex-row md:flex-col gap-1 md:gap-2 m-2">
+                  <ul className="flex flex-row md:flex-col gap-1 md:gap-2 m-2">
                     <TabButton
                       keyword="general"
                       setTab={() => {
                         setTab("general");
                       }}
                       tab={tab}
-                      title="General"
+                      title="General" 
                     >
                       <AiOutlineSetting
                         className="flex items-center md:hidden"

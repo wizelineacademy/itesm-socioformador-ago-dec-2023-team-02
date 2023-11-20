@@ -26,7 +26,7 @@ export default function ModelSelectionCard({model}: ModelSelectionProps): JSX.El
           className: `p-1 ${avatarBackgroundColor}`, // Applies the computed background color style.
           src: model.provider.image, // Uses the image from the model's provider.
         }}
-        className=""
+        className="whitespace-nowrap"
         description={`${2} Tokens`} // Static description is added, should be dynamic based on model data.
         name={model.name.toUpperCase()} // Model name is displayed in uppercase.
       />
