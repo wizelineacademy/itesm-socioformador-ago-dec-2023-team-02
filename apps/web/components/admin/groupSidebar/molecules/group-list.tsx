@@ -1,4 +1,5 @@
 import type { Group } from "@prisma/client";
+import { Divider } from "@nextui-org/react";
 import GroupCard from "../atoms/group-card";
 
 interface GroupListProps {
@@ -18,8 +19,14 @@ export default function GroupList({groups, selectedGroup, onGroupPress}: GroupLi
 
     return (
         <div className="flex flex-col gap-2 justify-start w-full h-full overflow-y-auto scrollbar-hide">
-            {groups.map((group) => (
-                <GroupCard group={group} isSelected={selectedGroup === group.id} key={group.id} onPress={() => {onGroupPress(group.id)}}/>
+            {groups.map((group, index) => (
+                <>
+                    <GroupCard group={group} isSelected={selectedGroup === group.id} key={group.id} onPress={() => {onGroupPress(group.id)}}/>
+
+                    {index === 0 ?
+                    <Divider className="m-1"/>
+                    : null}
+                </>
             ))} 
         </div>
     );
