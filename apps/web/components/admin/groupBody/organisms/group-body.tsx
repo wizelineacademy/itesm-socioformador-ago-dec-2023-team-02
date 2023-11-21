@@ -78,6 +78,7 @@ export default function GroupBody(): JSX.Element {
       <GroupHeader
         creditsAssigned={groupData?.creditsAssigned || 0}
         groupName={groupData?.name || "Group Name"}
+        groupData={groupData}
       />
       {/* Group Table */}
       <GroupTable users={groupData?.users || []} />
