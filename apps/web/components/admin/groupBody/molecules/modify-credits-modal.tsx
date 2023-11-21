@@ -1,4 +1,3 @@
-import { removeLeadingZeros, strToNumber } from "@/helpers/string-helpers"
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react"
 import { Input } from "@nextui-org/react"
 import { User } from "@prisma/client";
@@ -29,9 +28,9 @@ export default function ModifyCreditsModal({isOpen, onModalClose}: ModifyCredits
         onModalClose()
     }
 
-    const handleSave = () => {
+    // const handleSave = () => {
 
-    }
+    // }
 
     return(
         <Modal isOpen={isOpen} onClose={handleModalClose} size="sm">
