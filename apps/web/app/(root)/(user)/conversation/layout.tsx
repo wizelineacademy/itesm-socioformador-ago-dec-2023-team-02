@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import type { Tag, User } from "@prisma/client";
 import { Suspense } from "react";
+import { getSession } from "@auth0/nextjs-auth0";
+import { redirect } from "next/navigation";
 import ConversationSidebar from "@/components/user/conversationSidebar/organisms/conversation-sidebar";
 import { getAllConversationsByUserId } from "@/lib/conversation";
 import { getAllSidebarTagsByUserID } from "@/lib/tag";
@@ -8,10 +10,9 @@ import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import { getAllModelsWithProvider } from "@/lib/model";
 import type { ModelWithProvider } from "@/types/moder-with-provider-types";
 import { PrismaUserContextProvider } from "@/context/prisma-user-context";
-import { getSession } from "@auth0/nextjs-auth0";
 import { getUserbyAuthID } from "@/lib/user";
-import { redirect } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ConversationsContextProvider } from "@/context/conversations-context";
 
 export const metadata: Metadata = {
   title: "WizePrompt",
@@ -66,11 +67,7 @@ function SidebarSuspense(): JSX.Element {
   );
 }
 
-export default async function ConversationRootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}): Promise<any> {
+export default async function ConversationRootLayout({children}: {children: React.ReactNode}): Promise<any> {
   const { user } = (await getSession()) || {};
 
   //If no user, redirect to login
@@ -80,11 +77,10 @@ export default async function ConversationRootLayout({
 
   //get user from database
   const userAuthID: string = user.sub;
-  const prismaUser: User | null =
-    (await getUserbyAuthID(userAuthID)).data ?? null;
+  const prismaUser: User | null = (await getUserbyAuthID(userAuthID)).data ?? null;
   //const userId: number = prismaUser.id;
 
-  const userConversations: SidebarConversation[] = prismaUser
+  const userConversations: SidebarConversation[] = prismaUser 
     ? (await getAllConversationsByUserId(prismaUser.id)).data || []
     : [];
   const userTags: Tag[] = prismaUser
@@ -97,14 +93,14 @@ export default async function ConversationRootLayout({
   return (
     <Suspense fallback={<SidebarSuspense />}>
       <PrismaUserContextProvider prismaUser={prismaUser}>
-        <div className="flex flex-row">
-          <ConversationSidebar
-            models={models}
-            userConversations={userConversations}
-            userTags={userTags}
-          />
-          <section className="w-full">{children}</section>
-        </div>
+        <ConversationsContextProvider initialConversations={userConversations}>
+          <div className="flex flex-row">
+            <ConversationSidebar models={models} userTags={userTags}/>
+            <section className="w-full">
+              {children}
+            </section>
+          </div>
+        </ConversationsContextProvider>
       </PrismaUserContextProvider>
     </Suspense>
   );

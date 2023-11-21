@@ -76,8 +76,8 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
         })
         .then((createdConversation) => {
             onConversationCreation(createdConversation as SidebarConversation)
-            resetState()
             toast.success("Conversation created.")
+            resetState()
         })
         .catch((_) => {
             toast.error("Failed to create the conversation.")
