@@ -1,15 +1,52 @@
-/* eslint-disable no-nested-ternary */
-"use client";
-
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useUser } from "@auth0/nextjs-auth0/client";
-import { Spinner } from "@nextui-org/react";
-import { Button } from "@/components/ui/button";
+import { getUserbyAuthID, createUser } from "@/lib/user";
+import { UserCreateData } from "@/types/user-types";
+import LoginButton from "@/components/login/login-button";
+import { getSession } from "@auth0/nextjs-auth0";
 
-export default function Home(): JSX.Element {
-  const { user, isLoading } = useUser();
-  const router = useRouter();
+interface Parameters {
+  userContext: string;
+  responseContext: string;
+  temperature: number;
+  size: string;
+}
+
+export async function handleAuth0User(authUser: any) {
+  // Replace Auth0SessionType with the actual type
+
+  //check if current auth0 user exists in database
+  const authUserId: string = authUser.sub;
+  const result = await getUserbyAuthID(authUserId);
+
+  //If user does not exists in database
+  if (result.status === 404) {
+    // User doesn't exist in database, create a new one
+    const newUser: UserCreateData = {
+      idAuth0: authUserId,
+      name: authUser.name,
+      email: authUser.email,
+      jobPosition: "",
+      role: "USER",
+      image: authUser.picture,
+      creditsRemaining: 0,
+      globalParameters: {} as Parameters,
+    };
+
+    //create new user on the database
+    try {
+      void (await createUser(newUser, [1]));
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
+}
+
+export default async function Home() {
+  const { user } = (await getSession()) || {};
+
+  if (user) {
+    await handleAuth0User(user);
+  }
 
   return (
     <section>
@@ -45,29 +82,7 @@ export default function Home(): JSX.Element {
             <p className="text-xl sm:text-2xl mt-4 text-gray-300">
               The centralised platform for all your AI needs.
             </p>
-            {isLoading ? (
-              <Button className="w-30 mt-8 px-6 py-3 text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700">
-                <Spinner color="current" />
-              </Button>
-            ) : user ? (
-              <Button
-                className="w-30 mt-8 px-6 py-3 text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700"
-                onClick={() => {
-                  router.push("/conversation/new");
-                }}
-              >
-                Get Started
-              </Button>
-            ) : (
-              <Button
-                className="w-30 mt-8 px-6 py-3 text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700"
-                onClick={() => {
-                  router.push("/api/auth/login");
-                }}
-              >
-                Login
-              </Button>
-            )}
+            <LoginButton user={user} />
           </section>
         </main>
       </div>

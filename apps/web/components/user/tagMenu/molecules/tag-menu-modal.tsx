@@ -43,6 +43,7 @@ export default function TagMenuModal({modalTitle, initialTags, initialSelectedTa
         <ButtonWithIcon
             icon={isEditingTags ? <MdOutlineCancel color="white"/> : <MdModeEditOutline color="white"/>}
             isDisabled={false}
+            isLoading={false}
             onPress={handleEditTagsButtonPress}
             style={isEditingTags ? "bg-red-600" : "bg-sky-700"}
             text={isEditingTags ? "Cancel" : "Edit tags"}
@@ -50,7 +51,7 @@ export default function TagMenuModal({modalTitle, initialTags, initialSelectedTa
     )
     
     return (
-        <Modal hideCloseButton isOpen={isOpen} onClose={handleModalClose}>
+        <Modal hideCloseButton isOpen={isOpen} onClose={handleModalClose} placement="center">
             <ModalContent>
             {(onClose) => (
                 <>

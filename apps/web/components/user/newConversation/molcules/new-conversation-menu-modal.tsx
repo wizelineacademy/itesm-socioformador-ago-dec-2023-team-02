@@ -1,5 +1,5 @@
-import { useState } from "react";
-import type { Tag } from "@prisma/client";
+import { useContext, useState } from "react";
+import type { Tag, User } from "@prisma/client";
 import { toast } from "sonner";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { isValidConversationName } from "@/helpers/sidebar-conversation-helpers";
@@ -8,6 +8,7 @@ import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import type { ModelWithProvider } from "@/types/moder-with-provider-types";
 import { mapTagIdsToTags } from "@/helpers/tag-helpers";
 import { setToArray } from "@/helpers/set-helpers";
+import { PrismaUserContext } from "@/context/prisma-user-context";
 import NewConversationMenu from "./new-conversation-menu";
 
 interface NewConversationMenuModalProps {
@@ -19,6 +20,7 @@ interface NewConversationMenuModalProps {
 }
 
 export default function NewConversationMenuModal({isOpen, models, userTags, onModalClose, onConversationCreation}: NewConversationMenuModalProps): JSX.Element {
+    const prismaUserContext: User | null = useContext<User | null>(PrismaUserContext)
     const [conversationName, setConversationName] = useState<string>("")
     const [conversationModelId, setConversationModelId] = useState<number | null>(null)
     const [conversationTags, setConversationTags] = useState<Set<number>>(new Set<number>())
@@ -48,7 +50,7 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
     const creationIsDisabled = !isValidConversationName(conversationName) || conversationModelId === null
 
     const handleCreateButtonPress: (e: any) => void = (_) => {
-        if (!creationIsDisabled){
+        if (!creationIsDisabled && prismaUserContext){
             setIsLoading(true)
             createConversation()
         }
@@ -60,12 +62,12 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
         const fetchOptions: RequestInit = {method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               title: conversationName,
-              idUser: 1,
+              idUser: prismaUserContext?.id,
               idModel: conversationModelId,
               tags: conversationTagArray
             }),
           };
-        fetch(`/api/conversations`, fetchOptions)
+        fetch("/api/conversations", fetchOptions)
         .then((response) => {
             if (!response.ok) {
                 throw new Error("Network response was not ok");
@@ -74,8 +76,8 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
         })
         .then((createdConversation) => {
             onConversationCreation(createdConversation as SidebarConversation)
-            resetState()
             toast.success("Conversation created.")
+            resetState()
         })
         .catch((_) => {
             toast.error("Failed to create the conversation.")
@@ -116,6 +118,7 @@ export default function NewConversationMenuModal({isOpen, models, userTags, onMo
                             <Button
                                 className={(creationIsDisabled || isLoading) ? "opacity-50" : "opacity-100"}
                                 color="primary" isDisabled={creationIsDisabled || isLoading}
+                                isLoading={isLoading}
                                 onPress={handleCreateButtonPress}
                             >
                                 Create

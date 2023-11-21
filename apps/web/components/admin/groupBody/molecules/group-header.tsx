@@ -19,6 +19,7 @@ interface GroupHeaderProps {
   groupName: string; // The name of the group
   // groupDescription: string;   // A brief description of the group
   creditsAssigned: number; // The number of credits assigned to the group
+  onGroupsSettingsPress: () => void;
   groupData: GroupData
 }
 
@@ -27,8 +28,13 @@ export function GroupHeader({
   groupName,
   // groupDescription ,
   creditsAssigned,
+  onGroupsSettingsPress
   groupData
 }: GroupHeaderProps): JSX.Element {
+  const handleGroupSettingsPress: (e: any) => void = (_) => {
+    onGroupsSettingsPress()
+  }
+
   const [creditsModalIsOpen, setCreditsModalIsOpen] = useState<boolean>(false)
   
   const handleModalClose: () => void = () => {
@@ -63,7 +69,7 @@ export function GroupHeader({
           Modify Credits
         </Button>
 
-        <Button endContent={<AiOutlineSetting />} size="sm" variant="flat">
+        <Button endContent={<AiOutlineSetting />} onPress={handleGroupSettingsPress} size="sm" variant="flat">
           Group Settings
         </Button>
       </div>

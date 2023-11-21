@@ -36,6 +36,13 @@ export async function saveMessage(
     method: "POST",
     body: JSON.stringify(messageInfo),
   });
+
+  if (sender === Sender.MODEL){
+    await fetch(`/api/conversations/${idConversation}`, {
+      method: "PATCH",
+      body: JSON.stringify({updateCreatedAt: true}),
+    });
+  }
 }
 
 // Example calling code:

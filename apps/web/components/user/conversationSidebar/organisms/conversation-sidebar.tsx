@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Badge,
   Button,
@@ -23,99 +23,82 @@ import { TbEdit } from "react-icons/tb";
 import { BiLineChart } from "react-icons/bi";
 import { TiKeyOutline } from "react-icons/ti";
 import { useRouter } from "next/navigation";
+import { Role } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SearchBar from "@/components/shared/molecules/search-bar";
-import {
-  ConversationsActionType,
-  conversationsReducer,
-  filterConversations,
-  sortConversationsByDate,
-} from "@/helpers/sidebar-conversation-helpers";
+import { ConversationsActionType, filterConversations, includesConversation} from "@/helpers/sidebar-conversation-helpers";
 import { sortTagsByName } from "@/helpers/tag-helpers";
 import TabButton from "@/components/shared/atoms/tab-button";
 import TabModal from "@/components/shared/atoms/tab-modal";
 import General from "@/components/shared/molecules/general";
 import Usage from "@/components/shared/molecules/usage";
 import type { ModelWithProvider } from "@/types/moder-with-provider-types";
+import { PrismaUserContext } from "@/context/prisma-user-context";
+import type { ConversationsContextShape } from "@/context/conversations-context";
+import { ConversationsContext } from "@/context/conversations-context";
 import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
-import UserCard from "../molecules/user-card";
+import UserCard from "../../../shared/molecules/user-card";
 import { ConversationList } from "../molecules/conversation-list";
 import NewConversationMenuModal from "../../newConversation/molcules/new-conversation-menu-modal";
 
 interface ConversationSidebarProps {
-  userConversations: SidebarConversation[];
   userTags: Tag[];
   models: ModelWithProvider[];
 }
 
-export default function ConversationSidebar({
-  userConversations,
-  userTags,
-  models,
-}: ConversationSidebarProps): JSX.Element {
-  const [conversations, conversationsDispatch] = useReducer(
-    conversationsReducer,
-    sortConversationsByDate(userConversations)
-  );
-  const [selectedConversation, setSelectedConversation] = useState<
-    number | null
-  >(conversations[0]?.id || null);
+export default function ConversationSidebar({userTags, models}: ConversationSidebarProps): JSX.Element {
+  const conversationsContext = useContext<ConversationsContextShape | null>(ConversationsContext)
+  const [selectedConversation, setSelectedConversation] = useState<number | undefined>(undefined)
   const [tags, setTags] = useState<Tag[]>(sortTagsByName(userTags));
-  const [selectedTags, setSelectedTags] = useState<Set<number>>(
-    new Set<number>()
-  );
+  const [selectedTags, setSelectedTags] = useState<Set<number>>(new Set<number>());
   const [searchText, setSearchText] = useState<string>("");
   const [showingSidebar, setShowingSidebar] = useState<boolean>(true);
-  const [newConversationModalIsOpen, setNewConversationModalIsOpen] =
-    useState<boolean>(false);
+  const [newConversationModalIsOpen, setNewConversationModalIsOpen] = useState<boolean>(false);
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
   const router = useRouter();
 
   const { user } = useUser();
 
+  const prismaUser = useContext(PrismaUserContext);
+  const isAdmin = prismaUser?.role === Role.ADMIN;
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [tab, setTab] = useState("general");
 
-  const moveToConversation: (conversationId: number) => void = (
-    conversationId
-  ) => {
+  const moveToConversation: (conversationId: number) => void = (conversationId) => {
     setSelectedConversation(conversationId);
     router.push(`/conversation/${conversationId}`);
   };
 
   // Verificar que esto sea eficiente.
   useEffect(() => {
-    const firstConversationId: number | null = conversations[0]?.id;
-    if (
-      selectedConversation &&
-      firstConversationId &&
-      !conversations.map(({ id }) => id).includes(selectedConversation)
-    ) {
+    console.log(conversationsContext?.conversations)
+    const firstConversationId: number | undefined = conversationsContext?.conversations[0]?.id
+
+    if (conversationsContext && !includesConversation(conversationsContext?.conversations, selectedConversation)){
       setSelectedConversation(firstConversationId);
-      router.push(`/conversation/${firstConversationId}`);
+      router.push(`/conversation/${firstConversationId ?? "new"}`);
     }
-  }, [conversations, selectedConversation, router]);
+  }, [conversationsContext, selectedConversation, router]);
 
   // Handler function for updating the search text
   const handleSearchTextChange: (value: string) => void = (value) => {
     setSearchText(value);
   };
 
-  const handleNewConversationCreation: (
-    newConversation: SidebarConversation
-  ) => void = (newConversation) => {
-    conversationsDispatch({
-      type: ConversationsActionType.Create,
-      conversationId: newConversation.id,
-      conversation: newConversation,
-    });
-    moveToConversation(newConversation.id);
-    setNewConversationModalIsOpen(false);
+  const handleNewConversationCreation: (newConversation: SidebarConversation) => void = (newConversation) => {
+    if (conversationsContext){
+      conversationsContext.conversationsDispatch({
+        type: ConversationsActionType.Create,
+        conversationId: newConversation.id,
+        conversation: {...newConversation, createdAt: new Date(newConversation.createdAt)},
+      });
+      moveToConversation(newConversation.id);
+      setNewConversationModalIsOpen(false);
+    }
   };
 
-  const handleConversationPress: (conversationId: number) => void = (
-    conversationId
-  ) => {
+  const handleConversationPress: (conversationId: number) => void = (conversationId) => {
     moveToConversation(conversationId);
   };
 
@@ -136,10 +119,7 @@ export default function ConversationSidebar({
     setNewConversationModalIsOpen(false);
   };
 
-  const handleTagMenuModalClosing: (
-    newTags: Tag[],
-    newSelectedTags: Set<number>
-  ) => void = (newTags, newSelectedTags) => {
+  const handleTagMenuModalClosing: (newTags: Tag[], newSelectedTags: Set<number>) => void = (newTags, newSelectedTags) => {
     setTagMenuModalIsOpen(false);
     setTags(newTags);
     setSelectedTags(newSelectedTags);
@@ -211,14 +191,9 @@ export default function ConversationSidebar({
 
           {/* Conversation list section */}
           <ConversationList
-            conversationsDispatch={conversationsDispatch}
             onConversationPress={handleConversationPress}
             selectedConversation={selectedConversation}
-            userConversations={filterConversations(
-              conversations,
-              searchText,
-              selectedTags
-            )}
+            userConversations={filterConversations(conversationsContext?.conversations ?? [], searchText, selectedTags)}
             userTags={tags}
           />
 
@@ -241,7 +216,7 @@ export default function ConversationSidebar({
                     //     ? `${user?.email?.slice(0, 18)}...`
                     //     : "No email provided"
                     // }
-                    description="1740 tokens"
+                    description={`${prismaUser?.creditsRemaining} credits`}
                     name={
                       user?.name
                         ? `${
@@ -268,10 +243,19 @@ export default function ConversationSidebar({
                 )}
               </div>
             </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem className="h-14 gap-2" key="profile">
+            <DropdownMenu aria-label="Profile Actions" className="radius-small dark" variant="flat">
+              <DropdownItem className="h-14 gap-2 dark" key="profile">
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{user ? user.email : ""}</p>
+              </DropdownItem>
+              {
+                isAdmin ? <DropdownItem href="/admin/group/1" key="admin">
+                Admin Dashboard
+              </DropdownItem>:
+              null
+              }
+              <DropdownItem key="help_and_feedback">
+                Help & Feedback
               </DropdownItem>
               <DropdownItem key="settings" onPress={onOpen}>
                 Settings
@@ -281,7 +265,7 @@ export default function ConversationSidebar({
               <DropdownItem key="help_and_feedback">
                 Help & Feedback
               </DropdownItem>
-              <DropdownItem color="danger" href="/api/auth/logout" key="logout">
+              <DropdownItem className="text-red-600" color="danger" href="/api/auth/logout" key="logout">
                 Log Out
               </DropdownItem>
             </DropdownMenu>
@@ -320,9 +304,11 @@ export default function ConversationSidebar({
         />
       </div>
       <Modal
-        className="min-h-[500px] overflow-y-scroll"
+      className="min-h-[500px] overflow-y-scroll"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
+        placement="center"
+        radius="sm"
         size="4xl"
       >
         <ModalContent>
@@ -333,14 +319,14 @@ export default function ConversationSidebar({
               </ModalHeader>
               <ModalBody className="flex flex-col md:flex-row gap-1">
                 <div className="sidebar">
-                  <ul className=" flex flex-row md:flex-col gap-1 md:gap-2 m-2">
+                  <ul className="flex flex-row md:flex-col gap-1 md:gap-2 m-2">
                     <TabButton
                       keyword="general"
                       setTab={() => {
                         setTab("general");
                       }}
                       tab={tab}
-                      title="General"
+                      title="General" 
                     >
                       <AiOutlineSetting
                         className="flex items-center md:hidden"

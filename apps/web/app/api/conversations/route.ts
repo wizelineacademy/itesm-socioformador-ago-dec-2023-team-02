@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import {createConversation} from "@/lib/conversation";
 import type { ConversationCreateData } from "@/types/conversation-types";
+import type { PrismaResponse } from "@/types/prisma-client-types";
+import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 
 /**
  * Handles POST requests to create a new conversation.
@@ -15,7 +17,7 @@ request: Request  // The incoming HTTP request object
   const input: ConversationCreateData = JSON.parse(await request.text());
 
   // Call the 'createConversation' function to create a new conversation in the database
-  const result = await createConversation(input);
+  const result: PrismaResponse<SidebarConversation> = await createConversation(input);
 
   // Check the status code of the result
   if (result.status !== 201) {

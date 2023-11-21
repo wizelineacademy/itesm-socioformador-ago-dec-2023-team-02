@@ -1,15 +1,27 @@
 import { Input, Textarea } from "@nextui-org/react";
 import type { Group } from "@prisma/client";
+import { BiCoinStack } from "react-icons/bi"
+import { useEffect, useState } from "react";
 import { editGroupCredits, editGroupDescription, editGroupName } from "@/helpers/group-helpers";
-import { enforcePositiveNumericValuesOnly, imposeMaxLength, removeLeadingZeros, strToNumber, trimLeadingSpaces } from "@/helpers/string-helpers";
+import { imposeMaxLength, strToNumber, trimLeadingSpaces, isPositiveDecimal } from "@/helpers/string-helpers";
 
-interface NewGroupMenuProps {
+interface EditGroupMenuProps {
+    isEditing: boolean;
     group: Group;
     onGroupChange: (editedGroup: Group) => void;
 }
 
-export default function NewGroupMenu({group, onGroupChange}: NewGroupMenuProps): JSX.Element {
+export default function EditGroupMenu({isEditing, group, onGroupChange}: EditGroupMenuProps): JSX.Element {
+    const [creditsString, setCreditsString] = useState<string>(group.creditsAssigned.toString())
     const groupNameMaxLength = 20 
+
+    useEffect(() => {
+        console.log(isEditing)
+
+        if (!isEditing){
+            setCreditsString(group.creditsAssigned.toString())
+        }
+    }, [group.creditsAssigned, isEditing])
 
     const handleGroupNameChange: (value: string) => void = (value) => {
         onGroupChange(editGroupName(group, imposeMaxLength(trimLeadingSpaces(value), groupNameMaxLength)))
@@ -20,11 +32,10 @@ export default function NewGroupMenu({group, onGroupChange}: NewGroupMenuProps):
     }
 
     const handleGroupCreditsChange: (value: string) => void = (value) => {
-        const normalizedNumberString: string = removeLeadingZeros(enforcePositiveNumericValuesOnly(value))
-        if (normalizedNumberString.length === 0){
-            onGroupChange(editGroupCredits(group, 0))
-        } else {
-            onGroupChange(editGroupCredits(group, strToNumber(normalizedNumberString)))
+        const trimmedValue: string = trimLeadingSpaces(value)
+        if (trimmedValue.length === 0 || isPositiveDecimal(trimmedValue)){
+            setCreditsString(trimmedValue)
+            onGroupChange(editGroupCredits(group, strToNumber(trimmedValue)))
         }
     }
 
@@ -36,12 +47,13 @@ export default function NewGroupMenu({group, onGroupChange}: NewGroupMenuProps):
             </div>
 
             <div className="flex flex-col items-start gap-2 w-full">
-                <p>Credits assigned</p>
+                <p>Monthly credits</p>
                 <Input
-                    className="w-1/4"
+                    className="w-1/3"
                     onValueChange={handleGroupCreditsChange}
                     placeholder="Group credits"
-                    value={group.creditsAssigned.toString()}
+                    startContent={<BiCoinStack/>}
+                    value={creditsString}
                 />
             </div>
 
