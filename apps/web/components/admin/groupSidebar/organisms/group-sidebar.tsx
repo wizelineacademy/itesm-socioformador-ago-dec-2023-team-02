@@ -143,7 +143,7 @@ export default function GroupSidebar(): JSX.Element {
             <p className="text-xs">
               <AiOutlinePlus />
             </p>
-            <p className="text-xs">New Chat</p>
+            <p className="text-xs">New Group</p>
           </Button>
 
           {sidebarVisibilityButton}
