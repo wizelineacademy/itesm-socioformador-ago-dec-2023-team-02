@@ -105,22 +105,10 @@ export default function GroupSidebar(): JSX.Element {
   );
 
   const singleSelectionDropdownItems: SingleSelectionDropdownItem[] = [
-    {
-      key: "userInterface",
-      name: "User interface",
-      action: () => {
-        router.push("/conversation/new");
-      },
-    },
-    {
-      key: "logout",
-      name: "Log out",
-      action: () => {
-        router.push("/api/auth/logout");
-      },
-      style: "text-danger",
-    },
-  ];
+    {key: "userInterface", name: "User interface", action: () => {router.push("/conversation/new")}},
+    {key: "settings", name: "Settings", action: () => {console.log("Settings press")}},
+    {key: "logout", name: "Log out", action: () => {router.push("/api/auth/logout")}, style: "text-danger"},
+  ]
 
   return (
     <div className="flex flex-row h-screen bg-black space-x-0">
