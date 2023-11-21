@@ -53,7 +53,7 @@ const roleOptions = [
 
 //role color mapping
 const roleColorMap: Record<string, ChipProps["color"]> = {
-  ADMIN: "success",
+  ADMIN: "danger",
   USER: "warning",
 };
 
@@ -258,7 +258,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({
                 </DropdownTrigger>
                 <DropdownMenu>
                   <DropdownItem>
-                    <button onClick={() => {updateUserRole(user.id, user.role === Role.ADMIN ? Role.USER : Role.ADMIN)}}>
+                    <button onClick={() => {void updateUserRole(user.id, user.role === Role.ADMIN ? Role.USER : Role.ADMIN)}}>
                     Change role to {user.role === Role.ADMIN ? "USER" : "ADMIN"}
                     </button>
                   </DropdownItem>
