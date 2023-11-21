@@ -28,7 +28,7 @@ export function GroupHeader({
   groupName,
   // groupDescription ,
   creditsAssigned,
-  onGroupsSettingsPress
+  onGroupsSettingsPress,
   groupData
 }: GroupHeaderProps): JSX.Element {
   const handleGroupSettingsPress: (e: any) => void = (_) => {
