@@ -95,7 +95,8 @@ export default function GroupSidebar(): JSX.Element {
 
   const sidebarVisibilityButton: JSX.Element = (
     <Button
-      className="dark"
+      className={`${
+        sidebarIsVisible ? "dark" : ""}`}
       isIconOnly
       onPress={handleSidebarVisibilityPress}
       radius="sm"
@@ -105,15 +106,34 @@ export default function GroupSidebar(): JSX.Element {
   );
 
   const singleSelectionDropdownItems: SingleSelectionDropdownItem[] = [
-    {key: "userInterface", name: "User interface", action: () => {router.push("/conversation/new")}},
-    {key: "settings", name: "Settings", action: () => {console.log("Settings press")}},
-    {key: "logout", name: "Log out", action: () => {router.push("/api/auth/logout")}, style: "text-danger"},
-  ]
+    {
+      key: "userInterface",
+      name: "User interface",
+      action: () => {
+        router.push("/conversation/new");
+      },
+    },
+    {
+      key: "settings",
+      name: "Settings",
+      action: () => {
+        console.log("Settings press");
+      },
+    },
+    {
+      key: "logout",
+      name: "Log out",
+      action: () => {
+        router.push("/api/auth/logout");
+      },
+      style: "text-danger",
+    },
+  ];
 
   return (
-    <div className="flex flex-row h-screen bg-black space-x-0">
+    <div className="flex flex-row items-start space-x-0 absolute z-50 md:z-auto md:relative pt-0 bg-black">
       <div className={groupSidebarStyle}>
-        <div className="flex flex-row justify-between items-center w-full gap-1 mt-3 dark">
+        <div className="w-full flex items-center gap-1 justify-between">
           <Button
             fullWidth
             onPress={handleNewGroupButtonPress}
@@ -130,12 +150,12 @@ export default function GroupSidebar(): JSX.Element {
         </div>
 
         <div className="dark text-white">
-        <SearchBar
-          onTextChange={handleSearchTextChange}
-          placeholder="Search group"
-          takeFullWidth
-          text={searchText}
-        />
+          <SearchBar
+            onTextChange={handleSearchTextChange}
+            placeholder="Search group"
+            takeFullWidth
+            text={searchText}
+          />
         </div>
 
         <GroupList
@@ -145,18 +165,20 @@ export default function GroupSidebar(): JSX.Element {
         />
 
         {prismaUser ? (
-          <SingleSelectionDropdown
-            dropdownItems={singleSelectionDropdownItems}
-            placement="top"
-          >
-            <button type="button">
-              <UserCard
-                avatarUrl={prismaUser.image}
-                description={prismaUser.creditsRemaining.toString()}
-                name={prismaUser.name}
-              />
-            </button>
-          </SingleSelectionDropdown>
+          <div className="flex justify-between bg-black w-full px-4 hover:cursor-pointer">
+            <SingleSelectionDropdown
+              dropdownItems={singleSelectionDropdownItems}
+              placement="top"
+            >
+              <button type="button" className="w-full">
+                <UserCard
+                  avatarUrl={prismaUser.image}
+                  description={prismaUser.creditsRemaining.toString()}
+                  name={prismaUser.name}
+                />
+              </button>
+            </SingleSelectionDropdown>
+          </div>
         ) : null}
 
         <EditGroupMenuModal
@@ -169,7 +191,9 @@ export default function GroupSidebar(): JSX.Element {
       </div>
 
       <div
-        className={`flex flex-col justify-start w-0 h-full px-4 ${sidebarTopPadding}`}
+        className={`${
+          sidebarIsVisible ? "hidden" : "block"
+        }  w-2 absolute -right-6 z-50 top-5 md:top-2`}
       >
         {!sidebarIsVisible ? sidebarVisibilityButton : null}
       </div>
