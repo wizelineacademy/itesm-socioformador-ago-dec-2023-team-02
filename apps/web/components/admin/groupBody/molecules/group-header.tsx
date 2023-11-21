@@ -1,8 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { AiOutlineSetting } from "react-icons/ai";
 import ThemeButton from "@/components/theme-button";
+import ModifyCreditsModal from "./modify-credits-modal";
 
 // Define the prop types for the GroupHeader component using an interface
 interface GroupHeaderProps {
@@ -10,6 +11,8 @@ interface GroupHeaderProps {
   // groupDescription: string;   // A brief description of the group
   creditsAssigned: number; // The number of credits assigned to the group
   onGroupsSettingsPress: () => void;
+  groupdId: number;
+  setUpdatedUsers: any
 }
 
 // GroupHeader component definition with explicit return type JSX.Element
@@ -17,10 +20,22 @@ export function GroupHeader({
   groupName,
   // groupDescription ,
   creditsAssigned,
-  onGroupsSettingsPress
+  onGroupsSettingsPress,
+  groupdId,
+  setUpdatedUsers
 }: GroupHeaderProps): JSX.Element {
   const handleGroupSettingsPress: (e: any) => void = (_) => {
     onGroupsSettingsPress()
+  }
+
+  const [creditsModalIsOpen, setCreditsModalIsOpen] = useState<boolean>(false)
+  
+  const handleModalClose: () => void = () => {
+    setCreditsModalIsOpen(false)
+  }
+
+  const handleModifyCreditsButtonPress: (e: any) => void = (_) => {
+    setCreditsModalIsOpen(true)
   }
 
   return (
@@ -43,7 +58,7 @@ export function GroupHeader({
       <div className="w-full sm:w-1/2 flex justify-end space-x-2 order-1 sm:order-2 pb-2 sm:pb-0">
         <ThemeButton />
 
-        <Button size="sm" variant="flat">
+        <Button size="sm" onPress={handleModifyCreditsButtonPress} variant="flat">
           Modify Credits
         </Button>
 
@@ -51,6 +66,13 @@ export function GroupHeader({
           Group Settings
         </Button>
       </div>
+
+      <ModifyCreditsModal
+        id={groupdId}
+        isOpen={creditsModalIsOpen}
+        onModalClose={handleModalClose}
+        setUpdatedUsers={setUpdatedUsers}
+    />
     </div>
   );
 }

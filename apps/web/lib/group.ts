@@ -417,6 +417,7 @@ export async function modifyGroupsCurrentCredits(idGroup: number, creditOffset: 
   try {
       const modificationCount: {count: number} = await prisma.user.updateMany({
           where: {
+            creditsRemaining: creditOffset < 0 ? {gte: Math.abs(creditOffset)} : undefined,
               groups: {
                 some: {
                   id: idGroup
