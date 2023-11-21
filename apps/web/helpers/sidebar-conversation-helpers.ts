@@ -20,6 +20,7 @@ export enum ConversationsActionType {
   Delete,
   EditTitle,
   EditTags,
+  EditCreatedAt,
 }
 
 /**
@@ -30,6 +31,7 @@ export interface ConversationsAction {
   conversationId: number;
   title?: string;
   tags?: Tag[];
+  newDate?: Date
   conversation?: SidebarConversation;
 }
 
@@ -40,10 +42,7 @@ export interface ConversationsAction {
  * array state.
  * @returns An updated conversation array state.
  */
-export function conversationsReducer(
-  state: SidebarConversation[],
-  action: ConversationsAction
-): SidebarConversation[] {
+export function conversationsReducer(state: SidebarConversation[], action: ConversationsAction): SidebarConversation[] {
   switch (action.type) {
     case ConversationsActionType.Create:
       if (action.conversation) {
@@ -51,9 +50,7 @@ export function conversationsReducer(
       }
       return state;
     case ConversationsActionType.Delete:
-      return state.filter(
-        (conversation) => conversation.id !== action.conversationId
-      );
+      return state.filter((conversation) => conversation.id !== action.conversationId);
     case ConversationsActionType.EditTitle:
       if (action.title) {
         return state.map((conversation) => {
@@ -72,6 +69,13 @@ export function conversationsReducer(
         });
       }
       return state;
+    case ConversationsActionType.EditCreatedAt:
+      if (action.newDate){
+        return sortConversationsByDate(state.map((conv) => (
+          conv.id === action.conversationId && action.newDate !== undefined ? editConversationCreatedAt(conv, action.newDate) : conv
+        )))
+      }
+      return state 
   }
 }
 
@@ -94,9 +98,7 @@ export function editConversationTitle(
  * @param newTags - An array containing the new tag objects the given conversation will be associated to.
  * @returns A new conversation, that has as array of tags newTags.
  */
-export function editConversationTags(
-  conversation: SidebarConversation,
-  newTags: Tag[]
+export function editConversationTags(conversation: SidebarConversation, newTags: Tag[]
 ): SidebarConversation {
   return { ...conversation, tags: newTags };
 }
@@ -107,11 +109,13 @@ export function editConversationTags(
  * @param newModel - The model object the edited conversation will have. 
  * @returns A new conversation, that has as model newModel.
  */
-export function editConversationModel(
-  conversation: SidebarConversation,
-  newModel: SidebarConversationModel
+export function editConversationModel(conversation: SidebarConversation, newModel: SidebarConversationModel
 ): SidebarConversation {
   return { ...conversation, model: newModel };
+}
+
+export function editConversationCreatedAt(conversation: SidebarConversation, newDate: Date): SidebarConversation {
+  return {...conversation, createdAt: newDate};
 }
 
 /**
@@ -123,11 +127,7 @@ export function editConversationModel(
  * any of the tags found in in selectedTags.
  * @returns A filtered array of conversations.
  */
-export function filterConversations(
-  conversations: SidebarConversation[],
-  searchText: string,
-  selectedTags: Set<number>
-): SidebarConversation[] {
+export function filterConversations(conversations: SidebarConversation[], searchText: string, selectedTags: Set<number>): SidebarConversation[] {
   const cleanedSearchText: string = cleanString(searchText);
   const selectedTagsArray: number[] = Array.from(selectedTags);
   return conversations.filter(({ title, tags, active }) => {
@@ -152,7 +152,7 @@ export function filterConversations(
 export function sortConversationsByDate(
   conversations: SidebarConversation[]
 ): SidebarConversation[] {
-  return [...conversations].sort(
+  return conversations.length === 0 ? [] : [...conversations].sort(
     (convA, convB) => convB.createdAt.getTime() - convA.createdAt.getTime()
   );
 }
@@ -173,4 +173,8 @@ export function buildTagSet(conversation: SidebarConversation): Set<number> {
  */
 export function isValidConversationName(name: string): boolean {
   return name.length > 0;
+}
+
+export function includesConversation(conversations: SidebarConversation[], conversationId: number | undefined): boolean {
+  return conversationId !== undefined && conversations.some(({id}) => id === conversationId)
 }
