@@ -167,7 +167,7 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
           </div>
 
           {/* Search and tag filter section */}
-          <div className="w-full flex items-center gap-1 justify-between dark">
+          <div className="w-full flex items-center gap-1 justify-between dark text-white">
             {/* Search bar component */}
             <SearchBar
               onTextChange={handleSearchTextChange}
