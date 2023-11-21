@@ -8,11 +8,11 @@ import {
   Button,
   Spinner,
 } from "@nextui-org/react";
-import SearchBar from "@/components/shared/molecules/search-bar";
-import UsersListBox from "./users-list-box";
 import { toast } from "sonner";
-import { User } from "@prisma/client";
+import type { User } from "@prisma/client";
+import SearchBar from "@/components/shared/molecules/search-bar";
 import { findMatchRatio, cleanString } from "@/helpers/string-helpers";
+import UsersListBox from "./users-list-box";
 
 
 interface AddUserModalProps {
@@ -142,9 +142,9 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
               />
               {users ? (
                 <UsersListBox
-                  users={filterUsers(users, searchText)}
-                  setValues={setValues}
                   arrayValues={arrayValues}
+                  setValues={setValues}
+                  users={filterUsers(users, searchText)}
                 />
               ) : (
                 <div className="w-full h-full flex justify-center items-center">
@@ -153,14 +153,15 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
               )}
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
+              <Button color="danger" onPress={onClose} variant="light">
                 Close
               </Button>
               <Button
-                color="success"
                 className="text-white"
-                onPress={() => {void handleAddUser()}}
+                color="success"
                 disabled={isSubmitting}
+                isLoading={isSubmitting}
+                onPress={() => {void handleAddUser()}}
               >
                 Add
               </Button>
