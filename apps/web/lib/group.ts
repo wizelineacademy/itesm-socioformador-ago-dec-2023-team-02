@@ -410,9 +410,7 @@ export async function removeUsersFromGroup(
 }
 
 export async function modifyGroupsCurrentCredits(idGroup: number, creditOffset: number): Promise<PrismaResponse<{count: number}>> {
-  const positiveCreditOffset: number = creditOffset < 0 ? Number(creditOffset) : creditOffset
-
-  if (positiveCreditOffset === 0){
+  if (creditOffset === 0){
     return { status: 200, data: {count: 0} }
   }
 
@@ -426,7 +424,7 @@ export async function modifyGroupsCurrentCredits(idGroup: number, creditOffset: 
               }
           },
           data: {
-              creditsRemaining: creditOffset < 0 ? {decrement: positiveCreditOffset} : {increment: positiveCreditOffset} 
+              creditsRemaining: creditOffset < 0 ? {decrement: Math.abs(creditOffset)} : {increment: creditOffset} 
           }
       })
 
