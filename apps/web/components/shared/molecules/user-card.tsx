@@ -48,7 +48,6 @@ export default function UserCard({
       >
         {/* Card component to display the user's details. */}
         <Card
-          className="relative bottom-0 h-auto bg-transparent dark"
           radius="none"
         >
           {/* User component displays user's name, description, and avatar. */}
@@ -63,7 +62,7 @@ export default function UserCard({
         </Card>
 
         {/* Options Icon */}
-        <SlOptions className="text-xs text-white" />
+        <SlOptions className="text-xs" />
       </div>
     </div>
   );

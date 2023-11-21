@@ -37,7 +37,7 @@ import { PrismaUserContext } from "@/context/prisma-user-context";
 import type { ConversationsContextShape } from "@/context/conversations-context";
 import { ConversationsContext } from "@/context/conversations-context";
 import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
-import UserCard from "../molecules/user-card";
+import UserCard from "../../../shared/molecules/user-card";
 import { ConversationList } from "../molecules/conversation-list";
 import NewConversationMenuModal from "../../newConversation/molcules/new-conversation-menu-modal";
 
