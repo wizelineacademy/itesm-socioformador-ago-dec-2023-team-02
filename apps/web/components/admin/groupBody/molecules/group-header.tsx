@@ -24,7 +24,7 @@ export function GroupHeader({
   }
 
   return (
-    <div className="flex flex-wrap items-start justify-between my-2">
+    <div className="flex flex-wrap items-start justify-between my-2 md:mt-8">
       {/* Adjust the order of items for XS screens */}
       <div className="w-full sm:w-1/2 order-2 sm:order-1">
         <h3 className="text-3xl font-bold">{groupName}</h3>
