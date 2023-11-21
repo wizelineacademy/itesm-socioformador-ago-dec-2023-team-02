@@ -31,7 +31,7 @@ export default function ThemeButton(): JSX.Element | null {
   //   </button>
   return (
     <Switch
-      color="primary"
+      color="warning"
       defaultSelected
       endContent={<IconMoon />}
       onClick={() => {

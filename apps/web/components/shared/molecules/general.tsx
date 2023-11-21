@@ -1,106 +1,62 @@
 "use client";
-
+import { useContext } from "react";
 import {
-  Table,
-  TableBody,
-  TableRow,
-  TableColumn,
-  TableHeader,
-  getKeyValue,
-  TableCell,
   Button,
   Card,
   CardBody,
 } from "@nextui-org/react";
-import { MdDelete } from "react-icons/md";
+import { MdDeleteOutline } from "react-icons/md";
 import ThemeButton from "@/components/theme-button";
-import RequestCredits from "./request-credits";
+import { PrismaUserContext } from "@/context/prisma-user-context";
 
 function ClearAll(): JSX.Element {
   return (
     <Button
+    isIconOnly
       className="bg-red-500 text-gray-50"
-      startContent={<MdDelete />}
+      startContent={<MdDeleteOutline />}
       type="button"
     >
-      Delete All
     </Button>
   );
 }
 
 export default function General(): JSX.Element {
-  const creditsData = [
-    {
-      key: 1,
-      model: "OpenAI",
-      credits: 2345,
-    },
 
-    {
-      key: 2,
-      model: "Dall-E",
-      credits: 6384,
-    },
-  ];
+  const prismaUser = useContext(PrismaUserContext);
 
-  const data = [
-    {
-      key: "model",
-      label: "Model",
-    },
 
-    {
-      key: "credits",
-      label: "Credits",
-    },
-  ];
 
   return (
     <div className="flex flex-col space-y-4">
       {/* Credits Card */}
-      <Card>
+      <Card radius="sm" shadow="sm">
         {" "}
         <CardBody>
-          <div className="flex flex-col space-y-2">
-            <p className="font-bold">Credits</p>
-            <Table isCompact removeWrapper>
-              <TableHeader columns={data}>
-                {(column) => (
-                  <TableColumn key={column.key}>{column.label}</TableColumn>
-                )}
-              </TableHeader>
-              <TableBody items={creditsData}>
-                {(item) => (
-                  <TableRow key={item.key}>
-                    {(columnKey) => (
-                      <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-                    )}
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-            <RequestCredits />
+          <div className="flex items-center justify-between space-y-2 pr-3">
+            <p>Credits Remaining</p>
+            <p>{prismaUser?.creditsRemaining}</p>
           </div>
         </CardBody>{" "}
       </Card>
 
       {/* Theme Options */}
-      <Card>
+      <Card radius="sm" shadow="sm">
         {" "}
         <CardBody>
           <div className="flex justify-between items-center">
-            <p className="font-bold">Theme</p>
+            <p>Theme</p>
             <ThemeButton />
           </div>
         </CardBody>
       </Card>
 
       {/* Clear all chats Options */}
-      <Card>
+      <Card radius="sm" shadow="sm">
         {" "}
         <CardBody>
-          <div className="flex justify-between items-center">
-            <p className="font-bold">Clear Chats</p>
+          <div className="flex justify-between items-center pr-3">
+            <p>Delete all conversations</p>
             <ClearAll />
           </div>
         </CardBody>

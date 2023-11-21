@@ -329,7 +329,7 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
                         setTab("custom");
                       }}
                       tab={tab}
-                      title="Custom Instruction"
+                      title="Global context"
                     >
                       <TbEdit
                         className="flex items-center md:hidden"
