@@ -118,6 +118,29 @@ export const GroupTable: React.FC<GroupTableProps> = ({
     }
   };
 
+ const updateUserRole = async (userId: number, role: Role) => {
+  try{
+    const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ role: role }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Result: ", result);
+    toast.success('User role updated successfully');
+    setUpdatedUsers(true);
+  }catch(error){
+    console.error('Failed to update user role:', error);
+    toast.error('Failed to update user role');
+  }
+ };
 
   const [page, setPage] = React.useState(1);
 
@@ -234,8 +257,11 @@ export const GroupTable: React.FC<GroupTableProps> = ({
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownItem>Edit</DropdownItem>
-                  <DropdownItem>Delete</DropdownItem>
+                  <DropdownItem>
+                    <button onClick={() => {updateUserRole(user.id, user.role === Role.ADMIN ? Role.USER : Role.ADMIN)}}>
+                    Change role to {user.role === Role.ADMIN ? "USER" : "ADMIN"}
+                    </button>
+                  </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>
