@@ -2,7 +2,14 @@
 
 context('Conversation test', ()=> {
   beforeEach(() => {
-    cy.visit('/conversation/new')
+    cy.visit('conversation/new')
+    cy.get('input#username').type("prueba@gmail.com")
+     cy.get('input#password').type("Holamundo:1", { log: false })
+     cy.get('.c320322a4.c480bc568.c20af198f').click()
+    cy.origin('http://localhost:3000', () => {
+     cy.visit("conversation/new")
+     cy.contains("Get Started").click()
+   })
     cy.wait(2500)
 })
 /*
