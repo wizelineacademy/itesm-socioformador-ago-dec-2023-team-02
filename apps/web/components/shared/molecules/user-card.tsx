@@ -37,10 +37,10 @@ export default function UserCard({
   avatarUrl,
 }: UserCardProps): JSX.Element {
   return (
-    <div className="w-full">
+    <div className="w-full bg-black dark">
       {/* Button to encapsulate the UserCard and CreditsBadge components. */}
       <div
-        className="flex items-center justify-between w-full outline-none"
+        className="flex bg-black items-center justify-between w-full outline-none"
         // onClick={() => {
         //   console.log("Click");
         // }}
@@ -55,14 +55,18 @@ export default function UserCard({
             avatarProps={{
               src: avatarUrl,
             }}
-            className="shadow-none"
+            classNames={
+              {
+                base: "bg-black shadow-none",
+              }
+            }
             description={description}
             name={name}
           />
         </Card>
 
         {/* Options Icon */}
-        <SlOptions className="text-xs" />
+        <SlOptions className="text-xs text-white" />
       </div>
     </div>
   );

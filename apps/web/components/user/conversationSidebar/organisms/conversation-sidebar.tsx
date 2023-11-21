@@ -244,27 +244,17 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
               </div>
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" className="radius-small dark" variant="flat">
-              <DropdownItem className="h-14 gap-2 dark" key="profile">
-                <p className="font-semibold">Signed in as</p>
-                <p className="font-semibold">{user ? user.email : ""}</p>
-              </DropdownItem>
               {
                 isAdmin ? <DropdownItem href="/admin/group/1" key="admin">
                 Admin Dashboard
               </DropdownItem>:
-              null
+              <></>
               }
-              <DropdownItem key="help_and_feedback">
-                Help & Feedback
-              </DropdownItem>
               <DropdownItem key="settings" onPress={onOpen}>
                 Settings
               </DropdownItem>
               {/* <DropdownItem key="analytics">Analytics</DropdownItem> */}
               <DropdownItem key="system">Docs</DropdownItem>
-              <DropdownItem key="help_and_feedback">
-                Help & Feedback
-              </DropdownItem>
               <DropdownItem className="text-red-600" color="danger" href="/api/auth/logout" key="logout">
                 Log Out
               </DropdownItem>
