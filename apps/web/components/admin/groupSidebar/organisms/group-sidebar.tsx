@@ -85,7 +85,8 @@ export default function GroupSidebar(): JSX.Element {
 
   const singleSelectionDropdownItems: SingleSelectionDropdownItem[] = [
     {key: "userInterface", name: "User interface", action: () => {router.push("/conversation/new")}},
-    {key: "logout", name: "Log out", action: () => {router.push("/api/auth/logout")}, style: "text-danger"}
+    {key: "settings", name: "Settings", action: () => {console.log("Settings press")}},
+    {key: "logout", name: "Log out", action: () => {router.push("/api/auth/logout")}, style: "text-danger"},
   ]
 
   return (
