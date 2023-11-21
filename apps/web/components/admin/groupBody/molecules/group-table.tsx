@@ -443,7 +443,7 @@ export const GroupTable: React.FC<GroupTableProps> = ({
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{
-          wrapper: "max-h-[382px] shadow-none p-4",
+          wrapper: "max-h-[400px] shadow-none p-4",
         }}
         checkboxesProps={{
           classNames: {
