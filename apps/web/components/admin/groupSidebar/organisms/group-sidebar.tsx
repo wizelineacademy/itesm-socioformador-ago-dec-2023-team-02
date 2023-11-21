@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import type { Group } from "@prisma/client";
+import type { Group, User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi";
@@ -9,6 +9,10 @@ import type { GroupsContextShape } from "@/context/groups-context";
 import { GroupsContext } from "@/context/groups-context";
 import { GroupsActionType, defaultGroup, filterGroups } from "@/helpers/group-helpers";
 import SearchBar from "@/components/shared/molecules/search-bar";
+import UserCard from "@/components/shared/molecules/user-card";
+import { PrismaUserContext } from "@/context/prisma-user-context";
+import type { SingleSelectionDropdownItem } from "@/types/component-types";
+import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import GroupList from "../molecules/group-list";
 import EditGroupMenuModal from "../../editGroup/molcules/edit-group-menu-modal";
 
@@ -21,6 +25,7 @@ export default function GroupSidebar(): JSX.Element {
   const [sidebarIsVisible, setSidebarIsVisible] = useState<boolean>(true);
   const router = useRouter();
   const sidebarTopPadding = "py-4";
+  const prismaUser = useContext<User | null>(PrismaUserContext)
 
   useEffect(() => {
     if (groupsContext?.groups){
@@ -78,6 +83,11 @@ export default function GroupSidebar(): JSX.Element {
     </Button>
   );
 
+  const singleSelectionDropdownItems: SingleSelectionDropdownItem[] = [
+    {key: "userInterface", name: "User interface", action: () => {router.push("/conversation/new")}},
+    {key: "logout", name: "Log out", action: () => {router.push("/api/auth/logout")}, style: "text-danger"}
+  ]
+
   return (
     <div className="flex flex-row h-screen">
       <div className={groupSidebarStyle}>
@@ -101,6 +111,14 @@ export default function GroupSidebar(): JSX.Element {
           onGroupPress={handleGroupsPress}
           selectedGroup={selectedGroup}
         />
+
+        {prismaUser ?
+        <SingleSelectionDropdown dropdownItems={singleSelectionDropdownItems} placement="top">
+          <button type="button">
+            <UserCard avatarUrl={prismaUser.image} description={prismaUser.creditsRemaining.toString()} name={prismaUser.name}/>
+          </button>
+        </SingleSelectionDropdown>
+        : null}
 
         <EditGroupMenuModal
           initialGroup={defaultGroup()}
