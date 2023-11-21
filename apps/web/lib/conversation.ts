@@ -588,8 +588,6 @@ export async function updateConversationById(
   }
 }
 
-
-
 /**
  * Updates the model parameters associated to the given conversation and used in the generation of promts.
  * @param id - The ID of the conversation whose parameters will be updated.

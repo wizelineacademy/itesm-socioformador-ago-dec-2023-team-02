@@ -3,7 +3,7 @@
  * @returns JSX.Element
  */
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useChat } from "ai/react";
 import type { Message } from "ai/react";
 import { Sender, type Message as WizepromptMessage } from "@prisma/client";
@@ -16,6 +16,8 @@ import { saveMessage } from "@/lib/helper/data-handles";
 import ConversationHeader from "@/components/user/conversationHeader/molecules/conversation-top-header";
 import MessageList from "@/components/user/conversationBody/molecules/message-list";
 import type { ConversationUpdateData } from "@/types/conversation-types";
+import { ConversationsContext, type ConversationsContextShape } from "@/context/conversations-context";
+import { ConversationsActionType, type ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
 import PromptTextInput from "./prompt-text-input";
 
 /**
@@ -117,6 +119,8 @@ export default function ConversationBody(): JSX.Element {
   const [providerImage, setProviderImage] = useState<string>("");
 
   const { user } = useUser();
+
+  const conversationsDispatch: React.Dispatch<ConversationsAction> | undefined = useContext<ConversationsContextShape | null>(ConversationsContext)?.conversationsDispatch
 
   let userImage = "";
 
@@ -291,6 +295,12 @@ export default function ConversationBody(): JSX.Element {
         message.content,
         size
       );
+
+      conversationsDispatch?.({
+        type: ConversationsActionType.EditCreatedAt,
+        newDate: new Date(),
+        conversationId: idConversation
+      })
     },
   };
 

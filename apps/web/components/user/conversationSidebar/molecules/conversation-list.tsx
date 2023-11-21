@@ -1,17 +1,15 @@
 import type { Tag } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
-import type { ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
 import { ConversationCard } from "./conversation-card";
 
 interface ConversationListProps {
     selectedConversation: number | null;
     userTags: Tag[];
     userConversations: SidebarConversation[];
-    conversationsDispatch: (action: ConversationsAction) => void;
     onConversationPress: (conversationId: number) => void;
 }
 
-export function ConversationList({selectedConversation, userTags, userConversations, conversationsDispatch, onConversationPress}: ConversationListProps): JSX.Element {
+export function ConversationList({selectedConversation, userTags, userConversations, onConversationPress}: ConversationListProps): JSX.Element {
     const handleConversationPress: (conversationId: number) => void = (conversationId) => {
         onConversationPress(conversationId)
     }
@@ -30,7 +28,6 @@ export function ConversationList({selectedConversation, userTags, userConversati
             {userConversations.map(conversation => 
                 <ConversationCard
                     conversation={conversation}
-                    conversationsDispatch={conversationsDispatch}
                     isSelected={selectedConversation === conversation.id}
                     key={conversation.id}
                     onClick={()=>{handleConversationPress(conversation.id)}}

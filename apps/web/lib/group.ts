@@ -408,3 +408,28 @@ export async function removeUsersFromGroup(
     return { status: 500, message: error.message };
   }
 }
+
+export async function modifyGroupsCurrentCredits(idGroup: number, creditOffset: number): Promise<PrismaResponse<{count: number}>> {
+  if (creditOffset === 0){
+    return { status: 200, data: {count: 0} }
+  }
+
+  try {
+      const modificationCount: {count: number} = await prisma.user.updateMany({
+          where: {
+              groups: {
+                some: {
+                  id: idGroup
+                }
+              }
+          },
+          data: {
+              creditsRemaining: creditOffset < 0 ? {decrement: Math.abs(creditOffset)} : {increment: creditOffset} 
+          }
+      })
+
+      return { status: 200, data: modificationCount }
+  } catch (error: any) {
+      return { status: 500, message: error.message }
+  }
+}
