@@ -33,9 +33,11 @@ import TabModal from "@/components/shared/atoms/tab-modal";
 import General from "@/components/shared/molecules/general";
 import Usage from "@/components/shared/molecules/usage";
 import type { ModelWithProvider } from "@/types/moder-with-provider-types";
+import type { PrismaUserContextShape } from "@/context/prisma-user-context";
 import { PrismaUserContext } from "@/context/prisma-user-context";
 import type { ConversationsContextShape } from "@/context/conversations-context";
 import { ConversationsContext } from "@/context/conversations-context";
+import { roundUsersCredits } from "@/helpers/user-helpers";
 import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 import UserCard from "../../../shared/molecules/user-card";
 import { ConversationList } from "../molecules/conversation-list";
@@ -59,8 +61,8 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
 
   const { user } = useUser();
 
-  const prismaUser = useContext(PrismaUserContext);
-  const isAdmin = prismaUser?.role === Role.ADMIN;
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
+  const isAdmin: boolean = prismaUserContext?.prismaUser?.role === Role.ADMIN;
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [tab, setTab] = useState("general");
@@ -216,7 +218,7 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
                     //     ? `${user?.email?.slice(0, 18)}...`
                     //     : "No email provided"
                     // }
-                    description={`${prismaUser?.creditsRemaining} credits`}
+                    description={roundUsersCredits(prismaUserContext?.prismaUser) ?? ""}
                     name={
                       user?.name
                         ? `${

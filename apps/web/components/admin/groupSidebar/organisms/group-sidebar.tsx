@@ -1,10 +1,11 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import type { Group, User } from "@prisma/client";
+import type { Group } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi";
+import { AiOutlinePlus } from "react-icons/ai";
 import type { GroupsContextShape } from "@/context/groups-context";
 import { GroupsContext } from "@/context/groups-context";
 import {
@@ -14,12 +15,13 @@ import {
 } from "@/helpers/group-helpers";
 import SearchBar from "@/components/shared/molecules/search-bar";
 import UserCard from "@/components/shared/molecules/user-card";
+import type { PrismaUserContextShape } from "@/context/prisma-user-context";
 import { PrismaUserContext } from "@/context/prisma-user-context";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
+import { roundUsersCredits } from "@/helpers/user-helpers";
 import GroupList from "../molecules/group-list";
 import EditGroupMenuModal from "../../editGroup/molcules/edit-group-menu-modal";
-import { AiOutlinePlus } from "react-icons/ai";
 
 export default function GroupSidebar(): JSX.Element {
   const groupsContext: GroupsContextShape | null =
@@ -34,7 +36,7 @@ export default function GroupSidebar(): JSX.Element {
   const [sidebarIsVisible, setSidebarIsVisible] = useState<boolean>(true);
   const router = useRouter();
   const sidebarTopPadding = "py-4";
-  const prismaUser = useContext<User | null>(PrismaUserContext);
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
 
   useEffect(() => {
     if (groupsContext?.groups) {
@@ -135,10 +137,10 @@ export default function GroupSidebar(): JSX.Element {
       <div className={groupSidebarStyle}>
         <div className="w-full flex items-center gap-1 justify-between">
           <Button
+            color="danger"
             fullWidth
             onPress={handleNewGroupButtonPress}
             radius="sm"
-            color="danger"
           >
             <p className="text-xs">
               <AiOutlinePlus />
@@ -164,17 +166,17 @@ export default function GroupSidebar(): JSX.Element {
           selectedGroup={selectedGroup}
         />
 
-        {prismaUser ? (
+        {prismaUserContext ? (
           <div className="flex justify-between bg-black w-full px-4 hover:cursor-pointer">
             <SingleSelectionDropdown
               dropdownItems={singleSelectionDropdownItems}
               placement="top"
             >
-              <button type="button" className="w-full">
+              <button className="w-full" type="button">
                 <UserCard
-                  avatarUrl={prismaUser.image}
-                  description={prismaUser.creditsRemaining.toString()}
-                  name={prismaUser.name}
+                  avatarUrl={prismaUserContext?.prismaUser?.image}
+                  description={roundUsersCredits(prismaUserContext?.prismaUser) ?? ""}
+                  name={prismaUserContext?.prismaUser?.name}
                 />
               </button>
             </SingleSelectionDropdown>
