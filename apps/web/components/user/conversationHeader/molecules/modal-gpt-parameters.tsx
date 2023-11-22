@@ -7,7 +7,7 @@
  */
 // Importing necessary libraries and components
 "use client";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Button,
   Modal,
@@ -24,6 +24,8 @@ import {
 } from "@nextui-org/react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Slider } from "@/components/ui/slider";
+import { PrismaUserContext } from "@/context/prisma-user-context";
+import { type User } from "@prisma/client";
 
 interface Parameters {
   userContext: string;
@@ -50,20 +52,47 @@ export default function ModalParametersGPT(props: any): JSX.Element {
     saveParameters: (updatedParameters: Parameters) => void;
   } = props;
 
+  const prismaUser = useContext<User | null>(PrismaUserContext);
   const [updatedUserContext, setUpdatedUserContext] =
     useState<string>(userContext);
   const [updatedResponseContext, setUpdatedResponseContext] =
     useState<string>(responseContext);
   const [updatedTemperature, setUpdatedTemperature] =
     useState<number>(temperature);
+  const [isSelected, setIsSelected] = React.useState(false);
 
   const handleSave = (): void => {
-    const updatedParameters: Parameters = {
-      userContext: updatedUserContext,
-      responseContext: updatedResponseContext,
-      temperature: updatedTemperature,
-    };
-    saveParameters(updatedParameters);
+    if (isSelected) {
+      // Access global parameters from prismaUser
+      const globalUserContext = prismaUser?.globalParameters?.userContext || "";
+      const globalResponseContext =
+        prismaUser?.globalParameters?.responseContext || "";
+      const globalTemperature =
+        prismaUser?.globalParameters?.temperature || 0.5;
+
+      // Concatenate the text area values with global parameters
+      const concatenatedUserContext = `${globalUserContext} ${updatedUserContext}`;
+      const concatenatedResponseContext = `${globalResponseContext} ${updatedResponseContext}`;
+      const finalTemperature = globalTemperature; // Example logic for combining temperatures
+
+      // Create updated parameters object
+      const updatedParameters: Parameters = {
+        userContext: concatenatedUserContext,
+        responseContext: concatenatedResponseContext,
+        temperature: finalTemperature,
+      };
+      saveParameters(updatedParameters);
+
+    } else {
+      const updatedParameters: Parameters = {
+        userContext: updatedUserContext,
+        responseContext: updatedResponseContext,
+        temperature: updatedTemperature,
+      };
+      saveParameters(updatedParameters);
+
+    }
+
   };
 
   // Returning the Modal component
@@ -189,7 +218,12 @@ export default function ModalParametersGPT(props: any): JSX.Element {
                 <p className="text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
                   Use Global GPT Context
                 </p>
-                <Switch className="md:pl-3" color="danger" />
+                <Switch
+                  className="md:pl-3"
+                  color="danger"
+                  isSelected={isSelected}
+                  onValueChange={setIsSelected}
+                />
               </div>
               <div className="flex flex-col-reverse md:flex-row">
                 {/* Cancel and Save buttons */}
