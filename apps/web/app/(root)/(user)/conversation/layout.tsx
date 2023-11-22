@@ -77,8 +77,12 @@ export default async function ConversationRootLayout({children}: {children: Reac
 
   //get user from database
   const userAuthID: string = user.sub;
-  const prismaUser: User | null = (await getUserbyAuthID(userAuthID)).data ?? null;
-  //const userId: number = prismaUser.id;
+  const prismaUser: User | undefined = (await getUserbyAuthID(userAuthID)).data;
+
+  // If fetching of user data failed, redirect to login.
+  if (!prismaUser){
+    redirect("/api/auth/login");
+  }
 
   const userConversations: SidebarConversation[] = prismaUser 
     ? (await getAllConversationsByUserId(prismaUser.id)).data || []
@@ -92,7 +96,7 @@ export default async function ConversationRootLayout({children}: {children: Reac
 
   return (
     <Suspense fallback={<SidebarSuspense />}>
-      <PrismaUserContextProvider prismaUser={prismaUser}>
+      <PrismaUserContextProvider initialPrismaUser={prismaUser}>
         <ConversationsContextProvider initialConversations={userConversations}>
           <div className="flex flex-row">
             <ConversationSidebar models={models} userTags={userTags}/>

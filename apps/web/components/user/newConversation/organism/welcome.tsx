@@ -3,9 +3,11 @@ import React, { useContext } from "react";
 import {
   Divider,
 } from "@nextui-org/react";
+import type { PrismaUserContextShape } from "@/context/prisma-user-context";
 import { PrismaUserContext } from "@/context/prisma-user-context";
+import type { ModelWithProvider } from "@/types/moder-with-provider-types";
+import { roundUsersCredits } from "@/helpers/user-helpers";
 import ModelSelectionCard from "../atoms/model-selection-card";
-import { ModelWithProvider } from "@/types/moder-with-provider-types";
 
 
 interface WelcomeProps {
@@ -13,14 +15,14 @@ interface WelcomeProps {
 }
 
 function Welcome({ models }: WelcomeProps): JSX.Element {
-  const prismaUser = useContext(PrismaUserContext);
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
 
   return (
     <div className="flex justify-center  pt-20 w-full h-full">
       <div className="flex flex-col items-center justify-start w-10/12 md:w-7/12">
-        <h2 className="text-3xl font-bold p-2">Welcome {prismaUser?.name}</h2>
+        <h2 className="text-3xl font-bold p-2">Welcome {prismaUserContext?.prismaUser?.name}</h2>
         <p className="text-md">
-          You have {prismaUser?.creditsRemaining} credits available to spend
+          You have {roundUsersCredits(prismaUserContext?.prismaUser) ?? "..."} credits available to spend
           with our integrated AI models.
         </p>
         <Divider className="m-3" />
@@ -34,7 +36,7 @@ function Welcome({ models }: WelcomeProps): JSX.Element {
          </p>
 
         {models.map((model, index) => (
-          <div key={index} className="w-10/12 md:w-7/12 lg:w-1/3 p-2">
+          <div className="w-10/12 md:w-7/12 lg:w-1/3 p-2" key={index}>
             <ModelSelectionCard model={model} />
           </div>
         ))}

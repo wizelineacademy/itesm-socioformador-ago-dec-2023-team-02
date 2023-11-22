@@ -1,19 +1,25 @@
 "use client";
 
 import type { User } from "@prisma/client";
-import { createContext } from "react";
+import { createContext, useState } from "react";
 
-export const PrismaUserContext = createContext<User | null>(null)
+export interface PrismaUserContextShape {
+    prismaUser: User;
+    setPrismaUser: React.Dispatch<React.SetStateAction<User>>
+}
+
+export const PrismaUserContext = createContext<PrismaUserContextShape | null>(null)
 
 interface PrismaUserContextProviderProps {
     children: JSX.Element;
-    prismaUser: User | null;
+    initialPrismaUser: User;
 }
 
-export function PrismaUserContextProvider({children, prismaUser}: PrismaUserContextProviderProps): JSX.Element {
+export function PrismaUserContextProvider({children, initialPrismaUser}: PrismaUserContextProviderProps): JSX.Element {
+    const [prismaUser, setPrismaUser] = useState<User>(initialPrismaUser)
 
     return (
-        <PrismaUserContext.Provider value={prismaUser}>
+        <PrismaUserContext.Provider value={{prismaUser, setPrismaUser}}>
             {children}
         </PrismaUserContext.Provider>
     );
