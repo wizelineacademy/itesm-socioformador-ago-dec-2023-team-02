@@ -103,9 +103,14 @@ export default function GroupBody(): JSX.Element {
     // if (error) return <div>Error: {error}</div>;
 
     return (
-        <div className="p-5">
+        <div className="p-5 h-full">
             {/* Group Header */}
-            <GroupHeader creditsAssigned={groupData.creditsAssigned} groupName={groupData.name} onGroupsSettingsPress={handleGroupSettingsPress}/>
+            <GroupHeader 
+              creditsAssigned={groupData.creditsAssigned} 
+              groupName={groupData.name} groupdId={idGroup} 
+              onGroupsSettingsPress={handleGroupSettingsPress}
+              setUpdatedUsers={setUpdatedUsers}
+            />
             {/* Group Table */}
             <GroupTable idGroup={idGroup} setUpdatedUsers={setUpdatedUsers} users={groupData.users} />
 

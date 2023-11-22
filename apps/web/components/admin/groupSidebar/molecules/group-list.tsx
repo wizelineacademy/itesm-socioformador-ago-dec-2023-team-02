@@ -18,16 +18,19 @@ export default function GroupList({groups, selectedGroup, onGroupPress}: GroupLi
     }
 
     return (
-        <div className="flex flex-col gap-2 justify-start w-full h-full overflow-y-auto scrollbar-hide">
+        <div className="overflow-x-hidden overflow-y-auto w-full h-full scrollbar-hide">
+        {/* <div className="flex flex-col gap-2 justify-start w-full h-full overflow-y-auto scrollbar-hide"> */}
+            <div className="flex flex-col space-y-2 w-full scrollbar-hide">
             {groups.map((group, index) => (
                 <>
                     <GroupCard group={group} isSelected={selectedGroup === group.id} key={group.id} onPress={() => {onGroupPress(group.id)}}/>
 
                     {index === 0 ?
-                    <Divider className="m-1"/>
+                    <Divider className="m-1 my-0 dark"/>
                     : null}
                 </>
             ))} 
+        </div>
         </div>
     );
 }

@@ -415,9 +415,12 @@ export async function decrementUserCreditsRemaining(idUser: number, creditDecrem
     }
 
     try {
-        const user = await prisma.user.update({
+        const user: User = await prisma.user.update({
             where: {
-                id: idUser
+                id: idUser,
+                creditsRemaining: {
+                    gte: creditDecrement
+                }
             },
             data: {
                 creditsRemaining: {
@@ -428,6 +431,7 @@ export async function decrementUserCreditsRemaining(idUser: number, creditDecrem
 
         return { status: 200, data: user }
     } catch (error: any) {
+        console.log(error.message)
         return { status: 500, message: error.message }
     }
 }

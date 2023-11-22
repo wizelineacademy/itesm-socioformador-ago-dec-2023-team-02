@@ -7,14 +7,17 @@
  */
 
 "use client";
-import React from "react";
+import React, { useContext } from "react";
 import { Textarea, Button, Spinner } from "@nextui-org/react";
 import { IoMdSend } from "react-icons/io";
+import type { User } from "@prisma/client";
 import { Sender } from "@prisma/client";
 import { toast } from "sonner";
 import CreditsBadge from "@/components/user/conversationBody/atoms/credits-badge";
 import { calculateTokens } from "@/lib/helper/gpt/credits-and-tokens";
 import { saveMessage } from "@/lib/helper/data-handles";
+import type { PrismaUserContextShape } from "@/context/prisma-user-context";
+import { PrismaUserContext } from "@/context/prisma-user-context";
 
 /**
  * Saves a message to the server.
@@ -23,14 +26,19 @@ import { saveMessage } from "@/lib/helper/data-handles";
  */
 async function handleSaveMessage(
   idConversation: number,
+  idUser: number | undefined,
   model: string,
   sender: Sender,
   input: string,
-  size?: string
+  onUserCreditsReduction: (updatedUser: User) => void,
+  size?: string,
 ): Promise<void> {
   try {
-    await saveMessage(idConversation, model, sender, input, size || "");
-    toast.success("User message saved");
+    // Save sent user message if the user's information is available. 
+    if (idUser !== undefined){
+      await saveMessage(idConversation, idUser, model, sender, input, size || "", onUserCreditsReduction);
+      toast.success("User message saved");
+    }
   } catch {
     console.log("Error ocurred while saving message.");
     toast.error("Error ocurred while saving message of user.");
@@ -52,6 +60,14 @@ export default function PromptTextInput({
   handleSubmit: any;
   isLoading: boolean;
 }): JSX.Element {
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext)
+
+  // Function to run after a message, from the user or the responding model, has been stored
+  // and the number of credits of the current user has been decremented. 
+  const HandleUserCreditsReduction: (updatedUser: User) => void = (updatedUser) => {
+    prismaUserContext?.setPrismaUser(updatedUser)
+  }
+
   return (
     <div className="flex justify-center w-full z-30 bg-black">
       <div className="lg:w-3/6 md:w-4/6 w-11/12 fixed bottom-0 pb-4 py-0 z-30">
@@ -90,9 +106,11 @@ export default function PromptTextInput({
                 onClick={() => {
                   void handleSaveMessage(
                     idConversation,
+                    prismaUserContext?.prismaUser?.id,
                     model,
                     Sender.USER,
-                    input
+                    input,
+                    HandleUserCreditsReduction
                   );
                 }}
                 size="lg"
