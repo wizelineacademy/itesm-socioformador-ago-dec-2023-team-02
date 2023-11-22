@@ -37,3 +37,21 @@ function colorLuminanceThreeDigits(hexColor: string): number {
 
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
+
+export function randomHexColor(): string {
+    let color = "#"
+
+    for (let i = 0; i < 6; i++){
+        color += randomHexCharacter()
+    }
+    
+    return color
+}
+
+export function randomHexCharacter(): string {
+    return randomNumberBetween(0, 15).toString(16)
+}
+
+export function randomNumberBetween(min: number, max: number): number {
+    return Math.round(Math.random() * Math.abs(max - min)) + min 
+}
