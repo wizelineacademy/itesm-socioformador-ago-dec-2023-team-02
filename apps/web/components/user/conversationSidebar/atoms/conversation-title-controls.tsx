@@ -24,6 +24,7 @@ export default function ConversationTitleControls({disableConfirmButton, onConfi
                 <IoCheckmarkSharp color={disableConfirmButton ? "black" : "white"} size="1.1em"/>
             </button>
 
+
             <button onClick={handleCancelPress} type="button">
                 <IoCloseSharp color="white" size="1.1em"/>
             </button>
