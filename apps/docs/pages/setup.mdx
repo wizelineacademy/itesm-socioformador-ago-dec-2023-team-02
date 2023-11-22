@@ -4,24 +4,44 @@
 
 Commands that will use Github tools to fetch WizePrompt git code to local system
 * **Clone WizePrompt repository from Github web app:**
-```js filename="node terminal" {1} copy
+```js filename="TERMINAL" {1} copy
 git clone https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02.git
 ```
 * **Check the main development branch:**
-```js filename="node terminal" {1} copy
-git checkout development
-```
+>```js filename="TERMINAL" {1} copy
+>git checkout development
+>```
 > **Fetch any changes made to the development branch:**
->```js filename="node terminal" {1} copy
+>```js filename="TERMINAL" {1} copy
 >git fetch
 >```
 >   > If there are some changes to the branch write:
->   > ```js filename="node terminal" {1} copy
+>   > ```js filename="TERMINAL" {1} copy
 >   > git pull
 >   > ```
-If previous commands were used the git code should be already updated and inside the local repository.
-
+>If previous commands were used the git code should be already updated and inside the local repository.
 
 ## Installing project specific dependency packages and tools
+
+* **Pnpm package Manager**
+> Pnpm is an efficient package manager for Wizepropmt dependencies installation.
+> > **Pnpm installation**
+> > 
+> *🞂 If you have pnpm installed already, skip this step and move to project dependencies.*
+* **Project dependencies**
+> Download and install the project dependencies for the app to run correctly with pnpm command.
+>```js filename="TERMINAL" {1} copy
+> pnpm install
+>```
+> This specific command will appear, wait for it to end installing and test.
+> > 🞂 For the other dependencies you will need to access the **web** and **docs** folder of your local repository and repeat the pnpm command.
+> If all the dependencies are installed the system will respond with:
+>```js
+> Scope: all 6 workspace projects
+>../.. prepare$ husky install
+>│ husky - Git hooks installed
+>└─ Done in X.Xs
+>Done in XX.Xs
+>```
 
 ## Commands / Instructions for starting a server / OS service required by the project to run etc
