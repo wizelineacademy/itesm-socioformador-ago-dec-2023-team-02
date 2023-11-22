@@ -1,6 +1,4 @@
 import { Input } from "@nextui-org/react";
-import type { ColorChangeHandler} from "react-color";
-import { SliderPicker } from "react-color";
 import { CgToggleSquare, CgToggleSquareOff } from "react-icons/cg";
 import { useState } from "react";
 import ColorPicker from "./color-picker";
