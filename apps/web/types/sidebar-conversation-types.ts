@@ -1,4 +1,4 @@
-import type { SidebarTag } from "./sidebar-tag-types";
+import type { Tag } from "@prisma/client";
 
 // -- Types --
 /**
@@ -10,22 +10,24 @@ export interface SidebarConversation {
     title: string;
     createdAt: Date;
     active: boolean;
-    tags: SidebarTag[]
-    model: SidebarModel;
+    tags: Tag[]
+    model: SidebarConversationModel;
 }
 
 /**
  * Describes the information of a LLM, as required by the conversation sidebar interface of the application. 
  */
-export interface SidebarModel {
+export interface SidebarConversationModel {
+    id: number;
     name: string;
-    provider: SidebarProvider
+    provider: SidebarConversationProvider
 }
 
 /**
  * Describes the information of a LLM provider, as required by the conversation sidebar interface of the application. 
  */
-export interface SidebarProvider {
+export interface SidebarConversationProvider {
+    id: number;
     image: string;
 }
 

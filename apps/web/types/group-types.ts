@@ -22,7 +22,7 @@ export interface GroupUpdateData {
     name?: string;
     description?: string;
     creditsAssigned?: number;
-    users: User[];
+    users?: User[];
 };
 
 /**
@@ -48,7 +48,7 @@ export function isGroupCreateData(obj: any): obj is GroupCreateData {
     typeof obj === 'object' &&
     typeof obj.name === 'string' &&
     typeof obj.description === 'string' &&
-    typeof obj.creditsRemaining === 'number'
+    typeof obj.creditsAssigned === 'number'
   );
 }
 // -- Validation --- 

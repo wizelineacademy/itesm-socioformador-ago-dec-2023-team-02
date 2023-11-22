@@ -90,7 +90,7 @@ export async function createMessage(
         const contentTrimmed = messageData.content.trim();
 
         // Validate input parameters
-        if (!messageData.idConversation || !messageData.sender || !contentTrimmed || !messageData.creditsUsed) {
+        if (!messageData.idConversation || !messageData.sender || !contentTrimmed) {
             return { status: 400, message: 'Invalid input parameters' };
         }
 

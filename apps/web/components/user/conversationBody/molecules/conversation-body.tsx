@@ -3,22 +3,25 @@
  * @returns JSX.Element
  */
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useChat } from "ai/react";
 import type { Message } from "ai/react";
-import { Sender, type Message as WizepromptMessage } from "@prisma/client";
+import { Sender} from "@prisma/client";
+import type { User, Message as WizepromptMessage } from "@prisma/client";
 import type { UseChatOptions } from "ai";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { convertToGptMessage } from "@/lib/helper/gpt/convert-message-type";
 import { saveMessage } from "@/lib/helper/data-handles";
 import ConversationHeader from "@/components/user/conversationHeader/molecules/conversation-top-header";
 import MessageList from "@/components/user/conversationBody/molecules/message-list";
 import type { ConversationUpdateData } from "@/types/conversation-types";
+import { ConversationsContext, type ConversationsContextShape } from "@/context/conversations-context";
+import { ConversationsActionType, type ConversationsAction } from "@/helpers/sidebar-conversation-helpers";
+import type { PrismaUserContextShape } from "@/context/prisma-user-context";
+import { PrismaUserContext } from "@/context/prisma-user-context";
 import PromptTextInput from "./prompt-text-input";
-
-const userImage =
-  "https://ui-avatars.com/api/?background=007CFF&color=fff&name=David";
 
 /**
  * Extended options for the useChat hook.
@@ -42,7 +45,10 @@ interface ExtendedUseChatOptions extends UseChatOptions {
      * The temperature of the conversation, represented as a number.
      */
     temperature: number;
-
+    /**
+     * Image size
+     */
+    size: string;
     /**
      * The name of the model.
      */
@@ -54,6 +60,7 @@ interface Parameters {
   userContext: string;
   responseContext: string;
   temperature: number;
+  size: string;
 }
 
 interface ModelDescription {
@@ -85,16 +92,19 @@ interface ConversationData {
  */
 async function handleSaveMessage(
   idConversation: number,
+  idUser: number,
   model: string,
   sender: Sender,
-  input: string
+  input: string,
+  size: string,
+  onUserCreditsReduction: (updatedUser: User) => void
 ): Promise<void> {
   try {
-    await saveMessage(idConversation, model, sender, input);
+    await saveMessage(idConversation, idUser, model, sender, input, size, onUserCreditsReduction);
     toast.success("Model message saved");
   } catch {
     console.log("Error ocurred while saving message.");
-    toast.error("Error ocurred while saving message of user.");
+    toast.error("Error ocurred while saving message of model.");
   }
 }
 
@@ -105,11 +115,28 @@ export default function ConversationBody(): JSX.Element {
   const [userContext, setUserContext] = useState<string>("");
   const [responseContext, setResponseContext] = useState<string>("");
   const [temperature, setTemperature] = useState<number>(0.5);
+  const [size, setSize] = useState<string>("512x512")
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [modelDescription, setModelDescription] = useState<ModelDescription>({} as ModelDescription)
+  const [modelDescription, setModelDescription] = useState<ModelDescription>(
+    {} as ModelDescription
+  );
   const [modelName, setModelName] = useState<string>("");
   const [providerImage, setProviderImage] = useState<string>("");
 
+  const { user } = useUser();
+
+  const conversationsDispatch: React.Dispatch<ConversationsAction> | undefined = useContext<ConversationsContextShape | null>(ConversationsContext)?.conversationsDispatch
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext)
+
+  let userImage = "";
+
+  if (user?.picture) {
+    userImage = user?.picture;
+  } else {
+    userImage = `https://ui-avatars.com/api/?background=007CFF&color=fff&name=${user?.name?.split(
+      " "
+    )[0]}+${user?.name?.split(" ")[1]}`;
+  }
   const params = useParams();
   const idConversation = Number(params.id);
 
@@ -157,6 +184,7 @@ export default function ConversationBody(): JSX.Element {
     setUserContext(parameters.userContext);
     setResponseContext(parameters.responseContext);
     setTemperature(parameters.temperature);
+    setSize(parameters.size || "1024x1024");
     setMessageData(processedData);
     setModelDescription(descriptionObject);
     setProviderImage(providerImageUrl);
@@ -206,6 +234,7 @@ export default function ConversationBody(): JSX.Element {
         userContext: updatedParameters.userContext,
         responseContext: updatedParameters.responseContext,
         temperature: updatedParameters.temperature,
+        size: updatedParameters.size,
       },
     };
 
@@ -243,33 +272,56 @@ export default function ConversationBody(): JSX.Element {
     }
   }
 
+  // Function to run after a message, from the user or the responding model, has been stored
+  // and the number of credits of the current user has been decremented. 
+  const HandleUserCreditsReduction: (updatedUser: User) => void = (updatedUser) => {
+    prismaUserContext?.setPrismaUser(updatedUser)
+  }
+
   //podria actualizarse solo cuando messages se actualice
   useEffect(() => {
     void getData();
     setIsMounted(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMounted, userContext, responseContext, temperature]);
+  }, [isMounted, userContext, responseContext, temperature, size]);
 
   const options: ExtendedUseChatOptions = {
-    api: `/api/ai/openai/?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}&modelName=${modelName}`,
+    api: `/api/ai/openai/?userContext=${userContext}&responseContext=${responseContext}&temperature=${temperature}&modelName=${modelName}&size=${size}`,
     initialMessages: messageData,
     messages: messageData,
     body: {
       userContext,
       responseContext,
       temperature,
-      modelName
+      size,
+      modelName,
     },
 
     // onFinish callback function that runs when the response stream is finished
     // Saves the message generated by the model
     onFinish(message) {
+      // If the information of the current user is inaccessible, prevent the sending and saving of promts. 
+      if (!prismaUserContext){
+        return 
+      }
+
       void handleSaveMessage(
         idConversation,
+        prismaUserContext?.prismaUser?.id,
         modelName,
         Sender.MODEL,
-        message.content
+        message.content,
+        size,
+        HandleUserCreditsReduction
       );
+
+      // Update the current conversation's createdAt, and sort once again all conversations of the conversation sidebar. 
+      // Placing this recently modified conversation in the first position. 
+      conversationsDispatch?.({
+        type: ConversationsActionType.EditCreatedAt,
+        newDate: new Date(),
+        conversationId: idConversation
+      })
     },
   };
 
@@ -280,32 +332,34 @@ export default function ConversationBody(): JSX.Element {
     handleSubmit, // Form submission handler that automatically resets the input field and appends a user message.
     messages, // The current array of chat messages.
     error, // An error object returned by SWR, if any.
-
+    isLoading, // Boolean flag indicating whether a request is currently in progress.
+    
     /*
-       isLoading, // Boolean flag indicating whether a request is currently in progress.
-       stop, // Function that aborts the current request
-       reload,//Function to reload the last AI chat response for the given chat history.
-       append, //append(message: Message | CreateMessage, chatRequestOptions: { options: { headers, body } }) Function to append a message to the chat, triggering an API call for the AI response.
-       */
+      stop, // Function that aborts the current request
+      reload,//Function to reload the last AI chat response for the given chat history.
+      append, //append(message: Message | CreateMessage, chatRequestOptions: { options: { headers, body } }) Function to append a message to the chat, triggering an API call for the AI response.
+    */
   } = useChat(options);
 
   return (
     <div>
       {/* Conversation Header Component */}
       <ConversationHeader
-        responseContext={responseContext}
-        saveParameters={saveParameters}
-        temperature={temperature}
-        userContext={userContext}
         modelDescription={modelDescription}
         modelName={modelName}
         providerImage={providerImage}
+        responseContext={responseContext}
+        saveParameters={saveParameters}
+        size={size}
+        temperature={temperature}
+        userContext={userContext}
       />
 
       {/* Container for MessageList with custom styles */}
       <div className="message-list-container h-[calc(100vh-100px)] overflow-y-auto">
         <MessageList
           messages={messages}
+          modelName={modelName}
           providerImage={providerImage}
           userImage={userImage}
         />
@@ -321,11 +375,12 @@ export default function ConversationBody(): JSX.Element {
         </div>
       ) : (
         <PromptTextInput
-          model={modelName}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           idConversation={idConversation}
           input={input}
+          isLoading={isLoading}
+          model={modelName}
         />
       )}
     </div>

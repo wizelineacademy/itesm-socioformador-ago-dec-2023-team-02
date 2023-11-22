@@ -1,3 +1,4 @@
+import type { User } from "@prisma/client";
 import { Sender } from "@prisma/client";
 import type { MessageDataInput } from "@/lib/message";
 import { calculateCredits, calculateTokens } from "./gpt/credits-and-tokens";
@@ -13,9 +14,12 @@ import { calculateCredits, calculateTokens } from "./gpt/credits-and-tokens";
  */
 export async function saveMessage(
   idConversation: number,
+  idUser: number,
   model: string,
   sender: Sender,
-  input: string
+  input: string,
+  size: string,
+  onUserCreditsReduction: (updatedUser: User) => void
 ): Promise<void> {
   // Calculate the number of tokens in the message content.
   const tokens: number = calculateTokens(input);
@@ -26,7 +30,7 @@ export async function saveMessage(
     content: input,
     sender,
     // Determine the credits used based on the sender (User or Model).
-    creditsUsed: calculateCredits(tokens, model, sender === Sender.USER),
+    creditsUsed: calculateCredits(tokens, model, sender === Sender.USER, size),
   };
 
   // Make a POST request to save the message data to the server.
@@ -35,6 +39,36 @@ export async function saveMessage(
     method: "POST",
     body: JSON.stringify(messageInfo),
   });
+
+  // Update the current conversation's createdAt property, which is used to indicate when it was last interacted with. 
+  if (sender === Sender.MODEL){
+    await fetch(`/api/conversations/${idConversation}`, {
+      method: "PATCH",
+      body: JSON.stringify({updateCreatedAt: true}),
+    });
+  }
+
+  // Reduce the current user's remaining credits. 
+  const creditReductionFetchOptions: RequestInit = {
+    method: "PATCH",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({creditReduction: messageInfo.creditsUsed})
+  }
+  
+  fetch(`/api/users/removeCredits/${idUser}`, creditReductionFetchOptions)
+  .then((response) => {
+    if (!response.ok){
+      throw new Error("Network response was not ok")
+    }
+    return response.json()
+  })
+  .then((updatedUser) => {
+    console.log(updatedUser.creditsRemaining)
+    onUserCreditsReduction(updatedUser as User)
+  })
+  .catch((_) => {
+    console.log("Failed to update user's remaining credits")
+  })
 }
 
 // Example calling code:
