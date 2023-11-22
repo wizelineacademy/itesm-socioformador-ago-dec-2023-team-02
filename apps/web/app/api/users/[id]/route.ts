@@ -2,7 +2,7 @@ import type { User } from "@prisma/client";
 import { NextResponse } from "next/server";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import { deleteUser, getUser, updateUser } from "@/lib/user";
-import { isUserUpdateData } from "@/types/user-types";
+import { isUserUpdateData, UserUpdateData } from "@/types/user-types";
 
 
 /**
@@ -50,10 +50,13 @@ export async function DELETE(request: Request, {params: {id}}: {params: {id: num
  * @returns A Promise that resolves to a NextResponse instance, potentially holding in its body the updated user. 
  */
 export async function PATCH(request: Request, {params: {id}}: {params: {id: number}}): Promise<NextResponse> {
-    const requestBody = await request.json()
+    const requestBody:UserUpdateData = await request.json()
+    console.log("requestBody: ", requestBody);
+    console.log("====================================");
 
-    if (isUserUpdateData(requestBody)){ // Verify that the given input data object implements the UserUpdateData interface. 
-        const prismaResponse: PrismaResponse<User> = await updateUser(Number(id), requestBody)
+    if (isUserUpdateData(requestBody)){ // Verify that the given input data object implements the UserUpdateData interface.
+ 
+        const prismaResponse: PrismaResponse<User> = await updateUser(Number(id), requestBody);
 
         if (prismaResponse.status === 200 && prismaResponse.data){
             return NextResponse.json(prismaResponse.data, {status: 200, statusText: 'OK'})

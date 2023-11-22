@@ -29,7 +29,12 @@ export async function handleAuth0User(authUser: any) {
       role: "USER",
       image: authUser.picture,
       creditsRemaining: 0,
-      globalParameters: {} as Parameters,
+      globalParameters: {
+        userContext: "",
+        responseContext: "",
+        temperature: 0.5,
+        size: "",
+      } as Parameters,
     };
 
     //create new user on the database
