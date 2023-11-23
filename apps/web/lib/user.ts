@@ -431,7 +431,6 @@ export async function decrementUserCreditsRemaining(idUser: number, creditDecrem
 
         return { status: 200, data: user }
     } catch (error: any) {
-        console.log(error.message)
         return { status: 500, message: error.message }
     }
 }
