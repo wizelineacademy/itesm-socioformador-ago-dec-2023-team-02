@@ -6,7 +6,7 @@ import type { PrismaResponse } from "@/types/prisma-client-types";
 export async function PATCH(request: Request, {params: {id}}: {params: {id: number}}): Promise<NextResponse> {
     const reqBody = await request.json()
 
-    if (!reqBody?.creditReduction){
+    if (reqBody?.creditReduction === undefined){
         return new NextResponse("Invalid request body", {status: 400, headers: {"Content-Type": "text/plain"}})
     }
 
