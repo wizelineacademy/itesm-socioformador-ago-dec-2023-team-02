@@ -16,24 +16,24 @@ export default function TabButton({
   return (
     <li>
       <Button
-      radius="sm"
-        className={`hidden md:block w-auto md:w-[150px] hover:bg-dark400 hover:text-white ${
+      className={`hidden md:block w-auto md:w-[150px] hover:bg-dark400 hover:text-white ${
           tab === keyword ? "bg-black dark:bg-dark400 text-white" : "bg-transparent"
         }`}
         onClick={() => {
           setTab(keyword);
         }}
+        radius="sm"
       >
         <p className="hidden md:block">{title}</p>
       </Button>
       <Button
-      radius="sm"
-        className={`md:hidden flex flex-col justify-center gap-0 h-[45px] !w-[45px] min-w-[20px] p-[0 24px] hover:bg-dark400 hover:text-white ${
+      className={`md:hidden flex flex-col justify-center gap-0 h-[45px] !w-[45px] min-w-[20px] p-[0 24px] hover:bg-dark400 hover:text-white ${
           tab === keyword ? "bg-black dark:bg-dark400 text-white" : "bg-transparent"
         }`}
         onClick={() => {
           setTab(keyword);
         }}
+        radius="sm"
       >
         {/* <TbEdit className="flex items-center md:hidden" size={24} /> */}
         {children}

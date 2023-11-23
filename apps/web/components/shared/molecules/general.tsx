@@ -12,12 +12,11 @@ import { PrismaUserContext } from "@/context/prisma-user-context";
 function ClearAll(): JSX.Element {
   return (
     <Button
-    isIconOnly
-      className="bg-red-500 text-gray-50"
+    className="bg-red-500 text-gray-50"
+      isIconOnly
       startContent={<MdDeleteOutline />}
       type="button"
-    >
-    </Button>
+     />
   );
 }
 

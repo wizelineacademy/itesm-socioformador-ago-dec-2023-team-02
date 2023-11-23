@@ -31,7 +31,7 @@ export default function GroupCard({
   }
 
   return (
-    <button onClick={handleCardPress} type="button" className="w-full">
+    <button className="w-full" onClick={handleCardPress} type="button">
       <Tooltip content={cardTooltipContent} delay={1000} placement="right">
         <Card
            className={`flex flex-row items-center h-11 py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}

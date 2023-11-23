@@ -6,8 +6,8 @@ import {
     ScrollShadow,
     Avatar,
 } from "@nextui-org/react";
+import type { User } from "@prisma/client";
 import { ListboxWrapper } from "./list-box-wrap";
-import { User } from "@prisma/client";
 
 // Define the props in an interface
 interface UsersListBoxProps {
@@ -29,8 +29,8 @@ export default function UsersListBox({ users, setValues, arrayValues }: UsersLis
 
         return (
             <ScrollShadow
-                hideScrollBar
                 className="w-full flex py-0.5 px-2 gap-1"
+                hideScrollBar
                 orientation="horizontal"
             >
                 {arrayValues.map((value) => {
@@ -54,17 +54,17 @@ export default function UsersListBox({ users, setValues, arrayValues }: UsersLis
     return (
         <ListboxWrapper>
             <Listbox
-            emptyContent="All users assigned"
-                topContent={topContent}
-                classNames={{
+            classNames={{
                     base: "w-full",
                     list: "max-h-[300px] overflow-scroll w-full",
                 }}
                 defaultSelectedKeys={[]}
+                emptyContent="All users assigned"
                 items={users}
                 label="Assigned to"
-                selectionMode="multiple"
                 onSelectionChange={setValues}
+                selectionMode="multiple"
+                topContent={topContent}
                 variant="flat"
             >
                 {(item) => (

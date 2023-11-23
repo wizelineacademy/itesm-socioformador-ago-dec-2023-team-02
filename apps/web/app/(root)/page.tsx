@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { getUserbyAuthID, createUser } from "@/lib/user";
-import { UserCreateData } from "@/types/user-types";
-import LoginButton from "@/components/login/login-button";
 import { getSession } from "@auth0/nextjs-auth0";
+import { getUserbyAuthID, createUser } from "@/lib/user";
+import type { UserCreateData } from "@/types/user-types";
+import LoginButton from "@/components/login/login-button";
 
 interface Parameters {
   userContext: string;
@@ -11,7 +11,7 @@ interface Parameters {
   size: string;
 }
 
-export async function handleAuth0User(authUser: any) {
+export async function handleAuth0User(authUser: any): Promise<void> {
   // Replace Auth0SessionType with the actual type
 
   //check if current auth0 user exists in database
@@ -41,7 +41,7 @@ export async function handleAuth0User(authUser: any) {
   }
 }
 
-export default async function Home() {
+export default async function Home(): Promise<JSX.Element> {
   const { user } = (await getSession()) || {};
 
   if (user) {

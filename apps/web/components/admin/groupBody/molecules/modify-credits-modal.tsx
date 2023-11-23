@@ -1,5 +1,4 @@
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react"
-import { Input } from "@nextui-org/react"
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter , Input } from "@nextui-org/react"
 import { useState } from "react"
 import { toast } from "sonner";
 
