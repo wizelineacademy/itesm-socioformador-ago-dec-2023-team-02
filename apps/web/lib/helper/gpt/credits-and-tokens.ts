@@ -71,5 +71,5 @@ export function creditsToTokens(credits: number, model: string, size?: string): 
       tokens = credits / Number(process.env.NEXT_PUBLIC_DALLE_256)
     }
   }
-  return tokens;
+  return Math.floor(tokens);
 }

@@ -37,6 +37,7 @@ export default function ConversationHeader(props: any): JSX.Element {
           modelDescription={modelDescription}
           modelName={modelName}
           providerImageUrl={providerImage}
+          size={size}
         />
       </NavbarItem>
 
