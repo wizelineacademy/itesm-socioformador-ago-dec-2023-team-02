@@ -1,10 +1,6 @@
 "use client";
 import { useContext } from "react";
-import {
-  Button,
-  Card,
-  CardBody,
-} from "@nextui-org/react";
+import { Button, Card, CardBody } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
 import ThemeButton from "@/components/theme-button";
 import { PrismaUserContext } from "@/context/prisma-user-context";
@@ -12,19 +8,16 @@ import { PrismaUserContext } from "@/context/prisma-user-context";
 function ClearAll(): JSX.Element {
   return (
     <Button
-    className="bg-red-500 text-gray-50"
+      className="bg-red-500 text-gray-50"
       isIconOnly
       startContent={<MdDeleteOutline />}
       type="button"
-     />
+    />
   );
 }
 
 export default function General(): JSX.Element {
-
   const prismaUser = useContext(PrismaUserContext);
-
-
 
   return (
     <div className="flex flex-col space-y-4">

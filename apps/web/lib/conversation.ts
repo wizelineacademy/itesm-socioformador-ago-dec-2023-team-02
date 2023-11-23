@@ -120,6 +120,7 @@ export async function getAllConversationsByUserAuthId(
           tags: {
             select: {
               id: true,
+              idUser: true,
               name: true,
               color: true,
             },
@@ -127,9 +128,11 @@ export async function getAllConversationsByUserAuthId(
           active: true,
           model: {
             select: {
+              id: true,
               name: true,
               provider: {
                 select: {
+                  id: true,
                   image: true,
                 },
               },
@@ -150,7 +153,6 @@ export async function getAllConversationsByUserAuthId(
     return { status: 500, message: error.message };
   }
 }
-
 
 /**
  * Retrieves a conversation from the database by its ID, along with all its details.
@@ -236,7 +238,7 @@ export async function getConversationAuthById(
     }
 
     //get user from auth0 string
-    const user : User | null = await prisma.user.findUnique({
+    const user: User | null = await prisma.user.findUnique({
       where: {
         idAuth0: id,
       },
@@ -247,33 +249,33 @@ export async function getConversationAuthById(
       return { status: 400, message: "User not found" };
     }
 
-
     // Fetch the conversation from the database that matches the given ID
-    const conversation: Conversation | null = await prisma.conversation.findUnique({
-      where: {
-        id: user.id, // Conversation ID to filter
-      },
-      include: {
-        user: true, // Include user details
-        model: {
-          include: {
-            provider: {
-              select: {
-                image: true, // Select only the image of the provider
-              }
-            }
-          }
+    const conversation: Conversation | null =
+      await prisma.conversation.findUnique({
+        where: {
+          id: user.id, // Conversation ID to filter
         },
-        messages: {
-          orderBy: {
-            createdAt: 'asc', // Ordena los mensajes por fecha de creación, de más antiguo a más nuevo
-          }
+        include: {
+          user: true, // Include user details
+          model: {
+            include: {
+              provider: {
+                select: {
+                  image: true, // Select only the image of the provider
+                },
+              },
+            },
+          },
+          messages: {
+            orderBy: {
+              createdAt: "asc", // Ordena los mensajes por fecha de creación, de más antiguo a más nuevo
+            },
+          },
+          tags: true, // Include tags associated with the conversation
         },
-        tags: true, // Include tags associated with the conversation
-      },
-    });
-    
-  /*
+      });
+
+    /*
     const conversation: Conversation | null =
       await prisma.conversation.findUnique({
         where: {
@@ -413,7 +415,7 @@ export async function createConversationByUserAuthId(
   input: ConversationCreateData
 ): Promise<PrismaResponse<SidebarConversation>> {
   try {
-    const { idModel, title, tags} = input || {};
+    const { idModel, title, tags } = input || {};
     const modelId = Number(idModel);
 
     // Validate input conversation creation
@@ -425,11 +427,11 @@ export async function createConversationByUserAuthId(
     }
 
     // Validate input user auth id
-    if(!authId || authId.length === 0){
+    if (!authId || authId.length === 0) {
       return {
         status: 400,
         message: "User not found",
-      };      
+      };
     }
 
     // get user through auth0 id
@@ -451,7 +453,7 @@ export async function createConversationByUserAuthId(
       },
     });
 
-      // Validate that the model exists
+    // Validate that the model exists
     if (!model) {
       return { status: 404, message: "Model not found" };
     }
@@ -472,8 +474,10 @@ export async function createConversationByUserAuthId(
           parameters: parameters ? parameters : "", // Set parameters if applicable
           active: true, // Set the 'active' field to true by default
           tags: {
-            connect: tags.map((tag) => {return {id: tag.id}})
-          }
+            connect: tags.map((tag) => {
+              return { id: tag.id };
+            }),
+          },
         },
         // Include additional models (relations) in the result
         select: {

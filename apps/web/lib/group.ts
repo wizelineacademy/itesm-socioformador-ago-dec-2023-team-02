@@ -186,7 +186,10 @@ export async function updateGroupById(
     }
 
     //Validate credits are assigned
-    if (updateData.creditsAssigned === undefined || updateData.creditsAssigned < 0) {
+    if (
+      updateData.creditsAssigned === undefined ||
+      updateData.creditsAssigned < 0
+    ) {
       return {
         status: 400,
         message: "Credits assigned cannot be empty or negative",
@@ -269,7 +272,11 @@ export async function deleteGroup(
       },
     });
 
-    return { message: "Group deleted successfully", status: 200, data: deletedGroup};
+    return {
+      message: "Group deleted successfully",
+      status: 200,
+      data: deletedGroup,
+    };
   } catch (error: any) {
     console.error("Error deleting group:", error.message); // Logging the error
     return { status: 500, message: error.message };
@@ -326,7 +333,10 @@ export async function addUsersToGroup(
       ),
     ]);
 
-    return { data: { group: updatedGroup, users: updatedUsers }, status: 200 };
+    return {
+      data: { group: updatedGroup, users: updatedUsers as any },
+      status: 200,
+    };
   } catch (error: any) {
     console.error("Error adding users to group:", error.message);
     return { status: 500, message: error.message };
@@ -347,11 +357,11 @@ export async function removeUsersFromGroup(
     // Fetch the group's creditsAssigned value
     const group = await prisma.group.findUnique({
       where: { id: groupId },
-      select: { creditsAssigned: true }
+      select: { creditsAssigned: true },
     });
 
     if (!group) {
-      return { status: 404, message: 'Group not found' };
+      return { status: 404, message: "Group not found" };
     }
 
     // First Pass: Start a transaction to update both users and group
@@ -375,8 +385,8 @@ export async function removeUsersFromGroup(
               disconnect: { id: groupId },
             },
             creditsRemaining: {
-              decrement: group.creditsAssigned
-            }
+              decrement: group.creditsAssigned,
+            },
           },
         })
       ),
@@ -401,36 +411,45 @@ export async function removeUsersFromGroup(
       })
     );
 
-
-    return { data: { group: updatedGroup, users: updatedUsersSecondPass }, status: 200 };
+    return {
+      data: { group: updatedGroup, users: updatedUsersSecondPass },
+      status: 200,
+    };
   } catch (error: any) {
     console.error("Error removing users from group:", error.message);
     return { status: 500, message: error.message };
   }
 }
 
-export async function modifyGroupsCurrentCredits(idGroup: number, creditOffset: number): Promise<PrismaResponse<{count: number}>> {
-  if (creditOffset === 0){
-    return { status: 200, data: {count: 0} }
+export async function modifyGroupsCurrentCredits(
+  idGroup: number,
+  creditOffset: number
+): Promise<PrismaResponse<{ count: number }>> {
+  if (creditOffset === 0) {
+    return { status: 200, data: { count: 0 } };
   }
 
   try {
-      const modificationCount: {count: number} = await prisma.user.updateMany({
-          where: {
-            creditsRemaining: creditOffset < 0 ? {gte: Math.abs(creditOffset)} : undefined,
-              groups: {
-                some: {
-                  id: idGroup
-                }
-              }
+    const modificationCount: { count: number } = await prisma.user.updateMany({
+      where: {
+        creditsRemaining:
+          creditOffset < 0 ? { gte: Math.abs(creditOffset) } : undefined,
+        groups: {
+          some: {
+            id: idGroup,
           },
-          data: {
-              creditsRemaining: creditOffset < 0 ? {decrement: Math.abs(creditOffset)} : {increment: creditOffset} 
-          }
-      })
+        },
+      },
+      data: {
+        creditsRemaining:
+          creditOffset < 0
+            ? { decrement: Math.abs(creditOffset) }
+            : { increment: creditOffset },
+      },
+    });
 
-      return { status: 200, data: modificationCount }
+    return { status: 200, data: modificationCount };
   } catch (error: any) {
-      return { status: 500, message: error.message }
+    return { status: 500, message: error.message };
   }
 }

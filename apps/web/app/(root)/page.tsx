@@ -11,7 +11,7 @@ interface Parameters {
   size: string;
 }
 
-export async function handleAuth0User(authUser: any): Promise<void> {
+async function handleAuth0User(authUser: any): Promise<void> {
   // Replace Auth0SessionType with the actual type
 
   //check if current auth0 user exists in database

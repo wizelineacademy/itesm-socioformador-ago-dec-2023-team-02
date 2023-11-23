@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Modal,
   ModalHeader,
@@ -14,7 +14,6 @@ import SearchBar from "@/components/shared/molecules/search-bar";
 import { findMatchRatio, cleanString } from "@/helpers/string-helpers";
 import UsersListBox from "./users-list-box";
 
-
 interface AddUserModalProps {
   setUpdatedUsers: any;
   idGroup: number;
@@ -22,12 +21,12 @@ interface AddUserModalProps {
   onOpenChange: () => void;
 }
 
-const AddUserModal: React.FC<AddUserModalProps> = ({
+function AddUserModal({
   setUpdatedUsers,
   idGroup,
   isOpen,
   onOpenChange,
-}) => {
+}: AddUserModalProps): JSX.Element {
   //users in database
   const [users, setUsers] = useState<User[] | null>(null);
 
@@ -51,22 +50,22 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
     setSearchText(value);
   };
 
-  async function getUsers() {
+  async function getUsers(): Promise<void> {
     try {
       // Modify the URL to include the groupId
       const url = `http://localhost:3000/api/users/group/${idGroup}`;
-      
+
       const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
-  
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-  
+
       const data: User[] = await response.json();
       setUsers(data); // setUsers is a state setter function for users
     } catch (err) {
@@ -79,6 +78,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
     if (isOpen) {
       void getUsers();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   useEffect(() => {
@@ -86,37 +86,40 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
   }, [users]);
 
   //set values
-  const [values, setValues] = React.useState<Set<string>>(new Set(["1"]));
+  const [values, setValues] = useState<Set<string>>(new Set(["1"]));
 
   //array values
   const arrayValues = Array.from(values);
 
-  const handleAddUser = async () => {
+  const handleAddUser = async (): Promise<void> => {
     setIsSubmitting(true);
     try {
       // Get the user IDs from the values Set
       const userIds = Array.from(values).map(Number);
-  
+
       // Send the POST request to your API endpoint
-      const response = await fetch(`http://localhost:3000/api/groups/add-users/${idGroup}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userIds }),
-      });
-  
+      const response = await fetch(
+        `http://localhost:3000/api/groups/add-users/${idGroup}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userIds }),
+        }
+      );
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-  
+
       const data = await response.json();
-      console.log('Users added to group:', data);
-      toast.success('Users added to the group successfully');
+      console.log("Users added to group:", data);
+      toast.success("Users added to the group successfully");
       onOpenChange(); // Close the modal on success
     } catch (error) {
-      console.error('Error adding users:', error);
-      toast.error('Failed to add users to the group');
+      console.error("Error adding users:", error);
+      toast.error("Failed to add users to the group");
     } finally {
       setIsSubmitting(false);
       setUpdatedUsers(true);
@@ -135,7 +138,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
               {/* Search bar component */}
               <SearchBar
                 onTextChange={handleSearchTextChange}
-                overridingStyle="w-full text-sm shadow-none"
+                // overridingStyle="w-full text-sm shadow-none" // ! The property doesn't exist
                 placeholder="Search User"
                 takeFullWidth={false}
                 text={searchText}
@@ -161,7 +164,9 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
                 color="success"
                 disabled={isSubmitting}
                 isLoading={isSubmitting}
-                onPress={() => {void handleAddUser()}}
+                onPress={() => {
+                  void handleAddUser();
+                }}
               >
                 Add
               </Button>
@@ -171,6 +176,6 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
       </ModalContent>
     </Modal>
   );
-};
+}
 
 export default AddUserModal;
