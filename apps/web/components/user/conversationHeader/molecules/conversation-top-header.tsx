@@ -19,6 +19,7 @@ export default function ConversationHeader(props: any): JSX.Element {
     modelDescription,
     modelName,
     providerImage,
+    creditsRemaining,
   } = props;
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
@@ -33,7 +34,7 @@ export default function ConversationHeader(props: any): JSX.Element {
       {/* Model Card */}
       <NavbarItem className="flex-grow flex justify-center items-center gap-1">
         <ModelCard
-          creditsAvailable={400}
+          creditsAvailable={creditsRemaining}
           modelDescription={modelDescription}
           modelName={modelName}
           providerImageUrl={providerImage}
