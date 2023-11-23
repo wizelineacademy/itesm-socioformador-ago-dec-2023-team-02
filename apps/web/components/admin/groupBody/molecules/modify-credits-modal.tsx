@@ -1,5 +1,5 @@
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter , Input } from "@nextui-org/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner";
 
 interface ModifyCreditsModalProps {
@@ -10,10 +10,15 @@ interface ModifyCreditsModalProps {
 }
 
 export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdatedUsers}: ModifyCreditsModalProps): JSX.Element {
-    const [credits, setCredits] = useState<number>(0)
-    
+    const [credits, setCredits] = useState<string>(0)
     // determines whether the save button should be disabled
     const [isLoading, setIsLoading] = useState<boolean>(false) 
+
+    useEffect(() => {
+        if (!isOpen){
+            setCredits(0)
+        }
+    }, [isOpen])
 
     const handleCreditsChange: (value: string) => void = (value) => {
         setCredits(Number(value))
@@ -90,7 +95,7 @@ export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdated
                         <ModalFooter>
                                 <div className="flex flex-row gap-4 items-center">
                                     <Button color="danger" onPress={onClose} variant="light">Cancel</Button>
-                                    <Button color="primary" isDisabled={isLoading} onPress={handleSaveButtonPress}>Save</Button>
+                                    <Button color="primary" isDisabled={isLoading} isLoading={isLoading} onPress={handleSaveButtonPress}>Save</Button>
                                 </div>
                         </ModalFooter>
                     </>
