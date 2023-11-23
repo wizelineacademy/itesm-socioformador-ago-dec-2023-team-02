@@ -14,8 +14,8 @@ import { TagEditor } from "./tag-editor";
 interface TagEditorPopoverProps {
     children: JSX.Element;
     tagId: number | null;
-    initialTagName: string | null;
-    initialTagColor: string | null;
+    initialTagName: string;
+    initialTagColor: string;
     placement: PopoverPlacement;
     onTagDeletion: (deletedTag: Tag) => void;
     onTagEdition: (editedTag: Tag) => void;
@@ -23,16 +23,16 @@ interface TagEditorPopoverProps {
 
 export default function TagEditorPopover({children, tagId, initialTagName, initialTagColor, placement, onTagDeletion, onTagEdition}: TagEditorPopoverProps): JSX.Element {
     const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext)
-    const [tagName, setTagName] = useState<string>(initialTagName || "")
-    const [tagColor, setTagColor] = useState<string>(initialTagColor || "#bf4042")
+    const [tagName, setTagName] = useState<string>(initialTagName)
+    const [tagColor, setTagColor] = useState<string>(initialTagColor)
     const [popoverIsOpen, setPopoverIsOpen] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const tagNameMaxLength = 15 
     const isNewTag: boolean = tagId === null
 
     const resetTagState: () => void = () => {
-        setTagName(initialTagName || "")
-        setTagColor(initialTagColor || "")
+        setTagName(initialTagName)
+        setTagColor(initialTagColor)
     }
 
     const handleTagNameChange: (editedTagName: string) => void = (editedTagName) => {
