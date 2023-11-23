@@ -46,6 +46,8 @@ import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 import UserCard from "../../../shared/molecules/user-card";
 import { ConversationList } from "../molecules/conversation-list";
 import NewConversationMenuModal from "../../newConversation/molcules/new-conversation-menu-modal";
+import GlobalContext from "@/components/shared/molecules/global-context";
+
 
 interface ConversationSidebarProps {
   userTags: Tag[];
@@ -423,7 +425,7 @@ export default function ConversationSidebar({
                   <General />
                 </TabModal>
                 <TabModal keyword="custom" tab={tab}>
-                  Custom
+                  <GlobalContext />
                 </TabModal>
                 <TabModal keyword="usage" tab={tab}>
                   <Usage />

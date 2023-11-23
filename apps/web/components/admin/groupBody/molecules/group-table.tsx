@@ -28,6 +28,8 @@ import { toast } from "sonner";
 import { useCallback, useMemo, useState } from "react";
 import type { Key, ChangeEvent } from "react";
 import AddUserModal from "../../modals/add-user-modal";
+import { roundUsersCredits } from "@/helpers/user-helpers";
+import { BiCoinStack } from "react-icons/bi";
 
 //Component props
 interface GroupTableProps {
@@ -244,11 +246,16 @@ export default function GroupTable({
         );
       case "creditsRemaining":
         return (
-          <div className="flex flex-col w-full justify-end">
-            <p className="text-bold text-sm capitalize">
-              {cellValue as string}
+          <div className="flex flex-row w-full items-center gap-1">
+            <p className="p-0 m-0">
+              <BiCoinStack />
             </p>
-            {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
+            <p>
+              {" "}
+              {
+                roundUsersCredits(user) as string // eslint-disable-line
+              }
+            </p>
           </div>
         );
 
