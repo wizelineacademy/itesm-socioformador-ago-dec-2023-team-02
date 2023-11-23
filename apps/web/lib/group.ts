@@ -450,7 +450,17 @@ async function incrementGroupsCurrentCredits(idGroup: number, creditIncrement: n
 
 async function decrementGroupsCurrentCredits(idGroup: number, creditDecrement: number): Promise<{count: number}> {
   const absCreditDecrement: number = Math.abs(creditDecrement)
-  const [{count: updateCount}, {count: toZeroUpdateCount}] = await prisma.$transaction([
+  const [{count: toZeroUpdateCount}, {count: updateCount}] = await prisma.$transaction([
+    prisma.user.updateMany({
+      where: {
+        creditsRemaining: {lt: absCreditDecrement},
+        groups: {some: {id: idGroup}},
+      },
+      data: {
+        creditsRemaining: 0
+      },
+    }), 
+
     prisma.user.updateMany({
       where: {
         creditsRemaining: {gte: absCreditDecrement},
@@ -460,16 +470,6 @@ async function decrementGroupsCurrentCredits(idGroup: number, creditDecrement: n
         creditsRemaining: {decrement: absCreditDecrement}
       },
     }), 
-
-    prisma.user.updateMany({
-      where: {
-        creditsRemaining: {lt: absCreditDecrement},
-        groups: {some: {id: idGroup}},
-      },
-      data: {
-        creditsRemaining: 0
-      },
-    })
   ])
 
   return {count: updateCount + toZeroUpdateCount}
