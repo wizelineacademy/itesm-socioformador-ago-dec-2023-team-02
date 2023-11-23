@@ -421,35 +421,56 @@ export async function removeUsersFromGroup(
   }
 }
 
-export async function modifyGroupsCurrentCredits(
-  idGroup: number,
-  creditOffset: number
-): Promise<PrismaResponse<{ count: number }>> {
-  if (creditOffset === 0) {
-    return { status: 200, data: { count: 0 } };
+export async function modifyGroupsCurrentCredits(idGroup: number, creditOffset: number): Promise<PrismaResponse<{ count: number }>> {
+  if (creditOffset === 0){
+    return {status: 200, data: {count: 0}}
   }
 
   try {
-    const modificationCount: { count: number } = await prisma.user.updateMany({
+    const updateCount: {count: number} = creditOffset < 0 ?
+    await decrementGroupsCurrentCredits(idGroup, creditOffset) : 
+    await incrementGroupsCurrentCredits(idGroup, creditOffset)
+
+    return {status: 200, data: updateCount}
+  } catch (error: any){
+    return {status: 500, message: error.message}
+  }
+}
+
+async function incrementGroupsCurrentCredits(idGroup: number, creditIncrement: number): Promise<{count: number}> {
+  return prisma.user.updateMany({
+    where: {
+      groups: {some: {id: idGroup}},
+    },
+    data: {
+      creditsRemaining: {increment: Math.abs(creditIncrement)}
+    },
+  });
+}
+
+async function decrementGroupsCurrentCredits(idGroup: number, creditDecrement: number): Promise<{count: number}> {
+  const absCreditDecrement: number = Math.abs(creditDecrement)
+  const [{count: updateCount}, {count: toZeroUpdateCount}] = await prisma.$transaction([
+    prisma.user.updateMany({
       where: {
-        creditsRemaining:
-          creditOffset < 0 ? { gte: Math.abs(creditOffset) } : undefined,
-        groups: {
-          some: {
-            id: idGroup,
-          },
-        },
+        creditsRemaining: {gte: absCreditDecrement},
+        groups: {some: {id: idGroup}},
       },
       data: {
-        creditsRemaining:
-          creditOffset < 0
-            ? { decrement: Math.abs(creditOffset) }
-            : { increment: creditOffset },
+        creditsRemaining: {decrement: absCreditDecrement}
       },
-    });
+    }), 
 
-    return { status: 200, data: modificationCount };
-  } catch (error: any) {
-    return { status: 500, message: error.message };
-  }
+    prisma.user.updateMany({
+      where: {
+        creditsRemaining: {lt: absCreditDecrement},
+        groups: {some: {id: idGroup}},
+      },
+      data: {
+        creditsRemaining: 0
+      },
+    })
+  ])
+
+  return {count: updateCount + toZeroUpdateCount}
 }
