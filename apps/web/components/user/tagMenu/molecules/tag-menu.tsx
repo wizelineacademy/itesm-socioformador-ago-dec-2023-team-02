@@ -20,6 +20,7 @@ interface TagMenuProps {
 
 export default function TagMenu({tags, selectedTags, isEditingTags, onTagsChange, onSelectedTagsChange}: TagMenuProps): JSX.Element {
     const [searchText, setSearchText] = useState<string>("")
+    const defaultTagColor = "#be40bf"
 
     const handleSearchTextChange: (text: string) => void = (text) => {setSearchText(text)}
 
@@ -77,7 +78,7 @@ export default function TagMenu({tags, selectedTags, isEditingTags, onTagsChange
                     {filteredTags.length === 0 && !isEditingTags ? noTagsLabel : null}
 
                     {isEditingTags ?  
-                    <TagEditorPopover initialTagColor={null} initialTagName={null} onTagDeletion={handleTagDeletion} onTagEdition={handleTagEditionNewTag} placement="top" tagId={null}>
+                    <TagEditorPopover initialTagColor={defaultTagColor} initialTagName="" onTagDeletion={handleTagDeletion} onTagEdition={handleTagEditionNewTag} placement="top" tagId={null}>
                         <button type="button">
                             {newTagChip}
                         </button>

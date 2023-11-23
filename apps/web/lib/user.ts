@@ -422,9 +422,12 @@ export async function decrementUserCreditsRemaining(idUser: number, creditDecrem
     }
 
     try {
-        const user = await prisma.user.update({
+        const user: User = await prisma.user.update({
             where: {
-                id: idUser
+                id: idUser,
+                creditsRemaining: {
+                    gte: creditDecrement
+                }
             },
             data: {
                 creditsRemaining: {

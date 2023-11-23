@@ -18,13 +18,18 @@ export default async function AdminRootLayout({children}: {children: React.React
 
   //get user from database
   const userAuthID: string = user.sub;
-  const prismaUser: User | null = (await getUserbyAuthID(userAuthID)).data ?? null;
+  const prismaUser: User | undefined = (await getUserbyAuthID(userAuthID)).data;
+
+  // If fetching of user data failed, redirect to login.
+  if (!prismaUser){
+    redirect("/api/auth/login");
+  }
 
   const allUsersGroupId = 1
   const initialGroups: Group[] = sortGroups((await getAllGroups()).data || [], allUsersGroupId)
 
   return (
-    <PrismaUserContextProvider prismaUser={prismaUser}>
+    <PrismaUserContextProvider initialPrismaUser={prismaUser}>
         <GroupsContextProvider initialGroups={initialGroups}>
           <div className="flex flex-row">
             <GroupSidebar/>

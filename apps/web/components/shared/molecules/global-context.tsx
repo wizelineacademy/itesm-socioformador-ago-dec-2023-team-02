@@ -19,8 +19,7 @@ import {
 } from "@nextui-org/react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Slider } from "@/components/ui/slider";
-import { PrismaUserContext } from "@/context/prisma-user-context";
-import { type User } from "@prisma/client";
+import { PrismaUserContext, PrismaUserContextShape } from "@/context/prisma-user-context";
 import { toast } from "sonner";
 import { UserUpdateData } from "@/types/user-types";
 
@@ -32,7 +31,9 @@ interface Parameters {
 
 // ModalParametersGPT Component
 export default function GlobalContext(): JSX.Element {
-  const prismaUser = useContext<User | null>(PrismaUserContext);
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
+  const prismaUser = prismaUserContext?.prismaUser;
+
 
   // State to hold the form data
   const [formParams, setFormParams] = useState<Parameters>({
@@ -94,6 +95,7 @@ export default function GlobalContext(): JSX.Element {
         const updatedUserParameters: Parameters = updatedUserData.globalParameters;
         setFormParams(updatedUserParameters);
         console.log('updatedUserParameters', updatedUserParameters);
+        prismaUserContext?.setPrismaUser(updatedUserData);
       } else {
         // Handle errors
         const errorMessage = await response.text();

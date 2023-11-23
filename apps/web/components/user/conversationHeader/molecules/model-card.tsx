@@ -9,6 +9,7 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
+import { creditsToTokens } from "@/lib/helper/gpt/credits-and-tokens";
 
 // Interface to describe the shape of the model description object
 interface ModelDescription {
@@ -27,6 +28,7 @@ interface ModelCardProps {
   providerImageUrl: string;
   creditsAvailable: number;
   modelDescription: ModelDescription;
+  size: string;
 }
 
 // The ModelCard component displays a user card that, when clicked, opens a modal with more details
@@ -36,6 +38,7 @@ export function ModelCard({
   providerImageUrl,
   creditsAvailable,
   modelDescription,
+  size,
 }: ModelCardProps): JSX.Element {
   // useDisclosure is a hook that helps in controlling the visibility of modal
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -66,7 +69,9 @@ export function ModelCard({
             src: providerImageUrl,
           }}
           className="xs:ml-10 md:ml-20"
-          description={`${creditsAvailable} Tokens`}
+          description={modelName === "dalle" 
+            ? `${creditsToTokens(creditsAvailable, modelName, size)} Images` 
+            : `${creditsToTokens(creditsAvailable, modelName)} Tokens`}
           name={modelName.toUpperCase()}
         />
       </button>

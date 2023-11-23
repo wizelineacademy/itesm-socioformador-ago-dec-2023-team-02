@@ -1,6 +1,8 @@
 // Importing required components and dependencies
 import { Card, User } from "@nextui-org/react";
 import { SlOptions } from "react-icons/sl";
+import { BiCoinStack } from "react-icons/bi"
+
 // Defining the props expected by the UserCard component
 interface UserCardProps {
   /**
@@ -60,7 +62,15 @@ export default function UserCard({
                 base: "bg-black shadow-none",
               }
             }
-            description={description}
+
+            description={
+              <div className="flex flex-row items-center gap-1 text-gray-400">
+              <p className="p-0 m-0"><BiCoinStack/></p>
+              <p>{description}</p>
+            </div>
+ 
+              
+            }
             name={name}
           />
         </Card>

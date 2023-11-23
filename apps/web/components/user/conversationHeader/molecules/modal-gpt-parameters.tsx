@@ -24,8 +24,7 @@ import {
 } from "@nextui-org/react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Slider } from "@/components/ui/slider";
-import { PrismaUserContext } from "@/context/prisma-user-context";
-import { type User } from "@prisma/client";
+import { PrismaUserContext, PrismaUserContextShape } from "@/context/prisma-user-context";
 
 interface Parameters {
   userContext: string;
@@ -52,7 +51,8 @@ export default function ModalParametersGPT(props: any): JSX.Element {
     saveParameters: (updatedParameters: Parameters) => void;
   } = props;
 
-  const prismaUser = useContext<User | null>(PrismaUserContext);
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
+  const prismaUser = prismaUserContext?.prismaUser;
 
   const [isSelected, setIsSelected] = React.useState(false);
 

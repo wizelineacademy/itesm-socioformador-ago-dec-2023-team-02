@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import type { User } from "@prisma/client";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import { getUsersNotInGroup } from "@/lib/user"; // Adjust the import path as necessary
-import type { User } from "@prisma/client";
 
 /**
  * GET request handler, fetches all users not in a specific group.
