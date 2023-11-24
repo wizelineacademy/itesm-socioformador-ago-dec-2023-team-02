@@ -1,7 +1,8 @@
 {
   "index": "Introduction",
   "another": "Another Page",
-  "build": "Build",
+  "builds": "Build",
+  "setup":"Setup",
   "about": {
     "title": "About",
     "type": "page"
