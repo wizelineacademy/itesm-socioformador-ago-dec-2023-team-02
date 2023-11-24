@@ -1,6 +1,5 @@
 {
   "index": "Introduction",
-  "another": "Another Page",
   "builds": "Build",
   "setup":"Setup",
   "about": {
@@ -12,5 +11,7 @@
     "type": "page",
     "href": "https://twitter.com/shuding_",
     "newWindow": true
-  }
+  },
+  "frontend": "Front-End",
+  "backend": "Back-End"
 }
