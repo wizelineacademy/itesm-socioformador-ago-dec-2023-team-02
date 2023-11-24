@@ -24,12 +24,12 @@ import { SlOptionsVertical } from "react-icons/sl";
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
 import { BsChevronCompactDown } from "react-icons/bs";
 import { FaMinus } from "react-icons/fa";
+import { BiCoinStack } from "react-icons/bi";
 import { toast } from "sonner";
 import { useCallback, useMemo, useState } from "react";
 import type { Key, ChangeEvent } from "react";
-import AddUserModal from "../../modals/add-user-modal";
 import { roundUsersCredits } from "@/helpers/user-helpers";
-import { BiCoinStack } from "react-icons/bi";
+import AddUserModal from "../../modals/add-user-modal";
 
 //Component props
 interface GroupTableProps {

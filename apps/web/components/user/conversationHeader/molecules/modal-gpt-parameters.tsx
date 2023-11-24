@@ -303,3 +303,4 @@ function TemperatureTooltip(): JSX.Element {
     </div>
   );
 }
+
