@@ -2,25 +2,20 @@
 import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { AiOutlineSetting } from "react-icons/ai";
+import type { GroupData } from "@/types/group-types";
 import ModifyCreditsModal from "./modify-credits-modal";
 
 // Define the prop types for the GroupHeader component using an interface
 interface GroupHeaderProps {
-  groupName: string; // The name of the group
-  // groupDescription: string;   // A brief description of the group
-  creditsAssigned: number; // The number of credits assigned to the group
+  groupData: GroupData;
   onGroupsSettingsPress: () => void;
-  groupdId: number;
   setUpdatedUsers: any
 }
 
 // GroupHeader component definition with explicit return type JSX.Element
 export function GroupHeader({
-  groupName,
-  // groupDescription ,
-  creditsAssigned,
+  groupData,
   onGroupsSettingsPress,
-  groupdId,
   setUpdatedUsers
 }: GroupHeaderProps): JSX.Element {
   const handleGroupSettingsPress: (e: any) => void = (_) => {
@@ -41,11 +36,11 @@ export function GroupHeader({
     <div className="flex flex-wrap items-start justify-between my-2 sm:ml-10 mt-0 pt-0">
       {/* Adjust the order of items for XS screens */}
       <div className="w-full sm:w-1/2 order-2 sm:order-1 text-start">
-        <h3 className="text-3xl font-bold">{groupName}</h3>
+        <h3 className="text-3xl font-bold">{groupData.name}</h3>
 
         {/* Placeholder for credits information below the group name */}
         <p className="text-default-600  text-sm mt-1">
-          {creditsAssigned} credits assigned
+          {groupData.creditsAssigned} credits assigned
         </p>
         {/* Added padding between group name and description */}
         {/* <div className='overflow-scroll h-10 my-2'>
@@ -65,7 +60,7 @@ export function GroupHeader({
       </div>
 
       <ModifyCreditsModal
-        id={groupdId}
+        groupData={groupData}
         isOpen={creditsModalIsOpen}
         onModalClose={handleModalClose}
         setUpdatedUsers={setUpdatedUsers}

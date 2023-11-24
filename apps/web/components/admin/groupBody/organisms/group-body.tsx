@@ -2,24 +2,16 @@
 // Import necessary hooks and utilities from React and Next.js
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import type { Group, User } from "@prisma/client";
+import type { Group } from "@prisma/client";
 import { Spinner } from "@nextui-org/react";
 import { toast } from "sonner";
 import type { GroupsContextShape } from "@/context/groups-context";
 import { GroupsContext } from "@/context/groups-context";
-import { GroupsActionType } from "@/helpers/group-helpers";
+import { GroupsActionType, placeHolderGroupData } from "@/helpers/group-helpers";
+import type { GroupData } from "@/types/group-types";
 import { GroupHeader } from "../molecules/group-header";
 import EditGroupMenuModal from "../../editGroup/molcules/edit-group-menu-modal";
 import GroupTable from "../molecules/group-table";
-
-// Define the type for the group data
-interface GroupData {
-  id: number;
-  name: string;
-  description: string;
-  creditsAssigned: number;
-  users: User[];
-}
 
 export default function GroupBody(): JSX.Element {
   const sidebarGroupsContext = useContext<GroupsContextShape | null>(
@@ -117,9 +109,7 @@ export default function GroupBody(): JSX.Element {
     <div className="p-5 h-full">
       {/* Group Header */}
       <GroupHeader
-        creditsAssigned={groupData?.creditsAssigned ?? 0}
-        groupName={groupData?.name ?? ""}
-        groupdId={idGroup}
+        groupData={groupData ?? placeHolderGroupData()}
         onGroupsSettingsPress={handleGroupSettingsPress}
         setUpdatedUsers={setUpdatedUsers}
       />

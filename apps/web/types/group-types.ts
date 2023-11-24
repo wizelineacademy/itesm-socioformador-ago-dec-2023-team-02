@@ -26,6 +26,17 @@ export interface GroupUpdateData {
 };
 
 /**
+ * The shape of a group used in the admin dashboard, includes the group's users as an array of User objects. 
+*/
+export interface GroupData {
+  id: number;
+  name: string;
+  description: string;
+  creditsAssigned: number;
+  users: User[];
+}
+
+/**
  * Type-guard that determines if an object implements the interface GroupUpdateData. 
  * @param obj - An object whose adherence to GroupUpdateData will be tested. 
  * @returns A boolean value that indicates whether or not the given obj implements UserUpdateData. 
