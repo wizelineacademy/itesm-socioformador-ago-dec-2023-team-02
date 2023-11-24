@@ -2,7 +2,7 @@ import type { User } from "@prisma/client";
 import { NextResponse } from "next/server";
 import type { PrismaResponse } from "@/types/prisma-client-types";
 import { deleteUser, getUser, updateUser } from "@/lib/user";
-import { isUserUpdateData, UserUpdateData } from "@/types/user-types";
+import { isUserUpdateData, type UserUpdateData } from "@/types/user-types";
 
 
 /**

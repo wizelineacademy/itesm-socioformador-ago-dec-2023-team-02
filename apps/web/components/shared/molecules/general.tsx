@@ -2,10 +2,10 @@
 import { useContext } from "react";
 import { Button, Card, CardBody } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
-import ThemeButton from "@/components/theme-button";
-import { PrismaUserContext, PrismaUserContextShape } from "@/context/prisma-user-context";
-import { roundUsersCredits } from "@/helpers/user-helpers";
 import { BiCoinStack } from "react-icons/bi"
+import ThemeButton from "@/components/theme-button";
+import { PrismaUserContext, type PrismaUserContextShape } from "@/context/prisma-user-context";
+import { roundUsersCredits } from "@/helpers/user-helpers";
 
 function ClearAll(): JSX.Element {
   return (

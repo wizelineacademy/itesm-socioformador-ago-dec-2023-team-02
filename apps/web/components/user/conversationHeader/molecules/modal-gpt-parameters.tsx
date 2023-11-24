@@ -7,7 +7,7 @@
  */
 // Importing necessary libraries and components
 "use client";
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Button,
   Modal,
@@ -24,7 +24,7 @@ import {
 } from "@nextui-org/react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Slider } from "@/components/ui/slider";
-import { PrismaUserContext, PrismaUserContextShape } from "@/context/prisma-user-context";
+import { PrismaUserContext, type PrismaUserContextShape } from "@/context/prisma-user-context";
 
 interface Parameters {
   userContext: string;
@@ -54,7 +54,7 @@ export default function ModalParametersGPT(props: any): JSX.Element {
   const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
   const prismaUser = prismaUserContext?.prismaUser;
 
-  const [isSelected, setIsSelected] = React.useState(false);
+  const [isSelected, setIsSelected] = useState<boolean>(false);
 
   const [updatedUserContext, setUpdatedUserContext] =
   useState<string>(userContext);
@@ -64,9 +64,9 @@ const [updatedResponseContext, setUpdatedResponseContext] =
     useState<number>(temperature);
 
   const [globalFormParams, setGlobalFormParams] = useState<Parameters>({
-    userContext: userContext,
-    responseContext: responseContext,
-    temperature: temperature, // Default temperature value
+    userContext,
+    responseContext,
+    temperature, // Default temperature value
   });
 
   useEffect(() => {
@@ -109,7 +109,14 @@ const [updatedResponseContext, setUpdatedResponseContext] =
       setGlobalFormParams(updatedGlobalParameters);
 
     }
-  }, [isSelected]);
+  }, [isSelected, 
+      prismaUser?.globalParameters?.responseContext, 
+      prismaUser?.globalParameters?.temperature, 
+      prismaUser?.globalParameters?.userContext,
+      temperature,
+      updatedResponseContext,
+      updatedTemperature,
+      updatedUserContext]);
 
   const handleSave = (): void => {
     
@@ -145,7 +152,6 @@ const [updatedResponseContext, setUpdatedResponseContext] =
               <Tooltip content={<PersonalParameterTooltip />} placement="right">
                 <Textarea
                   className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
-                  value={globalFormParams.userContext}
                   labelPlacement="outside"
                   maxRows={8}
                   minRows={8}
@@ -155,6 +161,7 @@ const [updatedResponseContext, setUpdatedResponseContext] =
                   }}
                   placeholder=""
                   radius="sm"
+                  value={globalFormParams.userContext}
                   variant="faded"
                 />
               </Tooltip>
@@ -169,7 +176,6 @@ const [updatedResponseContext, setUpdatedResponseContext] =
               <Tooltip content={<ResponseParameterTooltip />} placement="right">
                 <Textarea
                   className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
-                  value={globalFormParams.responseContext}
                   labelPlacement="outside"
                   maxRows={8}
                   minRows={8}
@@ -179,6 +185,7 @@ const [updatedResponseContext, setUpdatedResponseContext] =
                   }}
                   placeholder=""
                   radius="sm"
+                  value={globalFormParams.responseContext}
                   variant="faded"
                 />
               </Tooltip>
