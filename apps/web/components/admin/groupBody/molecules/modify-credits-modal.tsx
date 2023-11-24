@@ -14,6 +14,7 @@ export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdated
     // determines whether the save button should be disabled
     const [isLoading, setIsLoading] = useState<boolean>(false) 
 
+    // Reset the component's credit state when closed. 
     useEffect(() => {
         if (!isOpen){
             setCredits(0)

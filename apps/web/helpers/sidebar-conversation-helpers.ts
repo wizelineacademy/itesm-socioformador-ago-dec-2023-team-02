@@ -175,6 +175,12 @@ export function isValidConversationName(name: string): boolean {
   return name.length > 0;
 }
 
+/**
+ * Determines if a given conversation (conversationId) is found within an array of conversations. 
+ * @param conversations - The array of conversations in which to search for the provided conversationId.
+ * @param conversationId - The id of the conversation to search for in the array. 
+ * @returns A boolean that indicates whether the conversation is present in the array. 
+ */
 export function includesConversation(conversations: SidebarConversation[], conversationId: number | undefined): boolean {
   return conversationId !== undefined && conversations.some(({id}) => id === conversationId)
 }
