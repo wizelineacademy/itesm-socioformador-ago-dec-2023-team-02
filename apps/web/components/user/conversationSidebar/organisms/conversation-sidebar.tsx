@@ -5,15 +5,10 @@ import {
   Badge,
   Button,
   Divider,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
 } from "@nextui-org/react";
 import { PiSidebarSimple } from "react-icons/pi";
 import { AiOutlineTag, AiOutlinePlus } from "react-icons/ai";
 import type { Tag } from "@prisma/client";
-import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/navigation";
 import { Role } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
@@ -31,6 +26,8 @@ import type { ConversationsContextShape } from "@/context/conversations-context"
 import { ConversationsContext } from "@/context/conversations-context";
 import { roundUsersCredits } from "@/helpers/user-helpers";
 import SettingsMenuModal from "@/components/shared/molecules/settings-menu-modal";
+import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
+import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 import UserCard from "../../../shared/molecules/user-card";
 import { ConversationList } from "../molecules/conversation-list";
@@ -65,7 +62,6 @@ export default function ConversationSidebar({
 
   const router = useRouter();
 
-  const { user } = useUser();
   const prismaUserContext = useContext<PrismaUserContextShape | null>(
     PrismaUserContext
   );
@@ -155,9 +151,36 @@ export default function ConversationSidebar({
   }
 
   const conversationSidebarStyle = `transition-all duration-200 linear h-screen bg-transparent flex flex-col
-  justify-start items-center space-y-5 overflow-hidden border-yellow-50 ${
+  justify-start items-center space-y-5 overflow-hidden border-yellow-50 pb-4 ${
     showingSidebar ? "w-64 px-5" : "w-0"
   }`;
+
+  const singleSelectionDropdownItems: SingleSelectionDropdownItem[] =  
+  [
+    {
+      key: "settings",
+      name: "Settings",
+      action: () => {
+        setSettingsModalIsOpen(true)
+      },
+    },
+    {
+      key: "logout",
+      name: "Log out",
+      action: () => {
+        router.push("/api/auth/logout");
+      },
+      style: "text-danger",
+    },
+  ];
+
+  const adminItem: SingleSelectionDropdownItem = {
+    key: "adminInterface",
+    name: "Admin Dashboard",
+    action: () => {
+      router.push("/admin/group/1");
+    }
+  }
 
   // Rendering the sidebar with its contained components and data
   return (
@@ -229,82 +252,22 @@ export default function ConversationSidebar({
           userTags={tags}
         />
 
-        {/* User Information Component */}
-        <Dropdown>
-          <DropdownTrigger>
-            <div className="flex flex-col items-center justify-between bg-black w-full px-4 pb-3 hover:cursor-pointer">
-              {user ? (
-                <UserCard
-                  avatarUrl={
-                    user?.picture
-                      ? user?.picture
-                      : `https://ui-avatars.com/api/?name=${user?.name?.replace(
-                          " ",
-                          "+"
-                        )}`
-                  }
-                  // description={
-                  //   user?.email
-                  //     ? `${user?.email?.slice(0, 18)}...`
-                  //     : "No email provided"
-                  // }
-                  description={
-                    roundUsersCredits(prismaUserContext?.prismaUser) ?? ""
-                  }
-                  name={
-                    user?.name
-                      ? `${
-                          user?.name.length > 15
-                            ? `${`${user?.name?.split(
-                                " "
-                              )[0]} ${user?.name?.split(" ")[1]}`.slice(
-                                0,
-                                15
-                              )}...`
-                            : `${user?.name?.split(
-                                " "
-                              )[0]} ${user?.name?.split(" ")[1]}`
-                        }`
-                      : "User"
-                  }
-                />
-              ) : (
-                <UserCard
-                  avatarUrl="https://ui-avatars.com/api/?name="
-                  description=""
-                  name="User"
-                />
-              )}
-            </div>
-          </DropdownTrigger>
-          <DropdownMenu
-            aria-label="Profile Actions"
-            className="radius-small dark"
-            variant="flat"
-          >
-            {isAdmin ? (
-              <DropdownItem href="/admin/group/1" key="admin">
-                Admin Dashboard
-              </DropdownItem>
-            ) : (
-              // eslint-disable-next-line react/jsx-no-useless-fragment
-              <></>
-            )}
-            <DropdownItem key="settings" onPress={() => {setSettingsModalIsOpen(true)}}>
-              Settings
-            </DropdownItem>
-            {/* <DropdownItem key="analytics">Analytics</DropdownItem> */}
-            <DropdownItem key="system">Docs</DropdownItem>
-            <DropdownItem
-              className="text-red-600"
-              color="danger"
-              href="/api/auth/logout"
-              key="logout"
+        {prismaUserContext ? (
+          <div className="flex justify-between bg-black w-full px-4 hover:cursor-pointer">
+            <SingleSelectionDropdown
+              dropdownItems={isAdmin ? [adminItem, ...singleSelectionDropdownItems] : singleSelectionDropdownItems}
+              placement="top"
             >
-              Log Out
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+              <button className="w-full" type="button">
+                <UserCard
+                  avatarUrl={prismaUserContext?.prismaUser?.image}
+                  description={roundUsersCredits(prismaUserContext?.prismaUser) ?? ""}
+                  name={prismaUserContext?.prismaUser?.name}
+                />
+              </button>
+            </SingleSelectionDropdown>
+          </div>
+        ) : null}
       </div>
 
       {/* Sidebar toggle button */}
