@@ -421,6 +421,13 @@ export async function removeUsersFromGroup(
   }
 }
 
+/**
+ * Modifies the number of remaining credits of all users that belong the given group. 
+ * @param idGroup - The ID of the group whose constituents will have their number of remaining redits modified. 
+ * @param creditOffset - The number of credits to increment or decrement. If its value is negative, credits are decremented, 
+ * if positive, incremented.
+ * @returns A Promise that resolves to a PrismaResponse object containing the number of updated users after the operation.
+ */
 export async function modifyGroupsCurrentCredits(idGroup: number, creditOffset: number): Promise<PrismaResponse<{ count: number }>> {
   if (creditOffset === 0){
     return {status: 200, data: {count: 0}}
@@ -437,6 +444,13 @@ export async function modifyGroupsCurrentCredits(idGroup: number, creditOffset: 
   }
 }
 
+/**
+ * Auxiliary function that aids modifyGroupsCurrentCredits. Increments for all user belonging to the provided group 
+ * their number of remaining credits by the provided amount.
+ * @param idGroup - The ID of the group whose constituents will have their number of credits incremented. 
+ * @param creditIncrement - The number of credits to increment. 
+ * @returns A Promise that resolves to a PrismaResponse object containing the number of updated users after the operation.
+ */
 async function incrementGroupsCurrentCredits(idGroup: number, creditIncrement: number): Promise<{count: number}> {
   return prisma.user.updateMany({
     where: {
@@ -448,6 +462,14 @@ async function incrementGroupsCurrentCredits(idGroup: number, creditIncrement: n
   });
 }
 
+/**
+ * Auxiliary function that aids modifyGroupsCurrentCredits. Decrements for all user belonging to the provided group 
+ * their number of remaining credits by the provided amount. If the number of credits to decrement is greater that the remaining
+ * of a user, its value is set to 0.  
+ * @param idGroup - The ID of the group whose constituents will have their number of credits decremented. 
+ * @param creditDecrement - The number of credits to decrement. 
+ * @returns A Promise that resolves to a PrismaResponse object containing the number of updated users after the operation.
+ */
 async function decrementGroupsCurrentCredits(idGroup: number, creditDecrement: number): Promise<{count: number}> {
   const absCreditDecrement: number = Math.abs(creditDecrement)
   const [{count: toZeroUpdateCount}, {count: updateCount}] = await prisma.$transaction([
