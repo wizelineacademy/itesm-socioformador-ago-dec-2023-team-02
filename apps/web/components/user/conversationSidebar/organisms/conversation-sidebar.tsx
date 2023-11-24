@@ -183,7 +183,7 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
               content={selectedTags.size}
               isInvisible={selectedTags.size === 0}
             >
-              <Button isIconOnly onPress={handleTagButtonPress} radius="sm">
+              <Button isIconOnly onPress={handleTagButtonPress} radius="sm" id="tag-search">
                 <AiOutlineTag />
               </Button>
             </Badge>

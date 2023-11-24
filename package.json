@@ -9,7 +9,7 @@
     "commit": "git-cz",
     "prepare": "husky install",
     "test:ci": "playwright test",
-    "test": "playwright test --ui"
+    "test": "playwright test --ui "
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",

@@ -33,18 +33,6 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-        name: 'Microsoft Edge',
-        use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    },
-    {
        name: 'Google Chrome',
        use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     },
@@ -61,6 +49,14 @@ export default defineConfig({
     // },
 
     /* Test against branded browsers. */
+    //{
+    //  name: 'firefox',
+    //  use: { ...devices['Desktop Firefox'] },
+    //},
+    //{
+    //    name: 'Microsoft Edge',
+    //    use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    //},
     // {
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
@@ -69,6 +65,10 @@ export default defineConfig({
     //   name: 'Google Chrome',
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
+    //{
+    //  name: 'chromium',
+    //  use: { ...devices['Desktop Chrome'] },
+    //},
   ],
 
   /* Run your local dev server before starting the tests */

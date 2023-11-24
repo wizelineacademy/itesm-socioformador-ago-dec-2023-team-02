@@ -184,6 +184,7 @@ export function ConversationCard({userTags, conversation, isSelected, onClick}: 
       size="sm"
       value={title}
       variant="bordered"
+      id="edit-name"
     />
   );
 

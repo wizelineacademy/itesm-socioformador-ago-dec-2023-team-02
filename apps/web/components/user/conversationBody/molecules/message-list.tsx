@@ -40,7 +40,7 @@ export default function MessageList({
   }, [autoScroll, messages]);
 
   return (
-    <div className="pb-32">
+    <div className="pb-32" id="messages">
       {/* Messages display */}
       {messages.map((message, index) => (
         <div key={index}>

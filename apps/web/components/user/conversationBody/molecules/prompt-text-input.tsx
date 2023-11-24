@@ -74,7 +74,7 @@ export default function PromptTextInput({
         <div className="flex flex-col justify-center items-center max-w-[750px] md:w-11/12 mx-auto p-2">
           <div className="flex justify-between items-center w-full mt-2 mb-1">
             {/* Tokens Placeholder */}
-            <div className={`${!input ? "hidden" : ""} ml-2`}>
+            <div id="token-count" className={`${!input ? "hidden" : ""} ml-2`}>
               <CreditsBadge creditsUsed={calculateTokens(input)} />
             </div>
           </div>
