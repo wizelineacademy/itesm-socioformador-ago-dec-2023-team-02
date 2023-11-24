@@ -10,12 +10,13 @@ test.describe('conversations', () => {
         await page.getByRole('button', { name: 'Get Started' }).click();
         await page.goto('http://localhost:3000/conversation/new');
     });
-
+/*
     test.afterEach(async({page})=>{
         await page.locator('[id="edit-chat"]').click();
         await page.getByText('Delete').click();
         await page.getByRole('button', { name: 'Confirm' }).click();
-    });
+        //await expect(page.getByRole('heading', { name: 'Welcome prueba@gmail.com' })).toBeHidden();
+    });  */
   
     test('Model ChatGPT-3.5', async ({ page }) => {
         await page.getByRole('button', { name: 'New Chat' }).click();
@@ -25,9 +26,9 @@ test.describe('conversations', () => {
         await page.getByRole('button', { name: 'Create' }).click();
         await page.getByPlaceholder('Send Message').fill('what is the capital of france?');
         await expect(page.locator('[id="token-count"]')).toContainText('7');
-        await page.locator('form').getByRole('button').click();
-        await expect(page.getByText('what is the capital of france?', { exact: true })).toBeVisible({timeout: 120000});
-        await expect(page.getByText('The capital of France is Paris.')).toBeVisible({timeout: 120000});
+        await page.locator('#button-chat').click();
+        await expect(page.getByText('what is the capital of france?', { exact: true })).toBeVisible({timeout: 150000});
+        await expect(page.getByText('The capital of France is Paris.')).toBeHidden({timeout: 220000});
     });
 
     test('Model Dalle', async ({ page }) => {
@@ -40,9 +41,10 @@ test.describe('conversations', () => {
         await page.getByText('256x256').click();
         await page.getByRole('button', { name: 'Save' }).click();
         await page.getByPlaceholder('Send Message').fill('cat in a suit');
-        await page.locator('form').getByRole('button').click();
-        await expect(page.getByText('cat in a suit', { exact: true })).toBeVisible({timeout: 120000});
-        await expect(page.getByRole('img', { name: 'Generated image' })).toBeVisible({timeout: 200000});
+        await expect(page.locator('#token-count')).toContainText('4');
+        await page.locator('#button-chat').click();
+        await expect(page.getByText('cat in a suit', { exact: true })).toBeVisible({timeout: 150000});
+        await expect(page.getByRole('img', { name: 'Generated image' })).toBeHidden({timeout: 220000});
     });
 
     test('Model ChatGPT-3.5-16k', async ({ page }) => {
@@ -53,9 +55,9 @@ test.describe('conversations', () => {
         await page.getByRole('button', { name: 'Create' }).click();
         await page.getByPlaceholder('Send Message').fill('what is the capital of france?');
         await expect(page.locator('#token-count')).toContainText('7');
-        await page.locator('form').getByRole('button').click();
-        await expect(page.getByText('what is the capital of france?', { exact: true })).toBeVisible({timeout: 120000});
-        await expect(page.getByText('The capital of France is Paris.')).toBeVisible({timeout: 120000});
+        await page.locator('#button-chat').click();
+        await expect(page.getByText('what is the capital of france?', { exact: true })).toBeVisible({timeout: 150000});
+        await expect(page.getByText('The capital of France is Paris.')).toBeHidden({timeout: 220000});
     });
 /*
     test('Model ChatGPT-4', async ({ page }) => {

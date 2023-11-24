@@ -68,7 +68,7 @@ test.describe('sidebar tag', () => {
         await page.getByRole('button', { name: 'test tag' }).click();
         await page.getByRole('button', { name: 'Close' }).click();
         await expect(page.getByRole('button', { name: 'avatar tag test' })).toBeVisible();
-        await page.locator('[id="edit-chat"]').click();
+        await page.locator('#edit-chat').click();
         await page.getByText('Delete').click();
         await page.getByRole('button', { name: 'Confirm' }).click();
     })

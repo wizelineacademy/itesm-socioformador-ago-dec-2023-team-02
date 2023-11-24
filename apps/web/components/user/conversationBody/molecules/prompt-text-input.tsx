@@ -96,6 +96,7 @@ export default function PromptTextInput({
               <Spinner className="flex items-center ml-1" color="danger" />
             ) : (
               <Button
+                id="button-chat"
                 className={`${
                   !input
                     ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10"
