@@ -1,9 +1,10 @@
 import { Input, Textarea } from "@nextui-org/react";
 import type { Group } from "@prisma/client";
-import { BiCoinStack } from "react-icons/bi"
 import { useEffect, useState } from "react";
 import { editGroupCredits, editGroupDescription, editGroupName } from "@/helpers/group-helpers";
 import { imposeMaxLength, strToNumber, trimLeadingSpaces, isPositiveDecimal } from "@/helpers/string-helpers";
+import TextInfoTooltip from "../../shared/molecules/text-info-tooltip";
+import CreditInput from "./credit-input";
 
 interface EditGroupMenuProps {
     isEditing: boolean;
@@ -16,8 +17,6 @@ export default function EditGroupMenu({isEditing, group, onGroupChange}: EditGro
     const groupNameMaxLength = 20 
 
     useEffect(() => {
-        console.log(isEditing)
-
         if (!isEditing){
             setCreditsString(group.creditsAssigned.toString())
         }
@@ -46,15 +45,13 @@ export default function EditGroupMenu({isEditing, group, onGroupChange}: EditGro
                 <Input isClearable onValueChange={handleGroupNameChange} placeholder="Group name" value={group.name}/>
             </div>
 
-            <div className="flex flex-col items-start gap-2 w-full">
-                <p>Monthly credits</p>
-                <Input
-                    className="w-1/3"
-                    onValueChange={handleGroupCreditsChange}
-                    placeholder="Group credits"
-                    startContent={<BiCoinStack/>}
-                    value={creditsString}
-                />
+            <div className="flex flex-col items-start gap-3 w-full">
+                <div className="flex flex-row gap-2 justify-start items-center">
+                    <p>Monthly credits</p>
+                    <TextInfoTooltip text="Number of credits to add to each user of the group every month."/>
+                </div>
+
+                <CreditInput credits={creditsString} onCreditsChange={handleGroupCreditsChange}/>
             </div>
 
             <div className="flex flex-col items-start gap-2 w-full">

@@ -1,6 +1,8 @@
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter , Input } from "@nextui-org/react"
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner";
+import { isDecimal, isPotentiallyDecimal, strToNumber, trimLeadingSpaces } from "@/helpers/string-helpers";
+import CreditInput from "../../editGroup/molcules/credit-input";
 
 interface ModifyCreditsModalProps {
     isOpen: boolean,
@@ -10,19 +12,22 @@ interface ModifyCreditsModalProps {
 }
 
 export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdatedUsers}: ModifyCreditsModalProps): JSX.Element {
-    const [credits, setCredits] = useState<string>(0)
+    const [creditsString, setCreditsString] = useState<string>("0")
     // determines whether the save button should be disabled
     const [isLoading, setIsLoading] = useState<boolean>(false) 
 
     // Reset the component's credit state when closed. 
     useEffect(() => {
         if (!isOpen){
-            setCredits(0)
+            setCreditsString("0")
         }
     }, [isOpen])
 
-    const handleCreditsChange: (value: string) => void = (value) => {
-        setCredits(Number(value))
+    const handleCreditsChange: (newCredits: string) => void = (newCredits) => {
+        const trimmedValue: string = trimLeadingSpaces(newCredits)
+        if (trimmedValue.length === 0 || isPotentiallyDecimal(trimmedValue)){
+            setCreditsString(trimmedValue)
+        }
     }
 
     const handleModalClose: () => void = () => {
@@ -41,7 +46,7 @@ export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdated
 
     const modifyCredits: () => void = () => {
         const data: ModifyCreditsData = {
-            creditOffset: credits
+            creditOffset: strToNumber(creditsString)
         }
 
         // set the fetch options such as the method and request body
@@ -74,6 +79,11 @@ export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdated
         })
     }
 
+    const saveButtonText: string = isNaN(Number(creditsString)) ||  Number(creditsString) >= 0 ?
+        "Add credits" : "Remove credits" 
+
+    const disableSaveButton: boolean = isLoading || !isDecimal(creditsString)
+
     return(
         <Modal hideCloseButton isOpen={isOpen} onClose={handleModalClose} size="sm">
             <ModalContent>
@@ -81,22 +91,24 @@ export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdated
                     <>
                         <ModalHeader>Add to or deduct from the current amount of credits</ModalHeader>
                         <ModalBody>
-                            <div className="flex items-center justify-center">
-                                <Input
-                                    className="w-1/3"
-                                    label="Credits"
-                                    labelPlacement="inside"
-                                    onValueChange={handleCreditsChange}
-                                    placeholder="0.00"
-                                    type="number"
-                                    value={credits.toString()}
+                            <div className="flex items-center justify-start w-full">
+                                <CreditInput
+                                    credits={creditsString}
+                                    onCreditsChange={handleCreditsChange}
                                 />
                             </div>
                         </ModalBody>
                         <ModalFooter>
                                 <div className="flex flex-row gap-4 items-center">
                                     <Button color="danger" onPress={onClose} variant="light">Cancel</Button>
-                                    <Button color="primary" isDisabled={isLoading} isLoading={isLoading} onPress={handleSaveButtonPress}>Save</Button>
+                                    <Button
+                                        className={disableSaveButton ? "opacity-50" : "opacity-100"}
+                                        color="primary"
+                                        isDisabled={disableSaveButton}
+                                        isLoading={isLoading}
+                                        onPress={handleSaveButtonPress}>
+                                            {saveButtonText}
+                                        </Button>
                                 </div>
                         </ModalFooter>
                     </>
