@@ -1,20 +1,26 @@
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner";
 import { isDecimal, isPotentiallyDecimal, strToNumber, trimLeadingSpaces } from "@/helpers/string-helpers";
+import type { PrismaUserContextShape } from "@/context/prisma-user-context";
+import { PrismaUserContext } from "@/context/prisma-user-context";
+import { editUserCreditsRemaining } from "@/helpers/user-helpers";
+import type { GroupData } from "@/types/group-types";
+import { groupDataContainsUser } from "@/helpers/group-helpers";
 import CreditInput from "../../editGroup/molcules/credit-input";
 
 interface ModifyCreditsModalProps {
-    isOpen: boolean,
-    onModalClose: () => void,
-    id: number,
-    setUpdatedUsers: any
+    groupData: GroupData;
+    isOpen: boolean;
+    onModalClose: () => void;
+    setUpdatedUsers: any;
 }
 
-export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdatedUsers}: ModifyCreditsModalProps): JSX.Element {
+export default function ModifyCreditsModal({groupData, isOpen, onModalClose, setUpdatedUsers}: ModifyCreditsModalProps): JSX.Element {
     const [creditsString, setCreditsString] = useState<string>("0")
     // determines whether the save button should be disabled
     const [isLoading, setIsLoading] = useState<boolean>(false) 
+    const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext)
 
     // Reset the component's credit state when closed. 
     useEffect(() => {
@@ -45,8 +51,10 @@ export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdated
     }
 
     const modifyCredits: () => void = () => {
+        const creditOffset: number = strToNumber(creditsString)
+
         const data: ModifyCreditsData = {
-            creditOffset: strToNumber(creditsString)
+            creditOffset
         }
 
         // set the fetch options such as the method and request body
@@ -57,7 +65,7 @@ export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdated
         }
 
         // fetch call to the api route, if an error it is displayed
-        fetch(`/api/groups/modifyCredits/${id}`, fetchOptions)
+        fetch(`/api/groups/modifyCredits/${groupData.id}`, fetchOptions)
         .then((response) => {
             if (!response.ok){
                 throw new Error("Network response was not ok")
@@ -65,11 +73,19 @@ export default function ModifyCreditsModal({isOpen, onModalClose, id, setUpdated
             return response.json()
         })
         .then(() => {
-            toast.success("Successfully modified credits")
+            toast.success("Successfully modified the group's credit number")
+
+            if (prismaUserContext && groupDataContainsUser(groupData, prismaUserContext.prismaUser.id)){
+                const userNewCreditsRemaining: number = prismaUserContext.prismaUser.creditsRemaining + creditOffset
+                prismaUserContext.setPrismaUser(
+                    editUserCreditsRemaining(prismaUserContext.prismaUser, userNewCreditsRemaining < 0 ? 0 : userNewCreditsRemaining)
+                )
+            }
+
             onModalClose()
         })
         .catch((_) => {
-            toast.error("Failed to modfiy credits")
+            toast.error("Failed to modfiy the group's credit number")
             console.log(_)
         })
         .finally(() => {
