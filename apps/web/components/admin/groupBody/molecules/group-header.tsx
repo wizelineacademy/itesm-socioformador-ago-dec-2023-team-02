@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { AiOutlineSetting } from "react-icons/ai";
-import ThemeButton from "@/components/theme-button";
 import ModifyCreditsModal from "./modify-credits-modal";
 
 // Define the prop types for the GroupHeader component using an interface
@@ -56,8 +55,6 @@ export function GroupHeader({
 
       {/* Adjust the order and padding of buttons container for XS screens */}
       <div className="w-full sm:w-1/2 flex justify-end space-x-2 order-1 sm:order-2 pb-2 sm:pb-0">
-        <ThemeButton />
-
         <Button onPress={handleModifyCreditsButtonPress} size="sm" variant="flat">
           Modify Credits
         </Button>
