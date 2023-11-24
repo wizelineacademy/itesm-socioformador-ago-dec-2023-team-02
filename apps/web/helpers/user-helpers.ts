@@ -5,5 +5,5 @@ export function editUserCreditsRemaining(user: User, newCreditsRemaining: number
 }
 
 export function roundUsersCredits(user: User | undefined): string | undefined {
-    return user?.creditsRemaining.toFixed(3)
+    return user?.creditsRemaining.toFixed(2)
 }

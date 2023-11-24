@@ -26,7 +26,11 @@ import { useRouter } from "next/navigation";
 import { Role } from "@prisma/client";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import SearchBar from "@/components/shared/molecules/search-bar";
-import { ConversationsActionType, filterConversations, includesConversation} from "@/helpers/sidebar-conversation-helpers";
+import {
+  ConversationsActionType,
+  filterConversations,
+  includesConversation,
+} from "@/helpers/sidebar-conversation-helpers";
 import { sortTagsByName } from "@/helpers/tag-helpers";
 import TabButton from "@/components/shared/atoms/tab-button";
 import TabModal from "@/components/shared/atoms/tab-modal";
@@ -42,42 +46,65 @@ import TagMenuModal from "../../tagMenu/molecules/tag-menu-modal";
 import UserCard from "../../../shared/molecules/user-card";
 import { ConversationList } from "../molecules/conversation-list";
 import NewConversationMenuModal from "../../newConversation/molcules/new-conversation-menu-modal";
+import GlobalContext from "@/components/shared/molecules/global-context";
+
 
 interface ConversationSidebarProps {
   userTags: Tag[];
   models: ModelWithProvider[];
 }
 
-export default function ConversationSidebar({userTags, models}: ConversationSidebarProps): JSX.Element {
-  const conversationsContext = useContext<ConversationsContextShape | null>(ConversationsContext)
-  const [selectedConversation, setSelectedConversation] = useState<number | undefined>(undefined)
+export default function ConversationSidebar({
+  userTags,
+  models,
+}: ConversationSidebarProps): JSX.Element {
+  const conversationsContext = useContext<ConversationsContextShape | null>(
+    ConversationsContext
+  );
+  const [selectedConversation, setSelectedConversation] = useState<
+    number | undefined
+  >(undefined);
   const [tags, setTags] = useState<Tag[]>(sortTagsByName(userTags));
-  const [selectedTags, setSelectedTags] = useState<Set<number>>(new Set<number>());
+  const [selectedTags, setSelectedTags] = useState<Set<number>>(
+    new Set<number>()
+  );
   const [searchText, setSearchText] = useState<string>("");
   const [showingSidebar, setShowingSidebar] = useState<boolean>(true);
-  const [newConversationModalIsOpen, setNewConversationModalIsOpen] = useState<boolean>(false);
+  const [newConversationModalIsOpen, setNewConversationModalIsOpen] =
+    useState<boolean>(false);
   const [tagMenuModalIsOpen, setTagMenuModalIsOpen] = useState<boolean>(false);
   const router = useRouter();
 
   const { user } = useUser();
 
-  const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(
+    PrismaUserContext
+  );
   const isAdmin: boolean = prismaUserContext?.prismaUser?.role === Role.ADMIN;
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [tab, setTab] = useState("general");
 
-  const moveToConversation: (conversationId: number) => void = (conversationId) => {
+  const moveToConversation: (conversationId: number) => void = (
+    conversationId
+  ) => {
     setSelectedConversation(conversationId);
     router.push(`/conversation/${conversationId}`);
   };
 
   // Verificar que esto sea eficiente.
   useEffect(() => {
-    console.log(conversationsContext?.conversations)
-    const firstConversationId: number | undefined = conversationsContext?.conversations[0]?.id
+    console.log(conversationsContext?.conversations);
+    const firstConversationId: number | undefined =
+      conversationsContext?.conversations[0]?.id;
 
-    if (conversationsContext && !includesConversation(conversationsContext?.conversations, selectedConversation)){
+    if (
+      conversationsContext &&
+      !includesConversation(
+        conversationsContext?.conversations,
+        selectedConversation
+      )
+    ) {
       setSelectedConversation(firstConversationId);
       router.push(`/conversation/${firstConversationId ?? "new"}`);
     }
@@ -88,19 +115,26 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
     setSearchText(value);
   };
 
-  const handleNewConversationCreation: (newConversation: SidebarConversation) => void = (newConversation) => {
-    if (conversationsContext){
+  const handleNewConversationCreation: (
+    newConversation: SidebarConversation
+  ) => void = (newConversation) => {
+    if (conversationsContext) {
       conversationsContext.conversationsDispatch({
         type: ConversationsActionType.Create,
         conversationId: newConversation.id,
-        conversation: {...newConversation, createdAt: new Date(newConversation.createdAt)},
+        conversation: {
+          ...newConversation,
+          createdAt: new Date(newConversation.createdAt),
+        },
       });
       moveToConversation(newConversation.id);
       setNewConversationModalIsOpen(false);
     }
   };
 
-  const handleConversationPress: (conversationId: number) => void = (conversationId) => {
+  const handleConversationPress: (conversationId: number) => void = (
+    conversationId
+  ) => {
     moveToConversation(conversationId);
   };
 
@@ -121,7 +155,10 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
     setNewConversationModalIsOpen(false);
   };
 
-  const handleTagMenuModalClosing: (newTags: Tag[], newSelectedTags: Set<number>) => void = (newTags, newSelectedTags) => {
+  const handleTagMenuModalClosing: (
+    newTags: Tag[],
+    newSelectedTags: Set<number>
+  ) => void = (newTags, newSelectedTags) => {
     setTagMenuModalIsOpen(false);
     setTags(newTags);
     setSelectedTags(newSelectedTags);
@@ -194,8 +231,12 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
           {/* Conversation list section */}
           <ConversationList
             onConversationPress={handleConversationPress}
-            selectedConversation={selectedConversation}
-            userConversations={filterConversations(conversationsContext?.conversations ?? [], searchText, selectedTags)}
+            selectedConversation={selectedConversation ?? 0}
+            userConversations={filterConversations(
+              conversationsContext?.conversations ?? [],
+              searchText,
+              selectedTags
+            )}
             userTags={tags}
           />
 
@@ -218,7 +259,9 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
                     //     ? `${user?.email?.slice(0, 18)}...`
                     //     : "No email provided"
                     // }
-                    description={roundUsersCredits(prismaUserContext?.prismaUser) ?? ""}
+                    description={
+                      roundUsersCredits(prismaUserContext?.prismaUser) ?? ""
+                    }
                     name={
                       user?.name
                         ? `${
@@ -245,19 +288,30 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
                 )}
               </div>
             </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" className="radius-small dark" variant="flat">
-              {
-                isAdmin ? <DropdownItem href="/admin/group/1" key="admin">
-                Admin Dashboard
-              </DropdownItem>:
-              <></>
-              }
+            <DropdownMenu
+              aria-label="Profile Actions"
+              className="radius-small dark"
+              variant="flat"
+            >
+              {isAdmin ? (
+                <DropdownItem href="/admin/group/1" key="admin">
+                  Admin Dashboard
+                </DropdownItem>
+              ) : (
+                // eslint-disable-next-line react/jsx-no-useless-fragment
+                <></>
+              )}
               <DropdownItem key="settings" onPress={onOpen}>
                 Settings
               </DropdownItem>
               {/* <DropdownItem key="analytics">Analytics</DropdownItem> */}
               <DropdownItem key="system">Docs</DropdownItem>
-              <DropdownItem className="text-red-600" color="danger" href="/api/auth/logout" key="logout">
+              <DropdownItem
+                className="text-red-600"
+                color="danger"
+                href="/api/auth/logout"
+                key="logout"
+              >
                 Log Out
               </DropdownItem>
             </DropdownMenu>
@@ -296,7 +350,7 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
         />
       </div>
       <Modal
-      className="min-h-[500px] overflow-y-scroll"
+        className="min-h-[500px] overflow-y-scroll"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         placement="center"
@@ -318,7 +372,7 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
                         setTab("general");
                       }}
                       tab={tab}
-                      title="General" 
+                      title="General"
                     >
                       <AiOutlineSetting
                         className="flex items-center md:hidden"
@@ -371,7 +425,7 @@ export default function ConversationSidebar({userTags, models}: ConversationSide
                   <General />
                 </TabModal>
                 <TabModal keyword="custom" tab={tab}>
-                  Custom
+                  <GlobalContext />
                 </TabModal>
                 <TabModal keyword="usage" tab={tab}>
                   <Usage />

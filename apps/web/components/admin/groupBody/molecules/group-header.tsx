@@ -58,7 +58,7 @@ export function GroupHeader({
       <div className="w-full sm:w-1/2 flex justify-end space-x-2 order-1 sm:order-2 pb-2 sm:pb-0">
         <ThemeButton />
 
-        <Button size="sm" onPress={handleModifyCreditsButtonPress} variant="flat">
+        <Button onPress={handleModifyCreditsButtonPress} size="sm" variant="flat">
           Modify Credits
         </Button>
 

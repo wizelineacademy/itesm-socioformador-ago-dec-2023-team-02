@@ -222,15 +222,22 @@ export async function updateUser(idUser: number, userData: UserUpdateData): Prom
     }
 
     try {
+        console.log("userData ================");
+        console.log(userData);
         const user = await prisma.user.update({
             where: {
                 id: idUser
             },
-            data: userData
+            data: {
+                globalParameters: userData.globalParameters as any,
+                ...userData
+                
+            }
         })
 
         return { status: 200, data: user }
     } catch (error: any) {
+        console.log(error.message);
         return { status: 500, message: error.message }
     }
 }
@@ -431,7 +438,6 @@ export async function decrementUserCreditsRemaining(idUser: number, creditDecrem
 
         return { status: 200, data: user }
     } catch (error: any) {
-        console.log(error.message)
         return { status: 500, message: error.message }
     }
 }

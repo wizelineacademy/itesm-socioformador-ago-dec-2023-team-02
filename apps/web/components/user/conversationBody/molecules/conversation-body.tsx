@@ -353,6 +353,7 @@ export default function ConversationBody(): JSX.Element {
         size={size}
         temperature={temperature}
         userContext={userContext}
+        creditsRemaining={prismaUserContext?.prismaUser.creditsRemaining}
       />
 
       {/* Container for MessageList with custom styles */}

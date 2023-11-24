@@ -1,7 +1,7 @@
 
 import { NextResponse } from 'next/server';
-import { addUsersToGroup, removeUsersFromGroup } from '@/lib/group';
 import type { Group, User } from '@prisma/client';
+import { addUsersToGroup, removeUsersFromGroup } from '@/lib/group';
 import type { PrismaResponse } from '@/types/prisma-client-types';
 
 export async function POST(request: Request, { params: { id } }: { params: { id: string } }): Promise<NextResponse> {

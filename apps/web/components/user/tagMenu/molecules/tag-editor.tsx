@@ -19,13 +19,13 @@ export function TagEditor({tagName, tagColor, onTagNameChange, onTagColorChange}
     }
 
     return (
-        <div className="flex flex-col justify-start items-center gap-3 pb-2">
+        <div className="flex flex-col justify-start items-center gap-3 pb-3">
             <div className="gap-2 flex flex-col items-start">
                 <p className="text-sm text-black dark:text-white">Name</p>
-                <Input id="tag-name" className="h-15" fullWidth onValueChange={handleTagNameChange} value={tagName}/>
+                <Input fullWidth isClearable onValueChange={handleTagNameChange} value={tagName}/>
             </div>
 
-            <div className="space-y-2 flex flex-col items-start w-full h-full">
+            <div className="flex flex-col gap-3 items-start w-full h-full">
                 <p className="text-sm text-black dark:text-white">Color</p>
                 <SliderPicker className="w-full" color={tagColor} onChange={handleTagColorChange}/>
             </div>
