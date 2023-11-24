@@ -1,0 +1,8 @@
+{
+    "database": "Database PostgreSQL",
+    "openai": "OpenAI Providers Connection",
+    "auth0": "Accounts Authentication Auth0",
+    "pricing": "Chat GPT and Dall-E Models Pricing",
+    "s3bucket": "S3 Bucket for image storage"
+    
+}
