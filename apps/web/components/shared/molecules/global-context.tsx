@@ -121,7 +121,7 @@ export default function GlobalContext(): JSX.Element {
         </p>
       </label>
       {/* Tooltip for additional information on personal parameters */}
-      <Tooltip content={<PersonalParameterTooltip />} placement="right">
+      <Tooltip content={<PersonalParameterTooltip />} placement="left">
         <Textarea
           className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
           value={formParams.userContext}
@@ -144,7 +144,7 @@ export default function GlobalContext(): JSX.Element {
         </p>
       </label>
       {/* Tooltip for additional information on response parameters */}
-      <Tooltip content={<ResponseParameterTooltip />} placement="right">
+      <Tooltip content={<ResponseParameterTooltip />} placement="left">
         <Textarea
           className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
           value={formParams.responseContext}
@@ -186,7 +186,7 @@ export default function GlobalContext(): JSX.Element {
 
       {/* Label for temperature parameters for md and above screens*/}
       <div className="hidden md:inline">
-        <Tooltip content={<TemperatureTooltip />} placement="right">
+        <Tooltip content={<TemperatureTooltip />} placement="left">
           <label
             className="mb-0 hidden md:inline "
             htmlFor="customInstructions"
