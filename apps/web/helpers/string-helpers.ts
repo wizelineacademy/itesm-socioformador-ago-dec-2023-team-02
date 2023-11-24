@@ -80,3 +80,11 @@ export function strToNumber(str: string): number {
 export function isPositiveDecimal(str: string): boolean {
     return /^\d+\.?\d*?$/.test(str)
 }
+
+export function isPotentiallyDecimal(str: string): boolean {
+    return /^-?\d*\.?\d*$/.test(str)
+}
+
+export function isDecimal(str: string): boolean {
+    return /^(?=.*[1-9])-?\d+(?:.\d*)?$/.test(str)
+}

@@ -1,8 +1,10 @@
 /**
- * Various functions for working with groups of user, represente with the Prisma Group type. 
+ * Various functions for working with groups of user, represented with the Prisma Group type or the user-defined 
+ * GroupData.
  */
 
 import type { Group } from "@prisma/client";
+import type { GroupData } from "@/types/group-types";
 import { cleanString, findMatchRatio } from "./string-helpers";
 
 /**
@@ -142,4 +144,18 @@ export function sortGroups(groups: Group[], groupToPlaceFirst?: number): Group[]
         } 
         return groupA.name.localeCompare(groupB.name)
     })
+}
+
+export function placeHolderGroupData(): GroupData {
+    return {
+        id: 0,
+        name: "",
+        description: "",
+        creditsAssigned: 0,
+        users: []
+    }
+}
+
+export function groupDataContainsUser(groupData: GroupData, userId: number): boolean {
+    return groupData.users.some(({id}) => id === userId)
 }

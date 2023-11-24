@@ -17,7 +17,6 @@ import {
   ModalFooter,
   Textarea,
   Tooltip,
-  Switch,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -51,69 +50,52 @@ export default function ModalParametersGPT(props: any): JSX.Element {
     saveParameters: (updatedParameters: Parameters) => void;
   } = props;
 
+  // access prismaUser from context
   const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
   const prismaUser = prismaUserContext?.prismaUser;
 
-  const [isSelected, setIsSelected] = React.useState(false);
+  // State to hold updated user context
+  const [updatedUserContext, setUpdatedUserContext] = useState<string>(userContext);
+  const [updatedResponseContext, setUpdatedResponseContext] = useState<string>(responseContext);
+  const [updatedTemperature, setUpdatedTemperature] = useState<number>(temperature);
 
-  const [updatedUserContext, setUpdatedUserContext] =
-  useState<string>(userContext);
-const [updatedResponseContext, setUpdatedResponseContext] =
-  useState<string>(responseContext);
-  const [updatedTemperature, setUpdatedTemperature] =
-    useState<number>(temperature);
-
-  const [globalFormParams, setGlobalFormParams] = useState<Parameters>({
-    userContext: userContext,
-    responseContext: responseContext,
-    temperature: temperature, // Default temperature value
-  });
-
+  // State to update values when modal is opened
   useEffect(() => {
-
-    if(isSelected) {
-      // Access global parameters from prismaUser
-
-      const globalUserContext = prismaUser?.globalParameters?.userContext || "";
-
-      const globalResponseContext = prismaUser?.globalParameters?.responseContext || "";
-
-      const globalTemperature = prismaUser?.globalParameters?.temperature || temperature;
+    setUpdatedUserContext(userContext || ""); 
+    setUpdatedResponseContext(responseContext || "");
+    setUpdatedTemperature(temperature || 0.5);
+  }, [isOpen]);
 
 
+  function handleUseGlobalParameters() {
+    
+    // Access global parameters from prismaUser
+    const globalUserContext = prismaUser?.globalParameters?.userContext || "";
+    const globalResponseContext = prismaUser?.globalParameters?.responseContext || "";
+    const globalTemperature = prismaUser?.globalParameters?.temperature || temperature;
 
-      // Concatenate the text area values with global parameters
-      const concatenatedUserContext = `${globalUserContext} ${updatedUserContext}`;
-      const concatenatedResponseContext = `${globalResponseContext} ${updatedResponseContext}`;
-      const finalTemperature = globalTemperature; // Example logic for combining temperatures
+    // Concatenate the text area values with global parameters
+    const concatenatedUserContext = `${globalUserContext} ${updatedUserContext}`;
+    const concatenatedResponseContext = `${globalResponseContext} ${updatedResponseContext}`;
+    const finalTemperature: number = globalTemperature; // Example logic for combining temperatures
 
+    //set values
+    setUpdatedUserContext(concatenatedUserContext);
+    setUpdatedResponseContext(concatenatedResponseContext);
+    setUpdatedTemperature(finalTemperature);
+  }
 
-      // Create updated parameters object
-      const updatedGlobalParameters: Parameters = {
-        userContext: concatenatedUserContext,
-        responseContext: concatenatedResponseContext,
-        temperature: finalTemperature,
-      };
-
-      setGlobalFormParams(updatedGlobalParameters);
-
-
-    }else{
-
-      const updatedGlobalParameters: Parameters = {
-        userContext: updatedUserContext,
-        responseContext: updatedResponseContext,
-        temperature: updatedTemperature,
-      };
-
-      setGlobalFormParams(updatedGlobalParameters);
-
-    }
-  }, [isSelected]);
 
   const handleSave = (): void => {
-    
-    saveParameters(globalFormParams);
+
+    const updatedParameters: Parameters = {
+      userContext: updatedUserContext,
+      responseContext: updatedResponseContext,
+      temperature: updatedTemperature,
+    };
+
+
+    saveParameters(updatedParameters);
 
   };
 
@@ -145,12 +127,11 @@ const [updatedResponseContext, setUpdatedResponseContext] =
               <Tooltip content={<PersonalParameterTooltip />} placement="right">
                 <Textarea
                   className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
-                  value={globalFormParams.userContext}
+                  value={updatedUserContext}
                   labelPlacement="outside"
                   maxRows={8}
                   minRows={8}
                   onChange={(e) => {
-                    setGlobalFormParams({ ...globalFormParams, userContext: e.target.value });
                     setUpdatedUserContext(e.target.value);
                   }}
                   placeholder=""
@@ -169,12 +150,11 @@ const [updatedResponseContext, setUpdatedResponseContext] =
               <Tooltip content={<ResponseParameterTooltip />} placement="right">
                 <Textarea
                   className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
-                  value={globalFormParams.responseContext}
+                  value={updatedResponseContext}
                   labelPlacement="outside"
                   maxRows={8}
                   minRows={8}
                   onChange={(e) => {
-                    setGlobalFormParams({ ...globalFormParams, responseContext: e.target.value });
                     setUpdatedResponseContext(e.target.value);
                   }}
                   placeholder=""
@@ -230,17 +210,19 @@ const [updatedResponseContext, setUpdatedResponseContext] =
                 max={1}
                 min={0}
                 onValueChange={(value: number[]) => {
-                  setGlobalFormParams({ ...globalFormParams, temperature: value[0] })
                   setUpdatedTemperature(value[0]);
                 }}
                 step={0.1}
-                value={[globalFormParams.temperature]}
+                value={[updatedTemperature]}
               />
             </ModalBody>
             <ModalFooter className="flex flex-col md:flex-row justify-between">
-              <div className="flex items-center justify-between mb-4 md:mb-0">
+              <div className="flex items-center justify-center mb-4 md:mb-0">
                 {/* Switch for global parameters usage */}
-                <p className="text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
+                <Button onClick={handleUseGlobalParameters} className="w-full" size="sm">
+                  Paste Global GPT Context
+                </Button>
+                {/* <p className="text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
                   Use Global GPT Context
                 </p>
                 <Switch
@@ -248,7 +230,7 @@ const [updatedResponseContext, setUpdatedResponseContext] =
                   color="danger"
                   isSelected={isSelected}
                   onValueChange={setIsSelected}
-                />
+                /> */}
               </div>
               <div className="flex flex-col-reverse md:flex-row">
                 {/* Cancel and Save buttons */}
@@ -321,3 +303,4 @@ function TemperatureTooltip(): JSX.Element {
     </div>
   );
 }
+
