@@ -146,6 +146,10 @@ export function sortGroups(groups: Group[], groupToPlaceFirst?: number): Group[]
     })
 }
 
+/**
+ * Creates a placeholder object that adheres to the GroupData type. 
+ * @returns A new and non-significant GroupData object.  
+ */
 export function placeHolderGroupData(): GroupData {
     return {
         id: 0,
@@ -156,6 +160,12 @@ export function placeHolderGroupData(): GroupData {
     }
 }
 
+/**
+ * Searches through the array of users of a GroupData object, to determine if the provided user is present. 
+ * @param groupData - A GroupData object containing the array of User objects to search. 
+ * @param userId - The id of the user to search for in the group. 
+ * @returns A boolean value that indicates whether or not the user is present in the group. 
+ */
 export function groupDataContainsUser(groupData: GroupData, userId: number): boolean {
     return groupData.users.some(({id}) => id === userId)
 }

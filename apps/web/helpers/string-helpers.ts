@@ -81,10 +81,21 @@ export function isPositiveDecimal(str: string): boolean {
     return /^\d+\.?\d*?$/.test(str)
 }
 
+/**
+ * Determines whether a string represents what might potentially be a decimal number, that is, whether it 
+ * is partially a decimal number. 
+ * @param str - A string to validate. 
+ * @returns A boolean value, indicating the validity of the given string. 
+ */
 export function isPotentiallyDecimal(str: string): boolean {
     return /^-?\d*\.?\d*$/.test(str)
 }
 
+/**
+ * Determines whether a string represents a decimal number.
+ * @param str - A string to validate. 
+ * @returns A boolean value, indicating the validity of the given string. 
+ */
 export function isDecimal(str: string): boolean {
     return /^(?=.*[1-9])-?\d+(?:.\d*)?$/.test(str)
 }

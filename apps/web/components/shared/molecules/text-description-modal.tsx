@@ -21,7 +21,7 @@ export default function TextDescriptionModal({description, isOpen, onModalClose}
                         <ScrollShadow
                             className={`min-h-[200px] max-h-[400px] mb-2 ${description.length === 0 ? "opacity-50" : "opacity-100"}`}
                             hideScrollBar size={60}>
-                            {description.length > 0 ? description : "Use Group Settings to add a description the group."}
+                            {description.length === 0 ? "Use Group Settings to add a description the group." : description}
                         </ScrollShadow>
                     </ModalBody>
                     <ModalFooter>
