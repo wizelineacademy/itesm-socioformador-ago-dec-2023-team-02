@@ -99,7 +99,7 @@ export default function GroupBody(): JSX.Element {
 
   if (loading)
     return (
-      <div>
+      <div className="w-full h-screen flex flex-row justify-center items-center">
         <Spinner color="danger" />
       </div>
     );
