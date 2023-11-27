@@ -53,7 +53,11 @@ function AddUserModal({
   async function getUsers(): Promise<void> {
     try {
       // Modify the URL to include the groupId
-      const url = `http://localhost:3000/api/users/group/${idGroup}`;
+      const url = `http://${
+        process.env.ENVIROMENT === "production"
+          ? process.env.PROD_DOMAIN
+          : "localhost"
+      }:3000/api/users/group/${idGroup}`;
 
       const response = await fetch(url, {
         method: "GET",
@@ -99,7 +103,11 @@ function AddUserModal({
 
       // Send the POST request to your API endpoint
       const response = await fetch(
-        `http://localhost:3000/api/groups/add-users/${idGroup}`,
+        `http://${
+          process.env.ENVIROMENT === "production"
+            ? process.env.PROD_DOMAIN
+            : "localhost"
+        }:3000/api/groups/add-users/${idGroup}`,
         {
           method: "POST",
           headers: {

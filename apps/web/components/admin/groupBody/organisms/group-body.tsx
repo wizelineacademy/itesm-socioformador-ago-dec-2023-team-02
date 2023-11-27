@@ -7,7 +7,10 @@ import { Spinner } from "@nextui-org/react";
 import { toast } from "sonner";
 import type { GroupsContextShape } from "@/context/groups-context";
 import { GroupsContext } from "@/context/groups-context";
-import { GroupsActionType, placeHolderGroupData } from "@/helpers/group-helpers";
+import {
+  GroupsActionType,
+  placeHolderGroupData,
+} from "@/helpers/group-helpers";
 import type { GroupData } from "@/types/group-types";
 import { GroupHeader } from "../molecules/group-header";
 import EditGroupMenuModal from "../../editGroup/molcules/edit-group-menu-modal";
@@ -63,7 +66,11 @@ export default function GroupBody(): JSX.Element {
     async function getGroupData(): Promise<void> {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/groups/${idGroup}`,
+          `http://${
+            process.env.ENVIROMENT === "production"
+              ? process.env.PROD_DOMAIN
+              : "localhost"
+          }:3000/api/groups/${idGroup}`,
           {
             method: "GET",
             headers: {
