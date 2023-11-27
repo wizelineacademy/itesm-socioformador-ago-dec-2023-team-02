@@ -65,11 +65,7 @@ export default function GlobalContext(): JSX.Element {
       setIsSubmitting(true);
       // Assuming you have the user's ID and the API endpoint ready
       const userId = prismaUser?.id; // Replace with actual user ID
-      const apiEndpoint = `http://${
-        process.env.ENVIROMENT === "production"
-          ? process.env.PROD_DOMAIN
-          : "localhost"
-      }:3000/api/users/${userId}`; // Modify as per your API endpoint
+      const apiEndpoint = `/api/users/${userId}`; // Modify as per your API endpoint
 
       // Converting form data to JSON
       //const requestData = JSON.stringify(formParams);

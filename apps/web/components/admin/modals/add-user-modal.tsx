@@ -53,11 +53,7 @@ function AddUserModal({
   async function getUsers(): Promise<void> {
     try {
       // Modify the URL to include the groupId
-      const url = `http://${
-        process.env.ENVIROMENT === "production"
-          ? process.env.PROD_DOMAIN
-          : "localhost"
-      }:3000/api/users/group/${idGroup}`;
+      const url = `/api/users/group/${idGroup}`;
 
       const response = await fetch(url, {
         method: "GET",
@@ -102,20 +98,13 @@ function AddUserModal({
       const userIds = Array.from(values).map(Number);
 
       // Send the POST request to your API endpoint
-      const response = await fetch(
-        `http://${
-          process.env.ENVIROMENT === "production"
-            ? process.env.PROD_DOMAIN
-            : "localhost"
-        }:3000/api/groups/add-users/${idGroup}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userIds }),
-        }
-      );
+      const response = await fetch(`/api/groups/add-users/${idGroup}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userIds }),
+      });
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);

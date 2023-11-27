@@ -65,20 +65,12 @@ export default function GroupBody(): JSX.Element {
   useEffect(() => {
     async function getGroupData(): Promise<void> {
       try {
-        console.log("enviroment", process.env);
-        const response = await fetch(
-          `http://${
-            process.env.ENVIROMENT === "production"
-              ? process.env.PROD_DOMAIN
-              : "localhost"
-          }:3000/api/groups/${idGroup}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`/api/groups/${idGroup}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
