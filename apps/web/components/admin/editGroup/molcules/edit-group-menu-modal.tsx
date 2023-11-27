@@ -4,6 +4,7 @@ import type { Group } from "@prisma/client";
 import { toast } from "sonner";
 import { AiFillDelete } from "react-icons/ai"
 import { groupsAreEqual, isValidGroup } from "@/helpers/group-helpers";
+import ConfirmDeleteModal from "@/components/shared/molecules/confirm-delete-modal";
 import NewGroupMenu from "./edit-group-menu";
 
 interface EditGroupMenuModalProps {
@@ -18,6 +19,7 @@ interface EditGroupMenuModalProps {
 export default function EditGroupMenuModal({isNew, initialGroup, isOpen, onGroupSave, onGroupDeletion, onModalClose}: EditGroupMenuModalProps): JSX.Element {
     const [group, setGroup] = useState<Group>(initialGroup)
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false)
     const modalHorizontalPadding = 5
     const saveIsDisabled = !isValidGroup(group) || groupsAreEqual(initialGroup, group)
 
@@ -40,8 +42,17 @@ export default function EditGroupMenuModal({isNew, initialGroup, isOpen, onGroup
 
     const handleDeleteButtonPress: (e: any) => void = (_) => {
         if (onGroupDeletion && !isNew){
+            onModalClose()
+            setConfirmDeleteModalIsOpen(true)
+        }
+    }
+
+    const handleConfirmDeleteModalClosing: (confirm: boolean) => void = (confirm) => {
+        if (confirm){
             deleteGroup()
         }
+
+        setConfirmDeleteModalIsOpen(false)
     }
 
     const createGroup: () => void = () => {
@@ -109,6 +120,7 @@ export default function EditGroupMenuModal({isNew, initialGroup, isOpen, onGroup
         .then((deletedGroup) => {
             if (onGroupDeletion){
                 onGroupDeletion(deletedGroup as Group)
+                toast.success("Group deleted successfully.")
             }
         })
         .catch((_) => {
@@ -121,47 +133,55 @@ export default function EditGroupMenuModal({isNew, initialGroup, isOpen, onGroup
     }
 
     return (
-        <Modal hideCloseButton isOpen={isOpen} onClose={handleModalClose}>
-            <ModalContent>
-            {(onClose) => (
-                <>
-                    <ModalHeader className={`flex flex-row justify-between items-center mt-2 ${modalHorizontalPadding}`}>
-                        <div className="flex flex-row justify-between items-center w-full">
-                            <p>{isNew ? "New group" : "Edit group"}</p>
+        <>
+            <Modal hideCloseButton isOpen={isOpen} onClose={handleModalClose}>
+                <ModalContent>
+                {(onClose) => (
+                    <>
+                        <ModalHeader className={`flex flex-row justify-between items-center mt-2 ${modalHorizontalPadding}`}>
+                            <div className="flex flex-row justify-between items-center w-full">
+                                <p>{isNew ? "New group" : "Edit group"}</p>
 
-                            {!isNew ? 
-                            <Button color="danger" isIconOnly onPress={handleDeleteButtonPress}>
-                                <AiFillDelete/>
-                            </Button>
-                            : null}
-                        </div>
-                    </ModalHeader>
-                    <ModalBody className={`${modalHorizontalPadding}`}>
-                        <NewGroupMenu
-                            group={group}
-                            isEditing={isOpen}
-                            onGroupChange={handleGroupChange}
-                        />
-                    </ModalBody>
-                    <ModalFooter className={`${modalHorizontalPadding}`}>
-                        <div className="flex flex-row gap-4 items-center">
-                            <Button color="danger" onPress={onClose} variant="light">
-                                Close
-                            </Button>
+                                {!isNew ? 
+                                <Button color="danger" isIconOnly onPress={handleDeleteButtonPress}>
+                                    <AiFillDelete/>
+                                </Button>
+                                : null}
+                            </div>
+                        </ModalHeader>
+                        <ModalBody className={`${modalHorizontalPadding}`}>
+                            <NewGroupMenu
+                                group={group}
+                                isEditing={isOpen}
+                                onGroupChange={handleGroupChange}
+                            />
+                        </ModalBody>
+                        <ModalFooter className={`${modalHorizontalPadding}`}>
+                            <div className="flex flex-row gap-4 items-center">
+                                <Button color="danger" onPress={onClose} variant="light">
+                                    Close
+                                </Button>
 
-                            <Button
-                                className={saveIsDisabled ? "opacity-50" : "opacity-100"}
-                                color="primary" isDisabled={saveIsDisabled}
-                                isLoading={isLoading}
-                                onPress={handleSaveButtonPress}
-                            >
-                                {isNew ? "Create" : "Edit"}
-                            </Button>
-                        </div>
-                    </ModalFooter>
-                </>
-            )}
-            </ModalContent>
-        </Modal>
+                                <Button
+                                    className={saveIsDisabled ? "opacity-50" : "opacity-100"}
+                                    color="primary" isDisabled={saveIsDisabled}
+                                    isLoading={isLoading}
+                                    onPress={handleSaveButtonPress}
+                                >
+                                    {isNew ? "Create" : "Edit"}
+                                </Button>
+                            </div>
+                        </ModalFooter>
+                    </>
+                )}
+                </ModalContent>
+            </Modal>
+
+            <ConfirmDeleteModal
+                isOpen={confirmDeleteModalIsOpen}
+                modalText="group"
+                onModalClose={handleConfirmDeleteModalClosing}
+            />
+        </>
     );
 }
