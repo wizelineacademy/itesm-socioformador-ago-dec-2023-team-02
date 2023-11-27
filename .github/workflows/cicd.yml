@@ -124,26 +124,34 @@ jobs:
         run: |
           cd apps/web && pnpm build
 
-      - name: Stop server
-        run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pm2 stop all"
+      # - name: Stop server
+      #   run: |
+      #     sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pm2 stop all"
 
       - name: Clean LightSail directory
         run: |
           sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "rm -rf apps/web"
 
-      - name: Deploy to Lightsail using scp
+      - name: Deploy to Lightsail
         run: |
           sudo apt-get install -y sshpass
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" scp -o StrictHostKeyChecking=no -r apps/web ubuntu@52.54.237.87:/home/ubuntu/apps --exclude node_modules
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" rsync -avz apps/web ubuntu@52.54.237.87:/home/ubuntu/apps
 
       - name: Set custom package.json
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && echo ${{secrets.APPS_WEB_PACKAGE}} > package.json"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && rm package.json && mv package.prod.json package.json"
+
+      - name: Install server dependencies
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pnpm install"
+
+      - name: Prisma generate
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && npx prisma generate"
 
       - name: Start server
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pnpm install && pm2 start pnpm --name "web" -- start"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pm2 start pnpm --name "web" -- start"
 
       - name: Create output artifact
         uses: actions/upload-artifact@v2
@@ -185,26 +193,30 @@ jobs:
         run: |
           cd apps/docs && pnpm build
 
-      - name: Stop server
-        run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 stop all"
+      # - name: Stop server
+      #   run: |
+      #     sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 stop all"
 
       - name: Clean LightSail directory
         run: |
           sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "rm -rf apps/docs"
 
-      - name: Deploy to Lightsail using scp excluding node_modules
+      - name: Deploy to Lightsail
         run: |
           sudo apt-get install -y sshpass
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" scp -o StrictHostKeyChecking=no -r apps/docs ubuntu@52.54.237.87:/home/ubuntu/apps --exclude node_modules
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" rsync -avz --exclude node_modules apps/docs ubuntu@52.54.237.87:/home/ubuntu/apps
 
       - name: Set custom package.json
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && echo ${{secrets.APPS_DOCS_PACKAGE}} > package.json"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && rm package.json && mv package.prod.json package.json"
+
+      - name: Install server dependencies
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pnpm install"
 
       - name: Start server
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pnpm install && pm2 start pnpm --name "docs" -- start"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 start pnpm --name "docs" -- start -- -p 3001"
 
       - name: Create output artifact
         uses: actions/upload-artifact@v2
