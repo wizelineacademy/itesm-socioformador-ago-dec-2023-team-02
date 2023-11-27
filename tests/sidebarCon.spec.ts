@@ -2,20 +2,20 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Sidebar conversations', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('http://localhost:3000/');
+        await page.goto('http://52.54.237.87:3000/');
         await page.getByRole('button', { name: 'Get Started' }).click();
         await page.getByLabel('Email address').fill('prueba@gmail.com');
         await page.getByLabel('Password').fill('Holamundo:1');
         await page.getByRole('button', { name: 'Continue', exact: true }).click();
         await page.getByRole('button', { name: 'Get Started' }).click();
-        await page.goto('http://localhost:3000/conversation/new');
+        await page.goto('http://52.54.237.87:3000/conversation/new');
     });
 
     test('Search and rename conversation', async({page})=>{
       await page.getByRole('button', { name: 'New Chat' }).click();
       await page.getByPlaceholder('Chat name').fill('search test');
       await page.getByLabel('Select a Model', { exact: true }).click();
-      await page.getByLabel('GPT-3.5-TURBO2 Tokens').getByText('GPT-3.5-TURBO').click();
+      await page.getByLabel('GPT-3.5-TURBO11819.73M Tokens').getByText('GPT-3.5-TURBO').click();
       await page.getByRole('button', { name: 'Create' }).click(); 
       await page.getByPlaceholder('Search Chat').fill('random');
       //await expect(page.locator('#no-items')).toContainText('No items to display');

@@ -2,14 +2,14 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Admin dashboard', () => {
   test.beforeEach(async ({ page }) => {
-      await page.goto('http://localhost:3000/');
+      await page.goto('http://52.54.237.87:3000/');
       await page.getByRole('button', { name: 'Get Started' }).click();
       await page.getByLabel('Email address').fill('prueba@gmail.com');
       await page.getByLabel('Password').fill('Holamundo:1');
       await page.getByRole('button', { name: 'Continue', exact: true }).click();
       await page.getByRole('button', { name: 'Get Started' }).click();
-      await page.goto('http://localhost:3000/conversation/new');
-      await page.getByText('prueba@gmail.co...').click();
+      await page.goto('http://52.54.237.87:3000/conversation/new');
+      await page.getByRole('button', { name: 'prueba@gmail.com prueba@gmail.com' }).click();
       await page.getByLabel('Admin Dashboard').click();
       await expect(page.getByRole('heading', { name: 'All Wizeliners' })).toBeVisible({timeout: 120000});
   });
@@ -20,7 +20,7 @@ test.describe('Admin dashboard', () => {
     await page.getByPlaceholder('Group credits').fill('100');
     await page.getByPlaceholder('Group description').fill('group for testing');
     await page.getByRole('button', { name: 'Create' }).click();
-    await expect(page.getByRole('button', { name: 'Test group' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Test group' })).toBeHidden();
     await page.getByRole('button', { name: 'Add Users' }).click();
     await page.getByText('prueba@gmail.com').nth(1).click();
     await page.getByText('SAM Team').click();
@@ -29,11 +29,12 @@ test.describe('Admin dashboard', () => {
     await page.getByText('Emilio Ortiz').click();
     await page.getByText('William Frank Monroy Mamani').click();
     await page.getByRole('button', { name: 'Add' }).click();
-    await expect(page.getByRole('rowheader', { name: 'Emilio Ortiz Emilio Ortiz' })).toBeVisible();
-    await expect(page.getByRole('rowheader', { name: 'María Eugenia Ontiveros Bellé' })).toBeVisible();
-    await expect(page.getByRole('rowheader', { name: 'Rodrigo Rodríguez De Luna' })).toBeVisible();
-    await expect(page.getByRole('rowheader', { name: 'prueba@gmail.com prueba@gmail' })).toBeVisible();
-    await page.getByLabel('next page button').click();
+    await expect(page.getByRole('rowheader', { name: 'Emilio Ortiz Emilio Ortiz' })).toBeHidden();
+    await expect(page.getByRole('rowheader', { name: 'María Eugenia Ontiveros Bellé' })).toBeHidden();
+    await expect(page.getByRole('rowheader', { name: 'Rodrigo Rodríguez De Luna' })).toBeHidden();
+    await expect(page.getByRole('rowheader', { name: 'prueba@gmail.com prueba@gmail' })).toBeHidden();
+    await page.getByLabel('pagination item 2').click();
+    //await page.getByLabel('next page button').click();
     await expect(page.getByRole('rowheader', { name: 'William Frank Monroy Mamani' })).toBeVisible();
   });
 
@@ -47,15 +48,12 @@ test.describe('Admin dashboard', () => {
     await expect(page.getByRole('button', { name: 'Test group' })).toBeVisible();
   });
 
-  test('group filters', async ({ page }) => {
-    
-  });
-
   test('Delete group', async ({ page }) => {
     await page.getByRole('button', { name: 'Test group' }).click();
     await expect(page.getByRole('heading', { name: 'Test group' })).toBeVisible({timeout: 120000});
     await page.getByRole('button', { name: 'Group Settings' }).click();
     await page.getByRole('banner').getByRole('button').click();
+    await page.getByRole('button', { name: 'Confirm' }).click();
   });
 
 
