@@ -65,6 +65,7 @@ export default function GroupBody(): JSX.Element {
   useEffect(() => {
     async function getGroupData(): Promise<void> {
       try {
+        console.log("enviroment", process.env);
         const response = await fetch(
           `http://${
             process.env.ENVIROMENT === "production"
