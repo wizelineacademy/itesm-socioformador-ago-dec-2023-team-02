@@ -2,34 +2,31 @@
 import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { AiOutlineSetting } from "react-icons/ai";
-import ThemeButton from "@/components/theme-button";
+import { LuInfo } from "react-icons/lu";
+import type { GroupData } from "@/types/group-types";
+import TextDescriptionModal from "@/components/shared/molecules/text-description-modal";
 import ModifyCreditsModal from "./modify-credits-modal";
 
 // Define the prop types for the GroupHeader component using an interface
 interface GroupHeaderProps {
-  groupName: string; // The name of the group
-  // groupDescription: string;   // A brief description of the group
-  creditsAssigned: number; // The number of credits assigned to the group
+  groupData: GroupData;
   onGroupsSettingsPress: () => void;
-  groupdId: number;
   setUpdatedUsers: any
 }
 
 // GroupHeader component definition with explicit return type JSX.Element
 export function GroupHeader({
-  groupName,
-  // groupDescription ,
-  creditsAssigned,
+  groupData,
   onGroupsSettingsPress,
-  groupdId,
   setUpdatedUsers
 }: GroupHeaderProps): JSX.Element {
+  const [creditsModalIsOpen, setCreditsModalIsOpen] = useState<boolean>(false)
+  const [descriptionModalIsOpen, setDescriptionModalIsOpen] = useState<boolean>(false)
+
   const handleGroupSettingsPress: (e: any) => void = (_) => {
     onGroupsSettingsPress()
   }
 
-  const [creditsModalIsOpen, setCreditsModalIsOpen] = useState<boolean>(false)
-  
   const handleModalClose: () => void = () => {
     setCreditsModalIsOpen(false)
   }
@@ -38,15 +35,26 @@ export function GroupHeader({
     setCreditsModalIsOpen(true)
   }
 
+  const handleGroupNameClick: (e: any) => void = (_) => {
+    setDescriptionModalIsOpen(true)
+  }
+
+  const handleDescriptionModalClosing: () => void = () => {
+    setDescriptionModalIsOpen(false)
+  }
+
   return (
     <div className="flex flex-wrap items-start justify-between my-2 sm:ml-10 mt-0 pt-0">
       {/* Adjust the order of items for XS screens */}
       <div className="w-full sm:w-1/2 order-2 sm:order-1 text-start">
-        <h3 className="text-3xl font-bold">{groupName}</h3>
+        <button className="flex flex-row justify-center items-center gap-3" onClick={handleGroupNameClick} type="button">
+          <h3 className="text-3xl font-bold">{groupData.name}</h3>
+          <LuInfo size="0.8rem"/>
+        </button>
 
         {/* Placeholder for credits information below the group name */}
         <p className="text-default-600  text-sm mt-1">
-          {creditsAssigned} credits assigned
+          {groupData.creditsAssigned} credits assigned
         </p>
         {/* Added padding between group name and description */}
         {/* <div className='overflow-scroll h-10 my-2'>
@@ -56,8 +64,6 @@ export function GroupHeader({
 
       {/* Adjust the order and padding of buttons container for XS screens */}
       <div className="w-full sm:w-1/2 flex justify-end space-x-2 order-1 sm:order-2 pb-2 sm:pb-0">
-        <ThemeButton />
-
         <Button onPress={handleModifyCreditsButtonPress} size="sm" variant="flat">
           Modify Credits
         </Button>
@@ -68,11 +74,18 @@ export function GroupHeader({
       </div>
 
       <ModifyCreditsModal
-        id={groupdId}
+        groupData={groupData}
         isOpen={creditsModalIsOpen}
         onModalClose={handleModalClose}
         setUpdatedUsers={setUpdatedUsers}
-    />
+      />
+
+      <TextDescriptionModal
+        description={groupData.description}
+        isOpen={descriptionModalIsOpen}
+        onModalClose={handleDescriptionModalClosing}
+      />
+
     </div>
   );
 }

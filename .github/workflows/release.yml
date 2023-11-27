@@ -1,30 +1,24 @@
 name: Release
 
 on:
-  workflow_dispatch:
+  workflow_call:
 
 jobs:
   release:
+    name: Release
     permissions:
       contents: write
       issues: write
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: SpicyPizza/create-envfile@v1.3
-        with:
-          envkey_DEBUG: false
-          envkey_PORT: 3000
-          envkey_DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          directory: ./apps/web
-          file_name: .env
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 18
-      - run: npm i -g pnpm
-      - run: pnpm install --no-frozen-lockfile
-      - run: pnpm build
+          node-version: "18.x"
+      - run: npm -g install @semantic-release/git semantic-release && semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

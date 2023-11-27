@@ -1,8 +1,10 @@
 /**
- * Various functions for working with groups of user, represente with the Prisma Group type. 
+ * Various functions for working with groups of user, represented with the Prisma Group type or the user-defined 
+ * GroupData.
  */
 
 import type { Group } from "@prisma/client";
+import type { GroupData } from "@/types/group-types";
 import { cleanString, findMatchRatio } from "./string-helpers";
 
 /**
@@ -142,4 +144,28 @@ export function sortGroups(groups: Group[], groupToPlaceFirst?: number): Group[]
         } 
         return groupA.name.localeCompare(groupB.name)
     })
+}
+
+/**
+ * Creates a placeholder object that adheres to the GroupData type. 
+ * @returns A new and non-significant GroupData object.  
+ */
+export function placeHolderGroupData(): GroupData {
+    return {
+        id: 0,
+        name: "",
+        description: "",
+        creditsAssigned: 0,
+        users: []
+    }
+}
+
+/**
+ * Searches through the array of users of a GroupData object, to determine if the provided user is present. 
+ * @param groupData - A GroupData object containing the array of User objects to search. 
+ * @param userId - The id of the user to search for in the group. 
+ * @returns A boolean value that indicates whether or not the user is present in the group. 
+ */
+export function groupDataContainsUser(groupData: GroupData, userId: number): boolean {
+    return groupData.users.some(({id}) => id === userId)
 }

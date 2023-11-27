@@ -2,8 +2,10 @@
 import { useContext } from "react";
 import { Button, Card, CardBody } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
+import { BiCoinStack } from "react-icons/bi"
 import ThemeButton from "@/components/theme-button";
-import { PrismaUserContext } from "@/context/prisma-user-context";
+import { PrismaUserContext, type PrismaUserContextShape } from "@/context/prisma-user-context";
+import { roundUsersCredits } from "@/helpers/user-helpers";
 
 function ClearAll(): JSX.Element {
   return (
@@ -17,7 +19,8 @@ function ClearAll(): JSX.Element {
 }
 
 export default function General(): JSX.Element {
-  const prismaUser = useContext(PrismaUserContext);
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
+  const prismaUser = prismaUserContext?.prismaUser;
 
   return (
     <div className="flex flex-col space-y-4">
@@ -27,7 +30,10 @@ export default function General(): JSX.Element {
         <CardBody>
           <div className="flex items-center justify-between space-y-2 pr-3">
             <p>Credits Remaining</p>
-            <p>{prismaUser?.creditsRemaining}</p>
+            <div className="flex flex-row items-center gap-1">
+              <p className="p-0 m-0"><BiCoinStack/></p>
+              <p>{roundUsersCredits(prismaUser)}</p>
+            </div>
           </div>
         </CardBody>{" "}
       </Card>

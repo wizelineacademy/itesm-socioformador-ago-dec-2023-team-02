@@ -24,9 +24,11 @@ import { SlOptionsVertical } from "react-icons/sl";
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
 import { BsChevronCompactDown } from "react-icons/bs";
 import { FaMinus } from "react-icons/fa";
+import { BiCoinStack } from "react-icons/bi";
 import { toast } from "sonner";
 import { useCallback, useMemo, useState } from "react";
 import type { Key, ChangeEvent } from "react";
+import { roundUsersCredits } from "@/helpers/user-helpers";
 import AddUserModal from "../../modals/add-user-modal";
 
 //Component props
@@ -91,16 +93,13 @@ export default function GroupTable({
     try {
       console.log("Selected keys: ", selectedKeys);
       console.log("Selected keys2: ", Array.from(selectedKeys));
-      const response = await fetch(
-        `http://localhost:3000/api/groups/add-users/${idGroup}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userIds: Array.from(selectedKeys) }),
-        }
-      );
+      const response = await fetch(`/api/groups/add-users/${idGroup}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userIds: Array.from(selectedKeys) }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status}`);
@@ -120,16 +119,13 @@ export default function GroupTable({
 
   const updateUserRole = async (userId: number, role: Role): Promise<void> => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/users/${userId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ role }),
-        }
-      );
+      const response = await fetch(`/api/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ role }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status}`);
@@ -244,11 +240,16 @@ export default function GroupTable({
         );
       case "creditsRemaining":
         return (
-          <div className="flex flex-col w-full justify-end">
-            <p className="text-bold text-sm capitalize">
-              {cellValue as string}
+          <div className="flex flex-row w-full items-center gap-1">
+            <p className="p-0 m-0">
+              <BiCoinStack />
             </p>
-            {/* <p className="text-bold text-tiny capitalize text-default-400">{user.jobPosition}</p> */}
+            <p>
+              {" "}
+              {
+                roundUsersCredits(user) as string // eslint-disable-line
+              }
+            </p>
           </div>
         );
 

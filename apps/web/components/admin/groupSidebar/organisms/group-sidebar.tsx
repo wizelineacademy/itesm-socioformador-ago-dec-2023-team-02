@@ -20,6 +20,7 @@ import { PrismaUserContext } from "@/context/prisma-user-context";
 import type { SingleSelectionDropdownItem } from "@/types/component-types";
 import SingleSelectionDropdown from "@/components/shared/molecules/single-selection-dropdown";
 import { roundUsersCredits } from "@/helpers/user-helpers";
+import SettingsMenuModal from "@/components/shared/molecules/settings-menu-modal";
 import GroupList from "../molecules/group-list";
 import EditGroupMenuModal from "../../editGroup/molcules/edit-group-menu-modal";
 
@@ -30,8 +31,8 @@ export default function GroupSidebar(): JSX.Element {
   const [selectedGroup, setSelectedGroup] = useState<number | null>(
     groups[0]?.id || null
   );
-  const [editGroupModalIsOpen, setEditGroupModalIsOpen] =
-    useState<boolean>(false);
+  const [editGroupModalIsOpen, setEditGroupModalIsOpen] = useState<boolean>(false);
+  const [settingsModalIsOpen, setSettingsModalIsOpen] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [sidebarIsVisible, setSidebarIsVisible] = useState<boolean>(true);
   const router = useRouter();
@@ -69,6 +70,10 @@ export default function GroupSidebar(): JSX.Element {
   const handleModalClose: () => void = () => {
     setEditGroupModalIsOpen(false);
   };
+
+  const handleSettingsModalClosing: () => void = () => {
+    setSettingsModalIsOpen(false)
+  }
 
   const handleGroupSave: (savedGroup: Group) => void = (savedGroup) => {
     if (groupsContext) {
@@ -119,7 +124,7 @@ export default function GroupSidebar(): JSX.Element {
       key: "settings",
       name: "Settings",
       action: () => {
-        console.log("Settings press");
+        setSettingsModalIsOpen(true)
       },
     },
     {
@@ -175,7 +180,7 @@ export default function GroupSidebar(): JSX.Element {
               <button className="w-full" type="button">
                 <UserCard
                   avatarUrl={prismaUserContext?.prismaUser?.image}
-                  description={roundUsersCredits(prismaUserContext?.prismaUser) ?? ""}
+                  description={`${roundUsersCredits(prismaUserContext?.prismaUser) ?? ""} Credits`}
                   name={prismaUserContext?.prismaUser?.name}
                 />
               </button>
@@ -189,6 +194,12 @@ export default function GroupSidebar(): JSX.Element {
           isOpen={editGroupModalIsOpen}
           onGroupSave={handleGroupSave}
           onModalClose={handleModalClose}
+        />
+
+        <SettingsMenuModal
+          includeGlobalContextSection={false}
+          isOpen={settingsModalIsOpen}
+          onModalClose={handleSettingsModalClosing}
         />
       </div>
 

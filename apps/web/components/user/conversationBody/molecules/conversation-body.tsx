@@ -345,6 +345,7 @@ export default function ConversationBody(): JSX.Element {
     <div>
       {/* Conversation Header Component */}
       <ConversationHeader
+        creditsRemaining={prismaUserContext?.prismaUser.creditsRemaining}
         modelDescription={modelDescription}
         modelName={modelName}
         providerImage={providerImage}
@@ -353,7 +354,6 @@ export default function ConversationBody(): JSX.Element {
         size={size}
         temperature={temperature}
         userContext={userContext}
-        creditsRemaining={prismaUserContext?.prismaUser.creditsRemaining}
       />
 
       {/* Container for MessageList with custom styles */}

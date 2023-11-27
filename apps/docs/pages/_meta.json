@@ -1,7 +1,11 @@
 {
   "index": "Introduction",
-  "another": "Another Page",
-  "advanced": "Advanced (A Folder)",
+  "specifications": "Specifications",
+  "coding": "Coding Standards",
+  "frontend": "Front-End",
+  "backend": "Back-End",
+  "builds": "Build",
+  "setup":"Setup",
   "about": {
     "title": "About",
     "type": "page"
@@ -12,4 +16,5 @@
     "href": "https://twitter.com/shuding_",
     "newWindow": true
   }
+  
 }

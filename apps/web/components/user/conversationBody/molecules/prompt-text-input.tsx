@@ -120,7 +120,7 @@ export default function PromptTextInput({
               <></>
               :
               <div className={`flex flex-row ${!input ? "hidden" : ""} ml-2 gap-2`}>
-                <CreditsBadge creditsUsed={calculateTokens(input)} />
+                <CreditsBadge creditsUsed={calculateTokens(input)} text="Tokens being used"/>
                 {
                 checkGPT(creditsRemaining, model, input)
                 ?

@@ -48,29 +48,30 @@ export async function saveMessage(
     });
   }
 
-  // Reduce the current user's remaining credits. 
-  const creditReductionFetchOptions: RequestInit = {
-    method: "PATCH",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({creditReduction: messageInfo.creditsUsed})
-  }
-  
-  fetch(`/api/users/removeCredits/${idUser}`, creditReductionFetchOptions)
-  .then((response) => {
-    if (!response.ok){
-      throw new Error("Network response was not ok")
+  if (messageInfo.creditsUsed > 0){
+    // Reduce the current user's remaining credits. 
+    const creditReductionFetchOptions: RequestInit = {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({creditReduction: messageInfo.creditsUsed})
     }
-    return response.json()
-  })
-  .then((updatedUser) => {
-    console.log(updatedUser.creditsRemaining)
-    onUserCreditsReduction(updatedUser as User)
-  })
-  .catch((_) => {
-    console.log("Failed to update user's remaining credits")
-  })
+    
+    fetch(`/api/users/removeCredits/${idUser}`, creditReductionFetchOptions)
+    .then((response) => {
+      if (!response.ok){
+        throw new Error("Network response was not ok")
+      }
+      return response.json()
+    })
+    .then((updatedUser) => {
+      console.log(updatedUser.creditsRemaining)
+      onUserCreditsReduction(updatedUser as User)
+    })
+    .catch((_) => {
+      console.log("Failed to update user's remaining credits")
+    })
+  }
 }
-
 // Example calling code:
 /*
 try {

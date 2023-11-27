@@ -38,6 +38,10 @@ function colorLuminanceThreeDigits(hexColor: string): number {
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+/**
+ * Randomly generate a string representation of a hexadecimal color of 6 digits. 
+ * @returns A string that represents a hexadecimal number of 6 digits. 
+ */
 export function randomHexColor(): string {
     let color = "#"
 
@@ -48,10 +52,20 @@ export function randomHexColor(): string {
     return color
 }
 
+/**
+ * Randomly return any of the 16 characters that compromise the hexadecimal numeral system. 
+ * @returns A single string hex character. 
+ */
 export function randomHexCharacter(): string {
     return randomNumberBetween(0, 15).toString(16)
 }
 
+/**
+ * Randomly return a number found within a specific range. 
+ * @param min - Inclusive, the min value of the range of numbers to choose from. 
+ * @param max - Inclusive, the max value of the range of numbers to choose from. 
+ * @returns A random whole number, located within the range. 
+ */
 export function randomNumberBetween(min: number, max: number): number {
     return Math.round(Math.random() * Math.abs(max - min)) + min 
 }

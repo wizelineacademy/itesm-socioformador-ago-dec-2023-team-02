@@ -7,7 +7,7 @@
  */
 // Importing necessary libraries and components
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Button,
   Modal,
@@ -17,13 +17,14 @@ import {
   ModalFooter,
   Textarea,
   Tooltip,
-  Switch,
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@nextui-org/react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Slider } from "@/components/ui/slider";
+import type { PrismaUserContextShape } from "@/context/prisma-user-context";
+import { PrismaUserContext } from "@/context/prisma-user-context";
 
 interface Parameters {
   userContext: string;
@@ -50,6 +51,13 @@ export default function ModalParametersGPT(props: any): JSX.Element {
     saveParameters: (updatedParameters: Parameters) => void;
   } = props;
 
+  // access prismaUser from context
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(
+    PrismaUserContext
+  );
+  const prismaUser = prismaUserContext?.prismaUser;
+
+  // State to hold updated user context
   const [updatedUserContext, setUpdatedUserContext] =
     useState<string>(userContext);
   const [updatedResponseContext, setUpdatedResponseContext] =
@@ -57,12 +65,40 @@ export default function ModalParametersGPT(props: any): JSX.Element {
   const [updatedTemperature, setUpdatedTemperature] =
     useState<number>(temperature);
 
+  // State to update values when modal is opened
+  useEffect(() => {
+    setUpdatedUserContext(userContext || "");
+    setUpdatedResponseContext(responseContext || "");
+    setUpdatedTemperature(temperature || 0.5);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  function handleUseGlobalParameters(): void {
+    // Access global parameters from prismaUser
+    const globalUserContext = prismaUser?.globalParameters?.userContext || "";
+    const globalResponseContext =
+      prismaUser?.globalParameters?.responseContext || "";
+    const globalTemperature =
+      prismaUser?.globalParameters?.temperature || temperature;
+
+    // Concatenate the text area values with global parameters
+    const concatenatedUserContext = `${globalUserContext} ${updatedUserContext}`;
+    const concatenatedResponseContext = `${globalResponseContext} ${updatedResponseContext}`;
+    const finalTemperature: number = globalTemperature; // Example logic for combining temperatures
+
+    //set values
+    setUpdatedUserContext(concatenatedUserContext);
+    setUpdatedResponseContext(concatenatedResponseContext);
+    setUpdatedTemperature(finalTemperature);
+  }
+
   const handleSave = (): void => {
     const updatedParameters: Parameters = {
       userContext: updatedUserContext,
       responseContext: updatedResponseContext,
       temperature: updatedTemperature,
     };
+
     saveParameters(updatedParameters);
   };
 
@@ -94,7 +130,6 @@ export default function ModalParametersGPT(props: any): JSX.Element {
               <Tooltip content={<PersonalParameterTooltip />} placement="right">
                 <Textarea
                   className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
-                  defaultValue={userContext}
                   labelPlacement="outside"
                   maxRows={8}
                   minRows={8}
@@ -103,6 +138,7 @@ export default function ModalParametersGPT(props: any): JSX.Element {
                   }}
                   placeholder=""
                   radius="sm"
+                  value={updatedUserContext}
                   variant="faded"
                 />
               </Tooltip>
@@ -117,7 +153,6 @@ export default function ModalParametersGPT(props: any): JSX.Element {
               <Tooltip content={<ResponseParameterTooltip />} placement="right">
                 <Textarea
                   className="max-w-[800px] w-full p-0 text-sm text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200"
-                  defaultValue={responseContext}
                   labelPlacement="outside"
                   maxRows={8}
                   minRows={8}
@@ -126,6 +161,7 @@ export default function ModalParametersGPT(props: any): JSX.Element {
                   }}
                   placeholder=""
                   radius="sm"
+                  value={updatedResponseContext}
                   variant="faded"
                 />
               </Tooltip>
@@ -173,7 +209,7 @@ export default function ModalParametersGPT(props: any): JSX.Element {
 
               {/* Slider for temperature parameters */}
               <Slider
-                defaultValue={[updatedTemperature]}
+                //defaultValue={[globalFormParams.temperature]}
                 max={1}
                 min={0}
                 onValueChange={(value: number[]) => {
@@ -184,12 +220,24 @@ export default function ModalParametersGPT(props: any): JSX.Element {
               />
             </ModalBody>
             <ModalFooter className="flex flex-col md:flex-row justify-between">
-              <div className="flex items-center justify-between mb-4 md:mb-0">
+              <div className="flex items-center justify-center mb-4 md:mb-0">
                 {/* Switch for global parameters usage */}
-                <p className="text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
+                <Button
+                  className="w-full"
+                  onClick={handleUseGlobalParameters}
+                  size="sm"
+                >
+                  Paste Global GPT Context
+                </Button>
+                {/* <p className="text-xs text-slate-800 dark:text-slate-200 wizeline-brand:text-slate-200">
                   Use Global GPT Context
                 </p>
-                <Switch className="md:pl-3" color="danger" />
+                <Switch
+                  className="md:pl-3"
+                  color="danger"
+                  isSelected={isSelected}
+                  onValueChange={setIsSelected}
+                /> */}
               </div>
               <div className="flex flex-col-reverse md:flex-row">
                 {/* Cancel and Save buttons */}
