@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Sidebar conversations', () => {
-   /* test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page }) => {
         await page.goto('http://52.54.237.87:3000/');
         await page.getByRole('button', { name: 'Get Started' }).click();
         await page.getByLabel('Email address').fill('prueba@gmail.com');
@@ -36,6 +36,6 @@ test.describe('Sidebar conversations', () => {
       await page.locator('#edit-chat').click();
       await page.getByText('Delete').click();
       await page.getByRole('button', { name: 'Confirm' }).click();
-    });*/
+    });
 
   });
