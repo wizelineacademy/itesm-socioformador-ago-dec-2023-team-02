@@ -135,7 +135,7 @@ jobs:
       - name: Deploy to Lightsail
         run: |
           sudo apt-get install -y sshpass
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" rsync -avz --exclude node_modules apps/web ubuntu@52.54.237.87:/home/ubuntu/apps
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" rsync -avz apps/web ubuntu@52.54.237.87:/home/ubuntu/apps
 
       - name: Set custom package.json
         run: |
@@ -212,7 +212,7 @@ jobs:
 
       - name: Start server
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 start pnpm --name "docs" -- start"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 start pnpm --name "docs" -- start -- -p 3001"
 
       - name: Create output artifact
         uses: actions/upload-artifact@v2
