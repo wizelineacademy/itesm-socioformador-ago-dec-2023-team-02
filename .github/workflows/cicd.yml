@@ -139,11 +139,15 @@ jobs:
 
       - name: Set custom package.json
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && echo ${{secrets.APPS_WEB_PACKAGE}} > package.json"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && rm package.json && mv package.prod.json package.json"
+
+      - name: Install server dependencies
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pnpm install"
 
       - name: Start server
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pnpm install && pm2 start pnpm --name "web" -- start"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pm2 start pnpm --name "web" -- start"
 
       - name: Create output artifact
         uses: actions/upload-artifact@v2
@@ -200,11 +204,15 @@ jobs:
 
       - name: Set custom package.json
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && echo ${{secrets.APPS_DOCS_PACKAGE}} > package.json"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && rm package.json && mv package.prod.json package.json"
+
+      - name: Install server dependencies
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pnpm install"
 
       - name: Start server
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pnpm install && pm2 start pnpm --name "docs" -- start"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 start pnpm --name "docs" -- start"
 
       - name: Create output artifact
         uses: actions/upload-artifact@v2
