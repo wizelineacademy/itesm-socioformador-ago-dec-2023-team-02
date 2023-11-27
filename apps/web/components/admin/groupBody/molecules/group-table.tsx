@@ -93,20 +93,13 @@ export default function GroupTable({
     try {
       console.log("Selected keys: ", selectedKeys);
       console.log("Selected keys2: ", Array.from(selectedKeys));
-      const response = await fetch(
-        `http://${
-          process.env.ENVIROMENT === "production"
-            ? process.env.PROD_DOMAIN
-            : "localhost"
-        }:3000/api/groups/add-users/${idGroup}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userIds: Array.from(selectedKeys) }),
-        }
-      );
+      const response = await fetch(`/api/groups/add-users/${idGroup}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userIds: Array.from(selectedKeys) }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status}`);
@@ -126,20 +119,13 @@ export default function GroupTable({
 
   const updateUserRole = async (userId: number, role: Role): Promise<void> => {
     try {
-      const response = await fetch(
-        `http://${
-          process.env.ENVIROMENT === "production"
-            ? process.env.PROD_DOMAIN
-            : "localhost"
-        }:3000/api/users/${userId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ role }),
-        }
-      );
+      const response = await fetch(`/api/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ role }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status}`);
