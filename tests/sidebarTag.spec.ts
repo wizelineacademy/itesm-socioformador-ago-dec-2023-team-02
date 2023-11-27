@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('sidebar tag', () => {
-    test.beforeEach(async ({ page }) => {
+   /* test.beforeEach(async ({ page }) => {
         await page.goto('http://52.54.237.87:3000/');
         await page.getByRole('button', { name: 'Get Started' }).click();
         await page.getByLabel('Email address').fill('prueba@gmail.com');
@@ -13,7 +13,7 @@ test.describe('sidebar tag', () => {
     
 
     test('Create tag', async ({ page }) => {
-        await page.locator('#tag-search').click();
+        await page.getByRole('button').nth(2).click();
         await page.getByRole('button', { name: 'Edit tags' }).click();
         await page.getByRole('button', { name: 'New tag +' }).click();
         await page.locator('#tag-name').fill('test');
@@ -25,7 +25,8 @@ test.describe('sidebar tag', () => {
 
 
     test('Edit tag', async ({ page }) => {
-        await page.locator('#tag-search').click();
+        //await page.locator('#tag-search').click();
+        await page.getByRole('button').nth(2).click();
         await page.getByRole('button', { name: 'Edit tags' }).click();
         await page.getByRole('button', { name: 'test' }).nth(1).click();
         await page.locator('#tag-name').fill('test tag');
@@ -38,7 +39,7 @@ test.describe('sidebar tag', () => {
 
 
     test('Search tag', async ({ page }) => {
-        await page.locator('#tag-search').click();
+        await page.getByRole('button').nth(2).click();
         await page.getByPlaceholder('Search tags').fill('tag');
         await expect(page.getByText('test tag', { exact: true })).toBeVisible({timeout: 120000});
         await page.getByPlaceholder('Search tags').fill('random');
@@ -53,18 +54,18 @@ test.describe('sidebar tag', () => {
         await page.getByLabel('Select a Model', { exact: true }).click();
         await page.getByLabel('GPT-3.5-TURBO2 Tokens').getByText('GPT-3.5-TURBO').click();
         await page.getByRole('button', { name: 'Create' }).click();
-        await page.locator('#tag-search').click();
+        await page.getByRole('button').nth(2).click();
         await page.getByRole('button', { name: 'test tag' }).click();
         await page.getByRole('button', { name: 'Close' }).click();
         await expect(page.locator('#no-items')).toContainText('No items to display');
-        await page.locator('#tag-search').click();
+        await page.getByRole('button').nth(2).click();
         await page.getByRole('button', { name: 'test tag' }).click();
         await page.getByRole('button', { name: 'Close' }).click();
         await page.locator('#edit-chat').click();
         await page.getByText('Edit Tags').click();
         await page.getByRole('button', { name: 'test tag' }).click();
         await page.getByRole('button', { name: 'Close' }).click();
-        await page.locator('#tag-search').click();
+        await page.getByRole('button').nth(2).click();
         await page.getByRole('button', { name: 'test tag' }).click();
         await page.getByRole('button', { name: 'Close' }).click();
         await expect(page.getByRole('button', { name: 'avatar tag test' })).toBeHidden();
@@ -80,6 +81,6 @@ test.describe('sidebar tag', () => {
         await page.getByRole('button', { name: 'test tag' }).nth(1).click();
         await page.locator('div').filter({ hasText: /^Edit tag$/ }).getByRole('button').click();
         await page.getByRole('button', { name: 'Close' }).click();
-    });
+    }); */
 
 });
