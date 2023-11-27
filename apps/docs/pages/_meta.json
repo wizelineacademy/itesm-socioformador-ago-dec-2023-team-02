@@ -2,6 +2,8 @@
   "index": "Introduction",
   "builds": "Build",
   "setup":"Setup",
+  "frontend": "Front-End",
+  "backend": "Back-End",
   "about": {
     "title": "About",
     "type": "page"
