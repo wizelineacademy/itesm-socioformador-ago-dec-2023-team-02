@@ -124,9 +124,9 @@ jobs:
         run: |
           cd apps/web && pnpm build
 
-      - name: Stop server
-        run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pm2 stop all"
+      # - name: Stop server
+      #   run: |
+      #     sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pm2 stop all"
 
       - name: Clean LightSail directory
         run: |
@@ -185,9 +185,9 @@ jobs:
         run: |
           cd apps/docs && pnpm build
 
-      - name: Stop server
-        run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 stop all"
+      # - name: Stop server
+      #   run: |
+      #     sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 stop all"
 
       - name: Clean LightSail directory
         run: |
