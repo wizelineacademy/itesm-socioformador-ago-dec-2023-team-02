@@ -419,25 +419,30 @@ export async function incrementUserCreditsRemaining(idUser: number, creditIncrem
 export async function decrementUserCreditsRemaining(idUser: number, creditDecrement: number): Promise<PrismaResponse<User>> {
     if (creditDecrement < 0) {
         return { status: 400, message: "Invalid credit decrement value given." }
-    }
+    } 
 
-    try {
-        const user: User = await prisma.user.update({
-            where: {
-                id: idUser,
-                creditsRemaining: {
-                    gte: creditDecrement
-                }
-            },
-            data: {
-                creditsRemaining: {
-                    decrement: creditDecrement
-                }
-            }
-        })
+    const getUserResult: PrismaResponse<User> = await getUser(idUser)
 
-        return { status: 200, data: user }
-    } catch (error: any) {
-        return { status: 500, message: error.message }
-    }
+    if (getUserResult.status === 200 && getUserResult.data){
+        if (creditDecrement === 0){
+            return {status: 200, data: getUserResult.data}
+        }
+
+        try {
+            const updatedUser: User = await prisma.user.update({
+                where: {
+                    id: idUser
+                }, 
+                data: {
+                    creditsRemaining: Math.max(getUserResult.data.creditsRemaining - creditDecrement, 0)
+                }
+            })
+
+            return {status: 200, data: updatedUser}
+        } catch (error: any) {
+            return {status: 500, message: error.message}
+        }
+    } 
+
+    return {status: getUserResult.status, message: getUserResult.message ?? "Failed to updated the user's credit number"}
 }
