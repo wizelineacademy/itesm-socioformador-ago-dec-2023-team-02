@@ -94,7 +94,11 @@ export default function GroupTable({
       console.log("Selected keys: ", selectedKeys);
       console.log("Selected keys2: ", Array.from(selectedKeys));
       const response = await fetch(
-        `http://localhost:3000/api/groups/add-users/${idGroup}`,
+        `http://${
+          process.env.ENVIROMENT === "production"
+            ? process.env.PROD_DOMAIN
+            : "localhost"
+        }:3000/api/groups/add-users/${idGroup}`,
         {
           method: "PATCH",
           headers: {
@@ -123,7 +127,11 @@ export default function GroupTable({
   const updateUserRole = async (userId: number, role: Role): Promise<void> => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/users/${userId}`,
+        `http://${
+          process.env.ENVIROMENT === "production"
+            ? process.env.PROD_DOMAIN
+            : "localhost"
+        }:3000/api/users/${userId}`,
         {
           method: "PATCH",
           headers: {

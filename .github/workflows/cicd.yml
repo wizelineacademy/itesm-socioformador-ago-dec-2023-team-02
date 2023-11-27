@@ -1,0 +1,213 @@
+name: CICD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  Build:
+    name: Build
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js 18.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18.x"
+
+      - name: Install dependencies
+        run: |
+          npm install -g pnpm && pnpm install --no-frozen-lockfile
+
+      - name: Setup environment variables
+        run: echo "${{ secrets.APPS_WEB_ENV }}" >> apps/web/.env
+
+      - name: Check environment variables
+        run: |
+          cat apps/web/.env
+
+      - name: Build
+        run: |
+          pnpm build
+
+      - name: Check build
+        run: |
+          ls
+
+      # - name: Test
+      # run: |
+      #   pnpm test:ci --if-present
+
+  Release:
+    name: Release
+    needs: [Build, DeployStagingWeb, DeployStagingDocs]
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/release.yml
+
+  Check:
+    name: Check PR
+    permissions:
+      contents: write
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js 18.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18.x"
+
+      - name: Install dependencies
+        run: |
+          npm install -g pnpm && pnpm install --no-frozen-lockfile
+
+      - name: Setup environment variables
+        run: echo "${{ secrets.APPS_WEB_ENV }}" >> apps/web/.env
+
+      - name: Check environment variables
+        run: |
+          cat apps/web/.env
+
+      # - name: Test
+      #   run: |
+      #     pnpm test --if-present
+
+  DeployStagingWeb:
+    name: Deploy to Staging Web
+    permissions:
+      contents: write
+    if: github.event.ref == 'refs/heads/main'
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment:
+      name: Production Web
+      url: "http://52.54.237.87:3000"
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js 18.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18.x"
+
+      - name: Move to docs directory
+        run: cd apps/web
+
+      - name: Check current directory
+        run: |
+          pwd
+
+      - name: Install dependencies
+        run: |
+          npm install -g pnpm
+          cd apps/web && pnpm install --no-frozen-lockfile
+
+      - name: Setup environment variables
+        run: echo "${{ secrets.APPS_WEB_ENV }}" >> apps/web/.env
+
+      - name: Check environment variables
+        run: |
+          cat apps/web/.env
+
+      - name: Build
+        run: |
+          cd apps/web && pnpm build
+
+      - name: Stop server
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pm2 stop all"
+
+      - name: Clean LightSail directory
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "rm -rf apps/web"
+
+      - name: Deploy to Lightsail using scp
+        run: |
+          sudo apt-get install -y sshpass
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" scp -o StrictHostKeyChecking=no -r apps/web ubuntu@52.54.237.87:/home/ubuntu/apps --exclude node_modules
+
+      - name: Set custom package.json
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && echo ${{secrets.APPS_WEB_PACKAGE}} > package.json"
+
+      - name: Start server
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pnpm install && pm2 start pnpm --name "web" -- start"
+
+      - name: Create output artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: web
+          path: apps/web
+
+  DeployStagingDocs:
+    name: Deploy to Staging Docs
+    permissions:
+      contents: write
+    if: github.event.ref == 'refs/heads/main'
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment:
+      name: Production Docs
+      url: "http://52.54.237.87:3001"
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js 18.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18.x"
+
+      - name: Move to docs directory
+        run: cd apps/docs
+
+      - name: Check current directory
+        run: |
+          pwd
+
+      - name: Install dependencies
+        run: |
+          npm install -g pnpm
+          cd apps/web && pnpm install --no-frozen-lockfile
+
+      - name: Build
+        run: |
+          cd apps/docs && pnpm build
+
+      - name: Stop server
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 stop all"
+
+      - name: Clean LightSail directory
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "rm -rf apps/docs"
+
+      - name: Deploy to Lightsail using scp excluding node_modules
+        run: |
+          sudo apt-get install -y sshpass
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" scp -o StrictHostKeyChecking=no -r apps/docs ubuntu@52.54.237.87:/home/ubuntu/apps --exclude node_modules
+
+      - name: Set custom package.json
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && echo ${{secrets.APPS_DOCS_PACKAGE}} > package.json"
+
+      - name: Start server
+        run: |
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pnpm install && pm2 start pnpm --name "docs" -- start"
+
+      - name: Create output artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: docs
+          path: apps/docs

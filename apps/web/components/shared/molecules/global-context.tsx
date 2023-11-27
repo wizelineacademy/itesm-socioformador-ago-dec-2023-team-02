@@ -19,7 +19,10 @@ import {
 } from "@nextui-org/react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Slider } from "@/components/ui/slider";
-import { PrismaUserContext, PrismaUserContextShape } from "@/context/prisma-user-context";
+import {
+  PrismaUserContext,
+  PrismaUserContextShape,
+} from "@/context/prisma-user-context";
 import { toast } from "sonner";
 import { UserUpdateData } from "@/types/user-types";
 
@@ -31,17 +34,17 @@ interface Parameters {
 
 // ModalParametersGPT Component
 export default function GlobalContext(): JSX.Element {
-  const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
+  const prismaUserContext = useContext<PrismaUserContextShape | null>(
+    PrismaUserContext
+  );
   const prismaUser = prismaUserContext?.prismaUser;
-
 
   // State to hold the form data
   const [formParams, setFormParams] = useState<Parameters>({
-    userContext: '',
-    responseContext: '',
+    userContext: "",
+    responseContext: "",
     temperature: 0.5, // Default temperature value
   });
-
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -50,10 +53,9 @@ export default function GlobalContext(): JSX.Element {
     if (prismaUser && prismaUser.globalParameters) {
       const userParameters: Parameters = prismaUser.globalParameters as any;
       setFormParams(userParameters);
-      console.log('userParameters', userParameters);
+      console.log("userParameters", userParameters);
     }
   }, [prismaUser]);
-
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,8 +65,12 @@ export default function GlobalContext(): JSX.Element {
       setIsSubmitting(true);
       // Assuming you have the user's ID and the API endpoint ready
       const userId = prismaUser?.id; // Replace with actual user ID
-      const apiEndpoint = `http://localhost:3000/api/users/${userId}`; // Modify as per your API endpoint
-  
+      const apiEndpoint = `http://${
+        process.env.ENVIROMENT === "production"
+          ? process.env.PROD_DOMAIN
+          : "localhost"
+      }:3000/api/users/${userId}`; // Modify as per your API endpoint
+
       // Converting form data to JSON
       //const requestData = JSON.stringify(formParams);
 
@@ -75,36 +81,36 @@ export default function GlobalContext(): JSX.Element {
           temperature: formParams.temperature,
         },
       };
-  
-  
+
       // Making the PATCH request
       const response = await fetch(apiEndpoint, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedInfo),
       });
-  
+
       // Handle the response
       if (response.ok) {
         // Handle successful update
         const updatedUserData = await response.json();
-        console.log('User updated:', updatedUserData);
-        toast.success('User updated');
-        const updatedUserParameters: Parameters = updatedUserData.globalParameters;
+        console.log("User updated:", updatedUserData);
+        toast.success("User updated");
+        const updatedUserParameters: Parameters =
+          updatedUserData.globalParameters;
         setFormParams(updatedUserParameters);
-        console.log('updatedUserParameters', updatedUserParameters);
+        console.log("updatedUserParameters", updatedUserParameters);
         prismaUserContext?.setPrismaUser(updatedUserData);
       } else {
         // Handle errors
         const errorMessage = await response.text();
-        console.error('Error updating user:', errorMessage);
-        toast.error('Error updating user');
+        console.error("Error updating user:", errorMessage);
+        toast.error("Error updating user");
       }
     } catch (error) {
-      console.error('An error occurred:', error);
-      toast.error('An error occurred');
+      console.error("An error occurred:", error);
+      toast.error("An error occurred");
     }
 
     setIsSubmitting(false);
@@ -203,13 +209,13 @@ export default function GlobalContext(): JSX.Element {
 
       {/* Slider for temperature parameters */}
       <Slider
-      className="m-3 mb-4"
+        className="m-3 mb-4"
         //defaultValue={[formParams.temperature]}
         max={1}
         min={0}
         onValueChange={(value: number[]) => {
           setFormParams({ ...formParams, temperature: value[0] });
-         }}
+        }}
         step={0.1}
         value={[formParams.temperature]}
       />
