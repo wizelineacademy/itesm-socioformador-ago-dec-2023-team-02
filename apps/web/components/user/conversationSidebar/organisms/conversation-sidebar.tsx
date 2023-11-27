@@ -261,7 +261,7 @@ export default function ConversationSidebar({
               <button className="w-full" type="button">
                 <UserCard
                   avatarUrl={prismaUserContext?.prismaUser?.image}
-                  description={roundUsersCredits(prismaUserContext?.prismaUser) ?? ""}
+                  description={`${roundUsersCredits(prismaUserContext?.prismaUser) ?? ""} Credits`}
                   name={prismaUserContext?.prismaUser?.name}
                 />
               </button>

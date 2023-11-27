@@ -7,7 +7,10 @@ import { Spinner } from "@nextui-org/react";
 import { toast } from "sonner";
 import type { GroupsContextShape } from "@/context/groups-context";
 import { GroupsContext } from "@/context/groups-context";
-import { GroupsActionType, placeHolderGroupData } from "@/helpers/group-helpers";
+import {
+  GroupsActionType,
+  placeHolderGroupData,
+} from "@/helpers/group-helpers";
 import type { GroupData } from "@/types/group-types";
 import { GroupHeader } from "../molecules/group-header";
 import EditGroupMenuModal from "../../editGroup/molcules/edit-group-menu-modal";
@@ -62,15 +65,12 @@ export default function GroupBody(): JSX.Element {
   useEffect(() => {
     async function getGroupData(): Promise<void> {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/groups/${idGroup}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`/api/groups/${idGroup}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
@@ -99,7 +99,7 @@ export default function GroupBody(): JSX.Element {
 
   if (loading)
     return (
-      <div>
+      <div className="w-full h-screen flex flex-row justify-center items-center">
         <Spinner color="danger" />
       </div>
     );

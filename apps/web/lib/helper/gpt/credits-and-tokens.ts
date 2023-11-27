@@ -56,7 +56,7 @@ export function calculateTokens(input: string): number {
  */
 export function creditsToTokens(credits: number, model: string, size?: string): number {
   let tokens!: number
-  if (model === "gpt-3.5-turbo") {
+  if (model === "gpt-3.5-turbo" || model === "gpt-3.5-turbo-16k") {
     tokens = (credits * 1000) / Number(process.env.NEXT_PUBLIC_GPT_35_INPUT)
   } else if (model === "gpt-4") {
     tokens = (credits * 1000) / Number(process.env.NEXT_PUBLIC_GPT_4_INPUT)

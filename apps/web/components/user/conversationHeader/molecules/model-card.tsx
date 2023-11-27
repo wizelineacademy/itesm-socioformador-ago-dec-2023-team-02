@@ -8,8 +8,12 @@ import {
   ModalBody,
   ModalFooter,
   Button,
+  Chip
 } from "@nextui-org/react";
+import { BsImages } from "react-icons/bs";
 import { creditsToTokens } from "@/lib/helper/gpt/credits-and-tokens";
+import CreditsBadge from "../../conversationBody/atoms/credits-badge";
+
 
 // Interface to describe the shape of the model description object
 interface ModelDescription {
@@ -69,9 +73,15 @@ export function ModelCard({
             src: providerImageUrl,
           }}
           className="xs:ml-10 md:ml-20"
-          description={modelName === "dalle" 
-            ? `${creditsToTokens(creditsAvailable, modelName, size)} Images` 
-            : `${creditsToTokens(creditsAvailable, modelName)} Tokens`}
+          classNames={
+            {
+              description: "text-xs font-bold text-black dark:text-white",
+            }
+          }
+          description={modelName === "dalle"
+            ? <Chip avatar={<BsImages />} radius="sm" size="sm" variant="flat"><p className="text-xs">{`${creditsToTokens(creditsAvailable, modelName, size)} Images Available`}</p></Chip>
+            : <CreditsBadge creditsUsed={creditsToTokens(creditsAvailable, modelName)} text="Tokens Available" /> 
+          }
           name={modelName.toUpperCase()}
         />
       </button>
