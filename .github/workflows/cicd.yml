@@ -135,7 +135,7 @@ jobs:
       - name: Deploy to Lightsail using scp
         run: |
           sudo apt-get install -y sshpass
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" scp -o StrictHostKeyChecking=no -r apps/web ubuntu@52.54.237.87:/home/ubuntu/apps --exclude node_modules
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" scp -o StrictHostKeyChecking=no -r apps/web ubuntu@52.54.237.87:/home/ubuntu/apps --exclude apps/web/node_modules
 
       - name: Set custom package.json
         run: |
@@ -196,7 +196,7 @@ jobs:
       - name: Deploy to Lightsail using scp excluding node_modules
         run: |
           sudo apt-get install -y sshpass
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" scp -o StrictHostKeyChecking=no -r apps/docs ubuntu@52.54.237.87:/home/ubuntu/apps --exclude node_modules
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" scp -o StrictHostKeyChecking=no -r apps/docs ubuntu@52.54.237.87:/home/ubuntu/apps --exclude apps/docs/node_modules
 
       - name: Set custom package.json
         run: |
