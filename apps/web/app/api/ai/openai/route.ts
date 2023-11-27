@@ -103,7 +103,8 @@ export async function POST(
       return new StreamingTextResponse(stream, { status: 200 });
     } catch (error: any) {
       // If an error occurs, log it to the console and send a message to the user
-      // console.error(error);
+      console.log(error.message)
+      console.error(error);
       return new NextResponse(`Error: ${error.message}`, { status: 500 });
     }
   }
