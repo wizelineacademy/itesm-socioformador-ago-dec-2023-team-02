@@ -1,11 +1,9 @@
-export default function UserRootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}): any {
-  return (
-    <html lang="es" suppressHydrationWarning>
-      <body>{children}</body>
-    </html>
-  );
+// import { withPageAuthRequired } from "@auth0/nextjs-auth0";
+
+// export default withPageAuthRequired(function User({ children }: any): any {
+//   return children;
+// });
+
+export default function UserLayout({ children }: any): any {
+  return children;
 }

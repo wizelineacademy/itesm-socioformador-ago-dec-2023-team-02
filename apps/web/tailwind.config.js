@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 const { nextui } = require("@nextui-org/theme");
+const { fontFamily } = require("tailwindcss/defaultTheme");
 
 module.exports = {
   content: [
@@ -16,6 +17,7 @@ module.exports = {
     extend: {
       fontFamily: {
         default: ["var(--font-inter)"],
+        sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       colors: {
         "primary-500": "#14167E",
@@ -27,6 +29,15 @@ module.exports = {
         "dark-2": "#121417",
         "dark-3": "#101012",
         "dark-4": "#1F1F22",
+        dark100: "#d2d2d3",
+        dark200: "#a5a5a7",
+        dark300: "#79797a",
+        dark400: "#4c4c4e",
+        dark500: "#1f1f22",
+        dark600: "#19191b",
+        dark700: "#131314",
+        dark800: "#0c0c0e",
+        dark900: "#060607",
         "light-1": "#FFFFFF",
         "light-2": "#EFEFEF",
         "light-3": "#7878A3",
@@ -39,6 +50,7 @@ module.exports = {
   darkMode: "class",
   plugins: [
     require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
     nextui({
       themes: {
         "wizeline-brand": {

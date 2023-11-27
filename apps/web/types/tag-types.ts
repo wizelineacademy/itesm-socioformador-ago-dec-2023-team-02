@@ -39,12 +39,23 @@ export function isValidTag(tagData: TagData): boolean {
     return true 
 }
 
+/**
+ * Determines whether a given string is a valid tag name. 
+ * @param name - A string that potentialy holds a valid tag name. 
+ * @returns A boolean value that indicates whether the given string is a valid tag name.
+ */
 export function isValidTagName(name: string): boolean {
     return name.length > 0 // Más validación podría ser añadida. 
 }
 
+/**
+ * Determines whether or not a string represents a valid hex color value, that is: begins with the numeral symbol, 
+ * followed by 3 o 6 hexadecimal digits. 
+ * @param color - A string whose adherence to the previous syntax is tested. 
+ * @returns A boolean value that indicates whether the given string is a valid representation of color. 
+ */
 export function isValidTagColor(color: string): boolean {
-    return /^#[0-9a-fA-F]{6}$/.test(color) // Color is represented with a hexadecimal number of 6 digits. 
+    return /^(?:#[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{3})?)$/.test(color) // Color is represented with a hexadecimal number of 3 or 6 digits. 
 }
 
 /**
@@ -72,7 +83,7 @@ export function isTagCreateData(obj: any): obj is TagCreateData {
       typeof obj.name === 'string' &&
       typeof obj.color === 'string'
     );
-  }
+}
 
 // -- Transformation -- 
 export function normalizeTagCreateData(tagData: TagCreateData): TagCreateData {

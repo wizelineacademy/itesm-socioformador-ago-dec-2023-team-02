@@ -7,6 +7,12 @@
 /**
  * Interface implemented by objects used to update the values of a User record. 
  */
+interface Parameters {
+  userContext: string;
+  responseContext: string;
+  temperature: number;
+}
+
 export interface UserUpdateData {
     idAuth0?: string; 
     name?: string; 
@@ -15,7 +21,11 @@ export interface UserUpdateData {
     role?: 'ADMIN' | 'USER'; 
     image?: string;
     creditsRemaining?: number; 
-    globalParameters?: any 
+    globalParameters?: {
+      temperature?: number;
+      userContext?: string;
+      responseContext?: string;
+  };
 }
 
 export interface UserCreateData {
@@ -38,9 +48,9 @@ export type UserData = UserUpdateData | UserCreateData
  * @returns A boolean value that indicates whether or not the given user is valid. 
  */
 export function isValidUser(user: UserData): boolean {
-    if (user.email && !isValidUserEmail(user.email)){
-        return false 
-    }
+    // if (user.email && !isValidUserEmail(user.email)){
+    //     return false 
+    // }
     return true 
 }
 

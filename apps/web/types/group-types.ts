@@ -22,8 +22,19 @@ export interface GroupUpdateData {
     name?: string;
     description?: string;
     creditsAssigned?: number;
-    users: User[];
+    users?: User[];
 };
+
+/**
+ * The shape of a group used in the admin dashboard, includes the group's users as an array of User objects. 
+*/
+export interface GroupData {
+  id: number;
+  name: string;
+  description: string;
+  creditsAssigned: number;
+  users: User[];
+}
 
 /**
  * Type-guard that determines if an object implements the interface GroupUpdateData. 
@@ -48,7 +59,7 @@ export function isGroupCreateData(obj: any): obj is GroupCreateData {
     typeof obj === 'object' &&
     typeof obj.name === 'string' &&
     typeof obj.description === 'string' &&
-    typeof obj.creditsRemaining === 'number'
+    typeof obj.creditsAssigned === 'number'
   );
 }
 // -- Validation --- 

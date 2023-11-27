@@ -1,15 +1,10 @@
-import ChatComponent from "@/components/chat-component";
-// Prisma does not support Edge without the Data Proxy currently
-// export const runtime = 'edge'
-export const preferredRegion = "home";
-export const dynamic = "force-dynamic";
+import Welcome from "@/components/user/newConversation/organism/welcome";
+import { getAllModelsWithProvider } from "@/lib/model";
+import type { ModelWithProvider } from "@/types/moder-with-provider-types";
 
-function HomePage(): any {
-  return (
-    <div>
-      <ChatComponent />
-    </div>
-  );
+export default async function NewConversationPage(): Promise<JSX.Element> {
+  const models: ModelWithProvider[] =
+    (await getAllModelsWithProvider()).data || [];
+
+  return <Welcome models={models} />;
 }
-
-export default HomePage;
