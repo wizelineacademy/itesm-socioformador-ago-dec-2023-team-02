@@ -382,6 +382,8 @@ export default function ConversationBody(): JSX.Element {
           input={input}
           isLoading={isLoading}
           model={modelName}
+          creditsRemaining={prismaUserContext?.prismaUser.creditsRemaining}
+          size={size}
         />
       )}
     </div>

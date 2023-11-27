@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary*/
+
 /**
  * A component that renders a text input field and a send button for the user to send messages.
  * @param input - The current value of the text input field.
@@ -14,7 +16,7 @@ import type { User } from "@prisma/client";
 import { Sender } from "@prisma/client";
 import { toast } from "sonner";
 import CreditsBadge from "@/components/user/conversationBody/atoms/credits-badge";
-import { calculateTokens } from "@/lib/helper/gpt/credits-and-tokens";
+import { calculateTokens, creditsToTokens } from "@/lib/helper/gpt/credits-and-tokens";
 import { saveMessage } from "@/lib/helper/data-handles";
 import type { PrismaUserContextShape } from "@/context/prisma-user-context";
 import { PrismaUserContext } from "@/context/prisma-user-context";
@@ -45,6 +47,24 @@ async function handleSaveMessage(
   }
 }
 
+// check to see if the prompt button should be disabled based on if an image can be generated
+function checkDalle(credits: number, size: string): boolean {
+  const totalImages = creditsToTokens(credits, "dalle", size)
+  // return false if an image can be generated
+  if (totalImages === 0)
+    return true
+  return false
+}
+
+function checkGPT(credits: number, model: string, input: string): boolean {
+  const totalTokens = creditsToTokens(credits, model)
+  const inputTokens = calculateTokens(input)
+  // return false if a prompt can be generated
+  if (totalTokens === 0 || totalTokens <= inputTokens)
+    return true
+  return false
+}
+
 export default function PromptTextInput({
   idConversation,
   model,
@@ -52,6 +72,8 @@ export default function PromptTextInput({
   handleInputChange,
   handleSubmit,
   isLoading,
+  creditsRemaining,
+  size,
 }: {
   idConversation: number;
   model: string;
@@ -59,6 +81,8 @@ export default function PromptTextInput({
   handleInputChange: any;
   handleSubmit: any;
   isLoading: boolean;
+  creditsRemaining: number;
+  size: string;
 }): JSX.Element {
   const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext)
 
@@ -68,19 +92,49 @@ export default function PromptTextInput({
     prismaUserContext?.setPrismaUser(updatedUser)
   }
 
+  // const handleSubmitCheckGPT = (input: string, credits?: number) : any => {
+  //   const totalTokens = creditsToTokens(credits!, model)
+  //   const inputTokens = calculateTokens(input)
+  //   if (totalTokens > inputTokens && totalTokens > 4096 + inputTokens || totalTokens > inputTokens && totalTokens < 4096) {
+  //     handleSubmit
+  //   } else if (totalTokens < inputTokens  || totalTokens === 0) {
+  //     toast.error("Insufficient credits to send a prompt")
+  //   }
+  // }
+
   return (
     <div className="flex justify-center w-full z-30 bg-black">
       <div className="lg:w-3/6 md:w-4/6 w-11/12 fixed bottom-0 pb-4 py-0 z-30">
         <div className="flex flex-col justify-center items-center max-w-[750px] md:w-11/12 mx-auto p-2">
           <div className="flex justify-between items-center w-full mt-2 mb-1">
             {/* Tokens Placeholder */}
-            <div className={`${!input ? "hidden" : ""} ml-2`}>
-              <CreditsBadge creditsUsed={calculateTokens(input)} />
-            </div>
+            {
+              model === "dalle" && checkDalle(creditsRemaining, size)
+              ?
+              <div className="ml-2">
+                <p>Insufficient credits</p>
+              </div>
+              :
+              model === "dalle" 
+              ?
+              <></>
+              :
+              <div className={`flex flex-row ${!input ? "hidden" : ""} ml-2 gap-2`}>
+                <CreditsBadge creditsUsed={calculateTokens(input)} />
+                {
+                checkGPT(creditsRemaining, model, input)
+                ?
+                <p>Insufficient credits</p>
+                :
+                <></>
+                }
+              </div>
+            }
           </div>
           <form
             className="flex items-center w-full rounded-xl"
             onSubmit={handleSubmit}
+            // handleSubmitCheckGPT(input, prismaUserContext?.prismaUser.creditsRemaining)
           >
             {/* Textarea field */}
             <Textarea
@@ -97,21 +151,25 @@ export default function PromptTextInput({
             ) : (
               <Button
                 className={`${
-                  !input
+                  (!input || model === "dalle" ? checkDalle(creditsRemaining, size) : checkGPT(creditsRemaining, model, input))
                     ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10"
                     : "bg-danger"
                 } text-white  rounded-r-xl`}
-                disabled={!input}
+                disabled={!input || (model === "dalle") ? checkDalle(creditsRemaining, size) : checkGPT(creditsRemaining, model, input)}
                 isIconOnly
                 onClick={() => {
-                  void handleSaveMessage(
-                    idConversation,
-                    prismaUserContext?.prismaUser?.id,
-                    model,
-                    Sender.USER,
-                    input,
-                    HandleUserCreditsReduction
-                  );
+                  //const totalTokens = creditsToTokens(prismaUserContext?.prismaUser.creditsRemaining!, model)
+                  //const inputTokens = calculateTokens(input)
+                  //if (totalTokens > inputTokens && totalTokens >= 4096 + inputTokens || totalTokens > inputTokens && totalTokens < 4096) {
+                    void handleSaveMessage(
+                      idConversation,
+                      prismaUserContext?.prismaUser?.id,
+                      model,
+                      Sender.USER,
+                      input,
+                      HandleUserCreditsReduction
+                    );
+                  //}
                 }}
                 size="lg"
                 type="submit"
