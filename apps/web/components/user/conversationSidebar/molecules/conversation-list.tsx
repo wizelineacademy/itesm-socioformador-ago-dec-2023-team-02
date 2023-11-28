@@ -17,7 +17,7 @@ export function ConversationList({selectedConversation, userTags, userConversati
     if (userConversations.length === 0){
         return (
             <div className="w-full h-full flex flex-col justify-center items-center">
-                <p className="text-neutral-300 p-4">No items to display</p>
+                <p id="no-items" className="text-neutral-300 p-4">No items to display</p>
             </div>
         ); 
     }

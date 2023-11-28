@@ -22,7 +22,7 @@ export function TagEditor({tagName, tagColor, onTagNameChange, onTagColorChange}
         <div className="flex flex-col justify-start items-center gap-3 pb-3">
             <div className="gap-2 flex flex-col items-start">
                 <p className="text-sm text-black dark:text-white">Name</p>
-                <Input fullWidth isClearable onValueChange={handleTagNameChange} value={tagName}/>
+                <Input fullWidth isClearable onValueChange={handleTagNameChange} value={tagName} id="tag-name"/>
             </div>
 
             <div className="flex flex-col gap-3 items-start w-full h-full">

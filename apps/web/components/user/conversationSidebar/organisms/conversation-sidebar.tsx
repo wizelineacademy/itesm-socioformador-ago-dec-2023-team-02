@@ -232,8 +232,8 @@ export default function ConversationSidebar({
             content={selectedTags.size}
             isInvisible={selectedTags.size === 0}
           >
-            <Button isIconOnly onPress={handleTagButtonPress} radius="sm">
-              <AiOutlineTag />
+            <Button isIconOnly onPress={handleTagButtonPress} radius="sm" >
+              <AiOutlineTag id="tag-search"/>
             </Button>
           </Badge>
         </div>

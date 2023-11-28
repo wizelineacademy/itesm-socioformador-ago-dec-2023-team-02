@@ -184,6 +184,7 @@ export function ConversationCard({userTags, conversation, isSelected, onClick}: 
       size="sm"
       value={title}
       variant="bordered"
+      id="edit-name"
     />
   );
 
@@ -245,7 +246,7 @@ export function ConversationCard({userTags, conversation, isSelected, onClick}: 
               dropdownItems={singleSelectionListItems}
               placement="right"
             >
-              <button className="text-white bg-inherit pl-1 pr-2" type="button">
+              <button className="text-white bg-inherit pl-1 pr-2"  type="button" id="edit-chat">
                 <AiOutlineEdit />
               </button>
             </SingleSelectionDropdown>
