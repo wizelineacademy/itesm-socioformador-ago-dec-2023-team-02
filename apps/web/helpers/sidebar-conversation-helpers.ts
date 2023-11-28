@@ -21,6 +21,7 @@ export enum ConversationsActionType {
   EditTitle,
   EditTags,
   EditCreatedAt,
+  DeleteAll,
 }
 
 /**
@@ -76,6 +77,8 @@ export function conversationsReducer(state: SidebarConversation[], action: Conve
         )))
       }
       return state 
+    case ConversationsActionType.DeleteAll:
+      return []
   }
 }
 
