@@ -206,7 +206,7 @@ export default function GroupSidebar(): JSX.Element {
       <div
         className={`${
           sidebarIsVisible ? "hidden" : "block"
-        }  w-2 absolute -right-6 z-50 top-5 md:top-2`}
+        }  w-2 absolute -right-6 z-50 top-2 md:top-2`}
       >
         {!sidebarIsVisible ? sidebarVisibilityButton : null}
       </div>
