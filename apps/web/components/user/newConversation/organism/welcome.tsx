@@ -20,8 +20,8 @@ function Welcome({ models }: WelcomeProps): JSX.Element {
   return (
     <div className="flex justify-center  pt-20 w-full h-full">
       <div className="flex flex-col items-center justify-start w-10/12 md:w-7/12">
-        <h2 className="text-3xl font-bold p-2">Welcome {prismaUserContext?.prismaUser?.name}</h2>
-        <p className="text-md">
+        <h2 className="text-center text-3xl font-bold p-2">Welcome {prismaUserContext?.prismaUser?.name}</h2>
+        <p className="text-center text-md">
           You have {roundUsersCredits(prismaUserContext?.prismaUser) ?? "..."} credits available to spend
           with our integrated AI models.
         </p>

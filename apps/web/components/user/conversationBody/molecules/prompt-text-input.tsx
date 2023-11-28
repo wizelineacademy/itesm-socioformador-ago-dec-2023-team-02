@@ -39,7 +39,6 @@ async function handleSaveMessage(
     // Save sent user message if the user's information is available. 
     if (idUser !== undefined){
       await saveMessage(idConversation, idUser, model, sender, input, size || "", onUserCreditsReduction);
-      toast.success("User message saved");
     }
   } catch {
     console.log("Error ocurred while saving message.");
@@ -143,13 +142,13 @@ export default function PromptTextInput({
               <Spinner className="flex items-center ml-1" color="danger" />
             ) : (
               <Button
-                id="button-chat"
                 className={`${
                   (!input || model === "dalle" ? checkDalle(creditsRemaining, size) : checkGPT(creditsRemaining, model, input))
                     ? "bg-black bg-opacity-10 dark:bg-white dark:bg-opacity-10"
                     : "bg-danger"
                 } text-white  rounded-r-xl`}
                 disabled={!input || (model === "dalle") ? checkDalle(creditsRemaining, size) : checkGPT(creditsRemaining, model, input)}
+                id="button-chat"
                 isIconOnly
                 onClick={() => {
                   //const totalTokens = creditsToTokens(prismaUserContext?.prismaUser.creditsRemaining!, model)

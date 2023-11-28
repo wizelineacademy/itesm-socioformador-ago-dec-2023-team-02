@@ -10,7 +10,7 @@ import { areValidModelParameters } from "@/types/model-parameters-types";
 import type { ModelParameters } from "@/types/model-parameters-types";
 import type { SidebarConversation } from "@/types/sidebar-conversation-types";
 import prisma from "./prisma";
-import { deleteImage } from "./helper/storage/delete-image";
+import { deleteImage, deleteImages } from "./helper/storage/delete-image";
 
 /**
  * Retrieves all conversations from the database that match the given user ID.
@@ -657,6 +657,11 @@ export async function deactivateConversationById(
   }
 }
 
+// Call the delete function for the s3 bucket
+async function deleteImagesHandler(imageNames: string[]): Promise<void> {
+  await deleteImages(imageNames)
+}
+
 /**
  * Marks all conversations associated with a given user as inactive.
  * @param idUser - The ID of the user whose conversations will be marked as inactive.
@@ -674,6 +679,25 @@ export async function deactivateAllConversationsByUserId(
       return { status: 404, message: "User ID does not exist" };
     }
 
+    const images = await prisma.conversation.findMany({
+      where: {
+        idUser,
+        idModel: 4,
+      },
+      select: {
+        messages: {
+          where: {
+            sender: "MODEL",
+          },
+          select: {
+            content: true,
+          }
+        }
+      }
+    })
+
+    const imageNames = images.flatMap(conversation => conversation.messages.map(message => message.content));
+
     // Update the 'active' field of all conversations that match the given user ID
     const updateResponse: Prisma.BatchPayload =
       await prisma.conversation.updateMany({
@@ -690,6 +714,10 @@ export async function deactivateAllConversationsByUserId(
       return { status: 404, message: "No conversations found for this user" };
     }
 
+    if (imageNames.length !== 0) {
+      await deleteImagesHandler(imageNames)
+    }
+
     // Return a message indicating the conversations are now inactive
     return {
       status: 200,
@@ -703,12 +731,8 @@ export async function deactivateAllConversationsByUserId(
 }
 
 // Call the delete function for the s3 bucket
-async function deleteImagesHandler(messageToDelete: Message): Promise<void> {
-  // Delete the image from the s3 bucket if the message belongs to the model
-  if (messageToDelete.sender === "MODEL") {
+async function deleteImageHandler(messageToDelete: Message): Promise<void> {
     await deleteImage(messageToDelete.content);
-  }
-  // })
 }
 
 /**
@@ -745,11 +769,12 @@ export async function deleteConversationById(
       const messagesToDelete = await prisma.message.findMany({
         where: {
           idConversation: id, // Filter messages by conversation ID
+          sender: "MODEL"
         },
       });
       // Call the delete function for the s3 bucket and delete the message from the database
       messagesToDelete.forEach((message: Message) => {
-        deleteImagesHandler(message).catch((error) => {
+        deleteImageHandler(message).catch((error) => {
           console.log(error);
         });
       });

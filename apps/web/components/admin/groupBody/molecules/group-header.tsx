@@ -44,10 +44,11 @@ export function GroupHeader({
   }
 
   return (
-    <div className="flex flex-wrap items-start justify-between my-2 sm:ml-10 mt-0 pt-0">
+    <div className="flex flex-wrap items-start justify-between mb-2 mt-2 pt-0">
       {/* Adjust the order of items for XS screens */}
-      <div className="w-full sm:w-1/2 order-2 sm:order-1 text-start">
+      <div className="w-full sm:w-1/2 order-2 sm:order-1 text-start sm:mt-10">
         <button className="flex flex-row justify-center items-center gap-3" onClick={handleGroupNameClick} type="button">
+        
           <h3 className="text-3xl font-bold">{groupData.name}</h3>
           <LuInfo size="1rem"/>
         </button>

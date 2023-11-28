@@ -101,7 +101,6 @@ async function handleSaveMessage(
 ): Promise<void> {
   try {
     await saveMessage(idConversation, idUser, model, sender, input, size, onUserCreditsReduction);
-    toast.success("Model message saved");
   } catch {
     console.log("Error ocurred while saving message.");
     toast.error("Error ocurred while saving message of model.");
@@ -376,13 +375,13 @@ export default function ConversationBody(): JSX.Element {
         </div>
       ) : (
         <PromptTextInput
+          creditsRemaining={prismaUserContext?.prismaUser.creditsRemaining}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           idConversation={idConversation}
           input={input}
           isLoading={isLoading}
           model={modelName}
-          creditsRemaining={prismaUserContext?.prismaUser.creditsRemaining}
           size={size}
         />
       )}
