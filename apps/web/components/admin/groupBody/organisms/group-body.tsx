@@ -108,7 +108,7 @@ export default function GroupBody(): JSX.Element {
   // if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="p-5 h-full">
+    <div className="p-5 h-full mt-0 pt-3 pl-1">
       {/* Group Header */}
       <GroupHeader
         groupData={groupData ?? placeHolderGroupData()}
