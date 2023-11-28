@@ -23,7 +23,12 @@ export default function GroupList({groups, selectedGroup, onGroupPress}: GroupLi
             <div className="flex flex-col space-y-2 w-full scrollbar-hide">
             {groups.map((group, index) => (
                 <>
-                    <GroupCard group={group} isSelected={selectedGroup === group.id} key={group.id} onPress={() => {onGroupPress(group.id)}}/>
+                    <GroupCard
+                        group={group}
+                        isAllUsersGroup={index === 0}
+                        isSelected={selectedGroup === group.id}
+                        key={group.id} onPress={() => {onGroupPress(group.id)}}
+                    />
 
                     {index === 0 ?
                     <Divider className="m-1 my-0 dark"/>

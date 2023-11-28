@@ -2,6 +2,7 @@
 import { Card, User } from "@nextui-org/react";
 import { SlOptions } from "react-icons/sl";
 import { BiCoinStack } from "react-icons/bi"
+import { shortenString } from "@/helpers/string-helpers";
 
 // Defining the props expected by the UserCard component
 interface UserCardProps {
@@ -71,7 +72,7 @@ export default function UserCard({
  
               
             }
-            name={name}
+            name={shortenString(name, 15)}
           />
         </Card>
 
