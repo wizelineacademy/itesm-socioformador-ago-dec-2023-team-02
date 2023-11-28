@@ -113,7 +113,7 @@ export default function General(): JSX.Element {
 
       <ConfirmDeleteModal 
         isOpen={confirmDeleteModalIsOpen}
-        modalText="conversations"
+        modalText="conversation history"
         onModalClose={handleConfirmDeleteModalClosing}
       />
 
