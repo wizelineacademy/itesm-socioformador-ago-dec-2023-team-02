@@ -25,8 +25,8 @@ export default async function AdminRootLayout({children}: {children: React.React
     redirect("/api/auth/login");
   }
 
-  const allUsersGroupId = 1
-  const initialGroups: Group[] = sortGroups((await getAllGroups()).data || [], allUsersGroupId)
+  const allWizelinersGroupId = 1
+  const initialGroups: Group[] = sortGroups((await getAllGroups()).data || [], allWizelinersGroupId)
 
   return (
     <PrismaUserContextProvider initialPrismaUser={prismaUser}>
