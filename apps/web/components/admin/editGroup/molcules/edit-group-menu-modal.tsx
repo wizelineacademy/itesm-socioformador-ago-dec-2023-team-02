@@ -9,6 +9,7 @@ import NewGroupMenu from "./edit-group-menu";
 
 interface EditGroupMenuModalProps {
     isNew: boolean;
+    allowElimination: boolean;
     initialGroup: Group;
     isOpen: boolean;
     onGroupSave: (savedGroup: Group) => void;
@@ -16,7 +17,7 @@ interface EditGroupMenuModalProps {
     onModalClose: () => void;
 }
 
-export default function EditGroupMenuModal({isNew, initialGroup, isOpen, onGroupSave, onGroupDeletion, onModalClose}: EditGroupMenuModalProps): JSX.Element {
+export default function EditGroupMenuModal({isNew, allowElimination, initialGroup, isOpen, onGroupSave, onGroupDeletion, onModalClose}: EditGroupMenuModalProps): JSX.Element {
     const [group, setGroup] = useState<Group>(initialGroup)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false)
@@ -41,7 +42,7 @@ export default function EditGroupMenuModal({isNew, initialGroup, isOpen, onGroup
     }
 
     const handleDeleteButtonPress: (e: any) => void = (_) => {
-        if (onGroupDeletion && !isNew){
+        if (onGroupDeletion && !isNew && allowElimination){
             onModalClose()
             setConfirmDeleteModalIsOpen(true)
         }
@@ -142,7 +143,7 @@ export default function EditGroupMenuModal({isNew, initialGroup, isOpen, onGroup
                             <div className="flex flex-row justify-between items-center w-full">
                                 <p>{isNew ? "New group" : "Edit group"}</p>
 
-                                {!isNew ? 
+                                {!isNew && allowElimination ? 
                                 <Button color="danger" isIconOnly onPress={handleDeleteButtonPress}>
                                     <AiFillDelete/>
                                 </Button>

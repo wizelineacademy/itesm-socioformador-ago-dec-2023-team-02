@@ -1,13 +1,16 @@
 import { Card, CardBody, Tooltip } from "@nextui-org/react";
 import type { Group } from "@prisma/client";
+import { MdOutlineGroup, MdOutlineGroups } from "react-icons/md"
 
 interface GroupCardProps {
+  isAllUsersGroup: boolean;
   group: Group;
   isSelected: boolean;
   onPress: () => void;
 }
 
 export default function GroupCard({
+  isAllUsersGroup,
   group,
   isSelected,
   onPress,
@@ -34,13 +37,14 @@ export default function GroupCard({
     <button className="w-full" onClick={handleCardPress} type="button">
       <Tooltip content={cardTooltipContent} delay={1000} placement="right">
         <Card
-           className={`flex flex-row items-center h-11 py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
+          className={`flex flex-row items-center h-11 py-2 pl-2 pr-0 border-none rounded-md shadow-none hover:bg-white hover:bg-opacity-20 ${cardBackgroundColor}`}
           fullWidth
           radius="none"
           shadow="none"
         >
           <CardBody>
-            <div className="flex flex-row justify-start items-center w-full overflow-scroll scrollbar-hide">
+            <div className="flex flex-row justify-start items-center gap-2 w-full overflow-scroll scrollbar-hide">
+              {isAllUsersGroup ? <MdOutlineGroups color="white"/> : <MdOutlineGroup color="white"/> }
               <p className="text-xs text-white whitespace-nowrap">{group.name}</p>
             </div>
           </CardBody>
