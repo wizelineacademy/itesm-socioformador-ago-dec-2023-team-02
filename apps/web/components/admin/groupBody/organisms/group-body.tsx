@@ -24,6 +24,7 @@ export default function GroupBody(): JSX.Element {
     useState<boolean>(false);
   const params = useParams();
   const idGroup = Number(params.id);
+  const allowGroupEditing: boolean = idGroup !== 1 // 1: the id of the 'All Wizeliners' group. 
 
   // State for storing group data
   const [groupData, setGroupData] = useState<GroupData | null>(null);
@@ -115,12 +116,14 @@ export default function GroupBody(): JSX.Element {
       />
       {/* Group Table */}
       <GroupTable
+        allowMembersEditing={allowGroupEditing}
         idGroup={idGroup}
         setUpdatedUsers={setUpdatedUsers}
         users={groupData?.users ?? []}
       />
 
       <EditGroupMenuModal
+        allowElimination={allowGroupEditing}
         initialGroup={{ ...groupData, users: undefined } as Group}
         isNew={false}
         isOpen={editGroupModalIsOpen}
