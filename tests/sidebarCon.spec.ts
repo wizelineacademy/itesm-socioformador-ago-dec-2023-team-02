@@ -51,7 +51,12 @@ test.describe('Sidebar conversations', () => {
       await page.locator('[id="1"]').click();
       await page.getByRole('button', { name: 'Create' }).click();
       await page.getByRole('button', { name: 'prueba@gmail.co... prueba@' }).click();
-      await page.getByLabel('Settings').locator('div').filter({ hasText: 'GeneralGeneralGlobal contextGlobal Credits Remaining1799.98 Theme Delete all' }).getByRole('button').nth(2).click();
+      await page.getByText('Settings').click();
+      await page.getByRole('dialog').locator('div').filter({ hasText: 'GeneralGeneralGlobal contextGlobal Credits Remaining1999.98 Theme Delete all' }).getByRole('button').nth(2).click();
+      await page.getByRole('button', { name: 'Confirm' }).click();
+      await page.waitForTimeout(4000);
+      await page.getByLabel('Close').click();
+      await expect(page.getByText('No items to display')).toBeVisible();
     });
 
   });
