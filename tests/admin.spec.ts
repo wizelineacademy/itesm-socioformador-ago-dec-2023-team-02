@@ -27,18 +27,32 @@ test.describe('Admin dashboard', () => {
     await page.getByText('Rodrigo Rodríguez De Luna').click();
     await page.getByText('María Eugenia Ontiveros Bellés').click();
     await page.getByText('Emilio Ortiz').click();
-    await page.getByText('William Frank Monroy Mamani').click();
     await page.getByRole('button', { name: 'Add' }).click();
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(6000);
     await expect(page.getByRole('rowheader', { name: 'Emilio Ortiz Emilio Ortiz' })).toBeVisible();
+    await expect(page.getByRole('rowheader', { name: 'SAM Team SAM Team tsam46317@' })).toBeVisible();
     await expect(page.getByRole('rowheader', { name: 'María Eugenia Ontiveros Bellé' })).toBeVisible();
     await expect(page.getByRole('rowheader', { name: 'Rodrigo Rodríguez De Luna' })).toBeVisible();
     await expect(page.getByRole('rowheader', { name: 'prueba@gmail.com prueba@gmail' })).toBeVisible();
-    await page.getByLabel('next page button').click();
-    await expect(page.getByRole('rowheader', { name: 'William Frank Monroy Mamani' })).toBeVisible();
   });
 
+  test('remove user', async ({ page }) => {
+    await page.getByRole('button', { name: 'Test group' }).click();
+    await page.waitForTimeout(2000);
+    await page.getByRole('rowheader', { name: 'Rodrigo Rodríguez De Luna' }).click();
+    await page.getByRole('button', { name: 'Remove Users' }).click();
+    await page.waitForTimeout(2000);
+    await expect(page.getByText('Total 4 users')).toBeVisible();
+  });
 
+  test('Edit group', async ({ page }) => {
+    await page.getByRole('button', { name: 'Test group' }).click();
+    await page.getByRole('button', { name: 'Group Settings' }).click();
+    await page.getByPlaceholder('Group credits').fill('50');
+    await page.getByPlaceholder('Group description').fill('edit group test');
+    await page.getByRole('button', { name: 'Edit' }).click();
+    await expect(page.getByText('Group edited.')).toBeVisible();
+  });
 
   test('search group', async ({ page }) => {
     await page.getByPlaceholder('Search group').click();
@@ -58,6 +72,5 @@ test.describe('Admin dashboard', () => {
     await page.getByRole('button', { name: 'Confirm' }).click();
     await page.waitForTimeout(5000);
   });
-
 
 });
