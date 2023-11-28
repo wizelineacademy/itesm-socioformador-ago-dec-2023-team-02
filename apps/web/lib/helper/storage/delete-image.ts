@@ -1,4 +1,4 @@
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, DeleteObjectCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
 
 /**
@@ -20,7 +20,7 @@ function extractFilename(content: string): string {
  * @param content String containing a message's content.
  */
 export async function deleteImage(content: string): Promise<NextResponse> {
-const secret = process.env.S3_SECRET_KEY
+    const secret = process.env.S3_SECRET_KEY
 
     if (!secret) {
         return new NextResponse(`Error: Invalid credentials`, { status: 500 })
@@ -52,5 +52,41 @@ const secret = process.env.S3_SECRET_KEY
         return new NextResponse(`Image succesfully deleted.`, {status: 200})
     } catch(error) {
         return new NextResponse(`Failed to delete image.`, {status: 500})
+    }
+}
+
+export async function deleteImages(files: string[]): Promise<NextResponse> {
+    const secret = process.env.S3_SECRET_KEY
+
+    if (!secret) {
+        return new NextResponse(`Error: Invalid credentials`, { status: 500 })
+    }
+
+    const client = new S3Client({
+        credentials: {
+            accessKeyId: "AKIAXNXJKBV77OB7CZPA",
+            secretAccessKey: secret,
+        },
+        region: "us-east-1",
+    });
+
+    // Define keys for the objects to delete from the bucket
+    const deleteObjects = files.map((file) => ({
+        Key: extractFilename(file), // key is the file's name
+    }))
+
+    const command = new DeleteObjectsCommand({
+        Bucket: "wizeprompt",
+        Delete: {
+            Objects: deleteObjects,
+        },
+    })
+
+    // Sends the command to delete the file and logs whether the command succeeds or fails
+    try {
+        await client.send(command)
+        return new NextResponse(`Images succesfully deleted.`, {status: 200})
+    } catch(error) {
+        return new NextResponse(`Failed to delete images.`, {status: 500})
     }
 }

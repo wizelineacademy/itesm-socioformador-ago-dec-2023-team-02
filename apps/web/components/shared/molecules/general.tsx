@@ -1,26 +1,69 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Button, Card, CardBody } from "@nextui-org/react";
 import { MdDeleteOutline } from "react-icons/md";
 import { BiCoinStack } from "react-icons/bi"
+import { toast } from "sonner";
 import ThemeButton from "@/components/theme-button";
 import { PrismaUserContext, type PrismaUserContextShape } from "@/context/prisma-user-context";
 import { roundUsersCredits } from "@/helpers/user-helpers";
+import { ConversationsContext, type ConversationsContextShape } from "@/context/conversations-context";
+import { ConversationsActionType } from "@/helpers/sidebar-conversation-helpers";
+import ConfirmDeleteModal from "./confirm-delete-modal";
 
-function ClearAll(): JSX.Element {
-  return (
-    <Button
-      className="bg-red-500 text-gray-50"
-      isIconOnly
-      startContent={<MdDeleteOutline />}
-      type="button"
-    />
-  );
-}
+// function ClearAll(handleDelete: any): JSX.Element {
+//   return (
+//     <Button
+//       className="bg-red-500 text-gray-50"
+//       isIconOnly
+//       startContent={<MdDeleteOutline />}
+//       type="button"
+//       onClick={handleDelete}
+//     />
+//   );
+// }
 
 export default function General(): JSX.Element {
   const prismaUserContext = useContext<PrismaUserContextShape | null>(PrismaUserContext);
   const prismaUser = prismaUserContext?.prismaUser;
+  const conversationsContext = useContext<ConversationsContextShape | null>(ConversationsContext)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false)
+
+  const deleteIsDisabled = conversationsContext?.conversations.length === 0
+
+  const handleDeleteButtonPress: () => void = () => {
+    setConfirmDeleteModalIsOpen(true)
+  }
+
+  const handleConfirmDeleteModalClosing: (confirm: boolean) => void = (confirm) => {
+    if (confirm) {
+      setIsLoading(true)
+      handleDeleteAllConversations()
+    }
+    setConfirmDeleteModalIsOpen(false)
+  }
+
+  const handleDeleteAllConversations: () => void = () => {
+    const fetchOptions: RequestInit = { method: "PATCH" };
+    fetch(`/api/conversations/user/${prismaUser?.id}`, fetchOptions)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok")
+      }
+      toast.success("All conversations were deleted")
+      conversationsContext?.conversationsDispatch({
+        type: ConversationsActionType.DeleteAll,
+        conversationId: 0,
+      })
+    })
+    .catch((_) => {
+      toast.error("Conversations couldn't be deleted")
+    })
+    .finally(() => {
+      setIsLoading(false)
+    })
+  }
 
   return (
     <div className="flex flex-col space-y-4">
@@ -55,10 +98,25 @@ export default function General(): JSX.Element {
         <CardBody>
           <div className="flex justify-between items-center pr-3">
             <p>Delete all conversations</p>
-            <ClearAll />
+            {/* <ClearAll handleDelete={handleDeleteAllConversations}/> */}
+            <Button
+              className="bg-red-500 text-gray-50"
+              isDisabled={deleteIsDisabled || isLoading}
+              isIconOnly
+              onClick={handleDeleteButtonPress}
+              startContent={<MdDeleteOutline />}
+              type="button"
+            />
           </div>
         </CardBody>
       </Card>
+
+      <ConfirmDeleteModal 
+        isOpen={confirmDeleteModalIsOpen}
+        modalText="conversations"
+        onModalClose={handleConfirmDeleteModalClosing}
+      />
+
     </div>
   );
 }
