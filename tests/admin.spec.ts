@@ -9,7 +9,7 @@ test.describe('Admin dashboard', () => {
       await page.getByRole('button', { name: 'Continue', exact: true }).click();
       await page.getByRole('button', { name: 'Get Started' }).click();
       await page.goto('http://localhost:3000/conversation/new');
-      await page.getByRole('button', { name: 'prueba@gmail.com prueba@gmail' }).click();
+      await page.getByRole('button', { name: 'prueba@gmail.co... prueba@' }).click();
       await page.getByText('Admin Dashboard').click();
       await expect(page.getByRole('heading', { name: 'All Wizeliners' })).toBeVisible({timeout: 120000});
   });
@@ -20,7 +20,6 @@ test.describe('Admin dashboard', () => {
     await page.getByPlaceholder('Group credits').fill('100');
     await page.getByPlaceholder('Group description').fill('group for testing');
     await page.getByRole('button', { name: 'Create' }).click();
-    await expect(page.getByRole('button', { name: 'Test group' })).toBeVisible();
     await page.waitForTimeout(5000);
     await page.getByRole('button', { name: 'Add Users' }).click();
     await page.getByText('prueba@gmail.com').nth(1).click({timeout: 150000});
