@@ -503,7 +503,7 @@ export default function GroupTable({
           },
         }}
         classNames={{
-          wrapper: "max-h-[382px] shadow-none p-4",
+          wrapper: "shadow-none p-4 overflow-y-scroll h-[calc(100vh-20rem)]",
         }}
         isHeaderSticky
         onSelectionChange={setSelectedKeys as any}
@@ -525,7 +525,7 @@ export default function GroupTable({
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent="No users found" items={sortedItems}>
+        <TableBody className="h-full" emptyContent="No users found" items={sortedItems}>
           {(item) => (
             <TableRow key={item.id}>
               {(columnKey) => (
