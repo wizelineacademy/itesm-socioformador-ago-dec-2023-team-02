@@ -12,7 +12,6 @@ interface GroupHeaderProps {
   groupData: GroupData;
   onGroupsSettingsPress: () => void;
   setUpdatedUsers: any
-  allowGroupEditing: boolean;
 }
 
 // GroupHeader component definition with explicit return type JSX.Element
