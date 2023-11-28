@@ -1,7 +1,7 @@
 "use client";
 // Import necessary hooks and utilities from React and Next.js
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams , useRouter } from "next/navigation";
 import type { Group } from "@prisma/client";
 import { Spinner } from "@nextui-org/react";
 import { toast } from "sonner";
@@ -20,14 +20,14 @@ export default function GroupBody(): JSX.Element {
   const sidebarGroupsContext = useContext<GroupsContextShape | null>(
     GroupsContext
   );
-  const [editGroupModalIsOpen, setEditGroupModalIsOpen] =
-    useState<boolean>(false);
+  const [editGroupModalIsOpen, setEditGroupModalIsOpen] = useState<boolean>(false);
+  const router = useRouter();
   const params = useParams();
   const idGroup = Number(params.id);
   const allowGroupEditing: boolean = idGroup !== 1 // 1: the id of the 'All Wizeliners' group. 
 
   // State for storing group data
-  const [groupData, setGroupData] = useState<GroupData | null>(null);
+  const [groupData, setGroupData] = useState<GroupData | null>(placeHolderGroupData());
 
   // State for tracking loading status
   const [loading, setLoading] = useState<boolean>(true);
@@ -81,9 +81,10 @@ export default function GroupBody(): JSX.Element {
         setGroupData(data);
         console.log(data);
       } catch (err: any) {
+        router.push("/admin/group/1") // Redirect to 'All Wizeliners' if group's data can't be fetched. 
         // setError(err.message);
         console.log(err);
-        toast.error("Failed getting group data");
+        toast.error(`Failed in fetching the data of group ${idGroup}.`);
       } finally {
         setLoading(false);
       }
