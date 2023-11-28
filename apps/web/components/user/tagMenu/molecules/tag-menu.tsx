@@ -62,7 +62,7 @@ export default function TagMenu({tags, selectedTags, isEditingTags, onTagsChange
 
             <Divider/>
 
-            <div className="min-h-[150px] max-h-[450px] overflow-y-auto">
+            <div className="min-h-[150px] max-h-[450px] overflow-y-auto pt-1">
                 <div className="flex flex-row flex-wrap">
                     {filteredTags.map((tag) => (                    
                         isEditingTags ? 

@@ -18,7 +18,7 @@ interface GroupHeaderProps {
 export function GroupHeader({
   groupData,
   onGroupsSettingsPress,
-  setUpdatedUsers
+  setUpdatedUsers,
 }: GroupHeaderProps): JSX.Element {
   const [creditsModalIsOpen, setCreditsModalIsOpen] = useState<boolean>(false)
   const [descriptionModalIsOpen, setDescriptionModalIsOpen] = useState<boolean>(false)
@@ -49,7 +49,7 @@ export function GroupHeader({
       <div className="w-full sm:w-1/2 order-2 sm:order-1 text-start">
         <button className="flex flex-row justify-center items-center gap-3" onClick={handleGroupNameClick} type="button">
           <h3 className="text-3xl font-bold">{groupData.name}</h3>
-          <LuInfo size="0.8rem"/>
+          <LuInfo size="1rem"/>
         </button>
 
         {/* Placeholder for credits information below the group name */}
