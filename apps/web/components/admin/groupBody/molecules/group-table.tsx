@@ -357,7 +357,7 @@ export default function GroupTable({
               onClear();
             }}
             onValueChange={onSearchChange}
-            placeholder="Search by name..."
+            placeholder="Search by name or email..."
             size="sm"
             startContent={<AiOutlineSearch />}
             value={filterValue}
