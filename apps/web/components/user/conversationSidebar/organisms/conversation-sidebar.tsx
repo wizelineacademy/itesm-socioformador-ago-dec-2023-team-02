@@ -151,7 +151,7 @@ export default function ConversationSidebar({
   }
 
   const conversationSidebarStyle = `transition-all duration-200 linear h-screen bg-transparent flex flex-col
-  justify-start items-center space-y-5 overflow-hidden border-yellow-50 pb-4 ${
+  justify-start items-center gap-4 overflow-hidden border-yellow-50 pb-4 ${
     showingSidebar ? "w-64 px-5" : "w-0"
   }`;
 
@@ -232,8 +232,8 @@ export default function ConversationSidebar({
             content={selectedTags.size}
             isInvisible={selectedTags.size === 0}
           >
-            <Button isIconOnly onPress={handleTagButtonPress} radius="sm">
-              <AiOutlineTag />
+            <Button isIconOnly onPress={handleTagButtonPress} radius="sm" >
+              <AiOutlineTag id="tag-search"/>
             </Button>
           </Badge>
         </div>

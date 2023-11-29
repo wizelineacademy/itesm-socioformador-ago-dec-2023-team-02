@@ -20,12 +20,12 @@ export default function ConfirmDeleteModal({isOpen, modalText, onModalClose}: Co
             <ModalContent>
             {(onClose) => (
                 <ModalBody>
-                    <p className="text-lg p-2 text-center">
-                        Are you sure you want to delete this {modalText}?<br/>This action is irreversible.
+                    <p className="text-md p-2 text-center">
+                        Delete {modalText}?<br/>This action is irreversible.
                     </p>
                     <div className="flex flex-row w-full justify-center gap-8 pb-2">
-                        <Button color="danger" onPress={onClose}>Cancel</Button>
-                        <Button color="primary" onPress={handleConfirm}>Confirm</Button>
+                        <Button color="danger" onPress={onClose} variant="light">Cancel</Button>
+                        <Button color="danger" onPress={handleConfirm}>Confirm</Button>
                     </div>
                 </ModalBody>
             )}

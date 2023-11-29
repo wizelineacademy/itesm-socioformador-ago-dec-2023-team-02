@@ -36,6 +36,7 @@ interface GroupTableProps {
   setUpdatedUsers: any;
   idGroup: number;
   users: User[];
+  allowMembersEditing: boolean;
 }
 
 //columns
@@ -70,6 +71,7 @@ export default function GroupTable({
   setUpdatedUsers,
   users,
   idGroup,
+  allowMembersEditing
 }: GroupTableProps): JSX.Element {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -158,7 +160,8 @@ export default function GroupTable({
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase())
+        user.name.toLowerCase().includes(filterValue.toLowerCase()) || 
+        user.email.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
     if (
@@ -321,6 +324,29 @@ export default function GroupTable({
   }, []);
 
   const topContent = useMemo(() => {
+    const membersEditingButton: JSX.Element = selectedKeys instanceof Set && selectedKeys.size > 0 ? (
+      <Button
+        color="danger"
+        endContent={<FaMinus />}
+        onClick={() => {
+          void removeUsersFromGroup();
+        }}
+        size="sm"
+      >
+        Remove Users
+      </Button>
+    ) : (
+      <Button
+        className="text-white"
+        color="success"
+        endContent={<AiOutlinePlus />}
+        onClick={onOpen}
+        size="sm"
+      >
+        Add Users
+      </Button>
+    )
+
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-center">
@@ -331,7 +357,7 @@ export default function GroupTable({
               onClear();
             }}
             onValueChange={onSearchChange}
-            placeholder="Search by name..."
+            placeholder="Search by name or email..."
             size="sm"
             startContent={<AiOutlineSearch />}
             value={filterValue}
@@ -387,28 +413,11 @@ export default function GroupTable({
                 ))}
               </DropdownMenu>
             </Dropdown>
-            {selectedKeys instanceof Set && selectedKeys.size > 0 ? (
-              <Button
-                color="danger"
-                endContent={<FaMinus />}
-                onClick={() => {
-                  void removeUsersFromGroup();
-                }}
-                size="sm"
-              >
-                Remove Users
-              </Button>
-            ) : (
-              <Button
-                className="text-white"
-                color="success"
-                endContent={<AiOutlinePlus />}
-                onClick={onOpen}
-                size="sm"
-              >
-                Add Users
-              </Button>
-            )}
+
+            {/*If the editing of the group's members is possible, show corresponding button*/}
+            {allowMembersEditing ?
+            membersEditingButton 
+            : null}
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -494,13 +503,13 @@ export default function GroupTable({
           },
         }}
         classNames={{
-          wrapper: "max-h-[382px] shadow-none p-4",
+          wrapper: "shadow-none p-4 overflow-y-scroll h-[calc(100vh-20rem)]",
         }}
         isHeaderSticky
         onSelectionChange={setSelectedKeys as any}
         onSortChange={setSortDescriptor as any}
         selectedKeys={selectedKeys}
-        selectionMode="multiple"
+        selectionMode={allowMembersEditing ? "multiple" : "single"}
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
@@ -516,7 +525,7 @@ export default function GroupTable({
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent="No users found" items={sortedItems}>
+        <TableBody className="h-full" emptyContent="No users found" items={sortedItems}>
           {(item) => (
             <TableRow key={item.id}>
               {(columnKey) => (

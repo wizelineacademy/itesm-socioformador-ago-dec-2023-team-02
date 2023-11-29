@@ -54,6 +54,15 @@ export function trimLeadingSpaces(str: string): string {
 }
 
 /**
+ * Removes from a string, if present, every whitespace found at its end. 
+ * @param str - A string whose trailing whitespaces will be removed.
+ * @returns A new string, removed of its trailing whitespaces.
+ */
+export function trimTrailingSpaces(str: string): string {
+    return str.replace(/\s+$/, "")
+}
+
+/**
  * Enforces a maximium length on the given string. 
  * @param str - A string whose copy's length will be trimmed if necessary. 
  * @param maxLength - The maximum number of characters the provided string will be able to have. 
@@ -98,4 +107,20 @@ export function isPotentiallyDecimal(str: string): boolean {
  */
 export function isDecimal(str: string): boolean {
     return /^(?=.*[1-9])-?\d+(?:.\d*)?$/.test(str)
+}
+
+/**
+ * Shortens a string if its number of characters is greater than maxlength.
+ * @param str - A string that will be potentially trimmed. 
+ * @param maxLength - The max number of characters the given string can have before being trimmed. 
+ * @returns A new string, shortened, or an unmodified copy of the given string, if its number of characters is smaller 
+ * than maxLength. 
+ */
+export function shortenString(str: string, maxLength: number): string {
+    if (str.length <= maxLength){
+        return str
+    }
+
+    const shortenedString: string = str.slice(0, maxLength)
+    return trimTrailingSpaces(shortenedString).concat("...") 
 }

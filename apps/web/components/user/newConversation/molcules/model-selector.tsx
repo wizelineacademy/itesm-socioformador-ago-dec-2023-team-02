@@ -37,8 +37,8 @@ export default function ModelSelector({
       >
         {/* This function renders each model as a selectable item with a custom ModelSelectionCard. */}
         {models.map((model) => (
-          <SelectItem key={model.id} textValue={model.name.toUpperCase()}>
-            <ModelSelectionCard model={model} />
+          <SelectItem id={model.id} key={model.id} textValue={model.name.toUpperCase()}>
+            <ModelSelectionCard  model={model} />
           </SelectItem>
         ))}
       </Select>
