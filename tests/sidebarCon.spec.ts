@@ -39,4 +39,24 @@ test.describe('Sidebar conversations', () => {
       await expect(page.getByText('No items to display')).toBeVisible({timeout: 220000});
     });
 
+    test('Delete all conversation', async({page})=>{
+      await page.getByRole('button', { name: 'New Chat' }).click();
+      await page.getByPlaceholder('Chat name').fill('test 1');
+      await page.getByLabel('Select a Model', { exact: true }).click();
+      await page.locator('[id="1"]').click();
+      await page.getByRole('button', { name: 'Create' }).click();
+      await page.getByRole('button', { name: 'New Chat' }).click();
+      await page.getByPlaceholder('Chat name').fill('test 2');
+      await page.getByLabel('Select a Model', { exact: true }).click();
+      await page.locator('[id="1"]').click();
+      await page.getByRole('button', { name: 'Create' }).click();
+      await page.getByRole('button', { name: 'prueba@gmail.co... prueba@' }).click();
+      await page.getByText('Settings').click();
+      await page.getByRole('dialog').locator('div').filter({ hasText: 'GeneralGeneralGlobal contextGlobal Credits Remaining1999.98 Theme Delete all' }).getByRole('button').nth(2).click();
+      await page.getByRole('button', { name: 'Confirm' }).click();
+      await page.waitForTimeout(4000);
+      await page.getByLabel('Close').click();
+      await expect(page.getByText('No items to display')).toBeVisible();
+    });
+
   });
