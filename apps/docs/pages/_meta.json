@@ -5,16 +5,7 @@
   "frontend": "Front-End",
   "backend": "Back-End",
   "builds": "Build",
-  "setup":"Setup",
-  "about": {
-    "title": "About",
-    "type": "page"
-  },
-  "contact": {
-    "title": "Contact ↗",
-    "type": "page",
-    "href": "https://twitter.com/shuding_",
-    "newWindow": true
-  }
+  "setup": "Setup",
+  "testing": "Tests"
   
 }
