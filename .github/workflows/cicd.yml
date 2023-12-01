@@ -40,10 +40,6 @@ jobs:
         run: |
           ls
 
-      # - name: Test
-      # run: |
-      #   pnpm test:ci --if-present
-
   Release:
     name: Release
     needs: [Build, DeployStagingWeb, DeployStagingDocs]
@@ -78,10 +74,6 @@ jobs:
       - name: Check environment variables
         run: |
           cat apps/web/.env
-
-      # - name: Test
-      #   run: |
-      #     pnpm test --if-present
 
   DeployStagingWeb:
     name: Deploy to Staging Web
@@ -124,10 +116,6 @@ jobs:
         run: |
           cd apps/web && pnpm build
 
-      # - name: Stop server
-      #   run: |
-      #     sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pm2 stop all"
-
       - name: Clean LightSail directory
         run: |
           sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "rm -rf apps/web"
@@ -151,7 +139,7 @@ jobs:
 
       - name: Start server
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pm2 start pnpm --name "web" -- start"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/web && pm2 stop web && pm2 delete web && pm2 start pnpm --name "web" -- start"
 
       - name: Remove web node_modules
         run: |
@@ -197,10 +185,6 @@ jobs:
         run: |
           cd apps/docs && pnpm build
 
-      # - name: Stop server
-      #   run: |
-      #     sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 stop all"
-
       - name: Clean LightSail directory
         run: |
           sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "rm -rf apps/docs"
@@ -220,7 +204,7 @@ jobs:
 
       - name: Start server
         run: |
-          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 start pnpm --name "docs" -- start -- -p 3001"
+          sshpass -p "${{ secrets.LIGHTSAIL_SSH_PASS }}" ssh -o StrictHostKeyChecking=no ubuntu@52.54.237.87 "cd apps/docs && pm2 stop docs && pm2 delete docs && pm2 start pnpm --name "docs" -- start -- -p 3001"
 
       - name: Remove docs node_modules
         run: |
