@@ -1,1 +1,99 @@
 # Back-End 
+WizePrompt Server side of the web application that is responsible of handling
+the database interactions and the server connection. The managment of the database is 
+done through Prisma Client and the created datbase is done by the PostgreSQL software application.
+
+## Backend-End Dependencies
+- [x] **Prisma** | Database Managment
+- [x] **PostgreSQL** | Open Source Database 
+
+## Back-End Section and Files
+
+### [Api Routes](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api)
+* [OpenAI IA language models](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/ai/openai)
+```
+POST /ai/openai/dalle
+POST /ai/openai/gpt-3.5-turbo
+POST /ai/openai/gpt-4
+POST /ai/openai
+```
+* [Authentication Auth0](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/auth/%5Bauth0%5D)
+```
+GET /auth/:auth0
+```
+* [User Conversations](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/conversations)
+```
+GET /conversations/user/:id
+PATCH /conversations/user/:id
+POST /conversations
+GET /conversations/:id
+PATCH /conversations/:id
+DELETE /conversations/:id
+PATCH /conversations/deactivate/:id
+```
+* [User Groups](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/groups)
+```
+GET /groups
+GET /groups/:id
+PATCH /groups/:id
+DELETE /groups/:id
+```
+* [User Keys](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/keys)
+```
+GET /keys/user/:id
+POST /keys
+PATCH /keys/:id
+DELETE /keys/:id
+```
+* [User Messages](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/messages)
+```
+GET /messages/conversation/:id
+POST /messages
+PATCH /messages/:id
+DELETE /messages/:id
+```
+* [IA language model](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/models)
+```
+GET /models
+GET /models/:id
+PATCH /models/:id
+```
+* [Parameters](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/params)
+```
+GET /params/conversation/:id
+POST /params
+PATCH /params/:id
+DELETE /params/:id
+```
+* [Providers](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/providers)
+```
+GET /providers
+GET /providers/:id
+PATCH /providers/:id
+```
+* [User Tags](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/tags)
+```
+GET /tags/user/:id
+GET /tags/conversation/:id
+POST /tags
+PATCH /tags/:id
+DELETE /tags/:id
+```
+* [Users](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/app/api/users)
+```
+GET /users
+GET /users/:id
+PATCH /users/:id
+DELETE /users/:id
+```
+
+### Web Application Prisma Database, Types & Library
+WizePrompt Prisma files and the database Prisma Squema
+* [Prisma](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/prisma)
+    * [Prisma Database Squema](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/blob/main/apps/web/prisma/schema.prisma)
+
+Back-End Types, Library & functions
+* [Types](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/lib)
+* [Library](https://github.com/wizelineacademy/itesm-socioformador-ago-dec-2023-team-02/tree/main/apps/web/types)
+
+
