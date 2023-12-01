@@ -1,23 +1,15 @@
-# Nextra Docs Template
+# WizePrompt Docs
 
-This is a template for creating documentation with [Nextra](https://nextra.site).
+## Setup
 
-[**Live Demo →**](https://nextra-docs-template.vercel.app)
+This app is part of WizePrompt mono-repo, so you need to follow the instructions in the [main README](../README.md) to setup the project.
 
-[![](.github/screenshot.png)](https://nextra-docs-template.vercel.app)
+## Tech Stack
 
-## Quick Start
-
-Click the button to clone this repository and deploy it on Vercel:
-
-[![](https://vercel.com/button)](https://vercel.com/new/clone?s=https%3A%2F%2Fgithub.com%2Fshuding%2Fnextra-docs-template&showOptionalTeamCreation=false)
-
-## Local Development
-
-First, run `pnpm i` to install the dependencies.
-
-Then, run `pnpm dev` to start the development server and visit localhost:3000.
-
-## License
-
-This project is licensed under the MIT License.
+- [React](https://reactjs.org/)
+- [Next.js](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Markdown](https://www.markdownguide.org/)
+- [ESLint](https://eslint.org/)
+- [Prettier](https://prettier.io/)
